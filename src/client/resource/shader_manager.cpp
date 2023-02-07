@@ -105,9 +105,19 @@ namespace cybrion
 
     bool ShaderManager::loadShader(const string& name, bool reloadable)
     {
-        auto data = new GL::detail::ShaderData;
-        data->name = name;
-        data->reloadable = reloadable;
+        GL::detail::ShaderData* data;
+        
+        if (m_shaders.find(name) == m_shaders.end())
+        {
+            data = new GL::detail::ShaderData;
+            data->name = name;
+            data->reloadable = reloadable;
+            m_shaders[name] = data;
+        }
+        else
+        {
+            data = m_shaders[name];
+        }
 
         string vertSource;
         string fragSource;
@@ -197,7 +207,6 @@ namespace cybrion
         glDeleteShader(fragShader);
 
         data->programId = programId;
-        m_shaders[data->name] = data;
 
         return true;
     }

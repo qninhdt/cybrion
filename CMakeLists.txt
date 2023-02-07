@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 project ("cybrion")
 
 add_executable(${PROJECT_NAME}
-    "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/client.cpp" "src/util/file.cpp" "src/client/window.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp")
+    "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/client.cpp" "src/util/file.cpp" "src/client/window.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp" "src/client/transform.cpp" "src/client/camera.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 

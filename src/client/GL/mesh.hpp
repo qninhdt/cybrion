@@ -1,5 +1,7 @@
 #pragma once
 
+#include "client/transform.hpp"
+
 namespace cybrion::GL
 {
     enum class Type
@@ -17,7 +19,7 @@ namespace cybrion::GL
         Type type;
     };
 
-    class Mesh
+    class Mesh : public Transform
     {
     public:
         Mesh(bool useGlobalIBO = false);

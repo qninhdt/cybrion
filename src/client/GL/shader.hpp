@@ -25,7 +25,7 @@ namespace cybrion::GL
 
             void loadUniform(GLuint programId)
             {
-                glGetUniformLocation(programId, uniform);
+                location = glGetUniformLocation(programId, uniform);
             }
         };
     }
