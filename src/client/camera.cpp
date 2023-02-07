@@ -3,6 +3,7 @@
 namespace cybrion
 {
     Camera::Camera(f32 aspect, f32 fov, f32 near, f32 far) :
+        detail::Transform0({ 0, 0, 0 }, { 0, 0, 0 }),
         m_aspect(aspect),
         m_fov(fov),
         m_near(near),
@@ -17,6 +18,11 @@ namespace cybrion
     const mat4& Camera::getViewMatrix() const
     {
         return m_viewMatrix;
+    }
+
+    const mat4& Camera::getProjectionMatrix() const
+    {
+        return m_projectionMatrix;
     }
 
     const mat4& Camera::getProjectionViewMatrix() const
@@ -39,10 +45,16 @@ namespace cybrion
         return m_forward;
     }
 
+    void Camera::setAspect(f32 aspect)
+    {
+        m_aspect = aspect;
+    }
+
     void Camera::updateViewMatrix()
     {
         vec3 direction = getDirection();
-        m_viewMatrix = glm::lookAt(getPosition(), getPosition() + direction, m_up);
+        m_viewMatrix = glm::rotate(mat4(1.0f), m_rotation.z, direction)
+            * glm::lookAt(m_position, m_position + direction, m_up);
         m_right = glm::normalize(glm::cross(direction, m_up));
         m_forward = glm::normalize(glm::cross(m_up, m_right));
         updateProjectionViewMatrix();

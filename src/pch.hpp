@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <array>
 #include <ranges>
+#include <chrono>
 
 // third-party libraries
 #include <spdlog/spdlog.h>

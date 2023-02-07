@@ -87,6 +87,30 @@ namespace cybrion
         glfwTerminate();
     }
 
+    void Window::tick(f32 deltaTime)
+    {
+        Camera& camera = Client::Get().getCamera();
+
+        bool right    = isKeyPressed(KeyCode::D);
+        bool forward  = isKeyPressed(KeyCode::W);
+        bool up       = isKeyPressed(KeyCode::SPACE);
+        bool left     = !right   && isKeyPressed(KeyCode::A);
+        bool backward = !forward && isKeyPressed(KeyCode::S);
+        bool down     = !up      && isKeyPressed(KeyCode::LEFT_SHIFT);
+
+        if (right || left || forward || backward || up || down)
+        {
+            vec3 dir = glm::normalize(
+                f32(right   - left    ) * camera.getRight()   +
+                f32(up      - down    ) * camera.getUp()      +
+                f32(forward - backward) * camera.getForward()
+            );
+
+            camera.move(dir * deltaTime * 10.0f);
+            camera.updateViewMatrix();
+        }
+    }
+
     GLFWwindow* Window::getNativeWindow() const
     {
         return m_nativeWindow;
@@ -100,6 +124,8 @@ namespace cybrion
         window.m_width = width;
 
         glViewport(0, 0, width, height);
+
+        window.onResize(width, height);
     }
 
     void Window::GlfwCloseCallback(GLFWwindow* nativeWindow)
@@ -167,15 +193,25 @@ namespace cybrion
 
     void Window::toggleCursor()
     {
-        m_enableCursor = !m_enableCursor;
-
         if (m_enableCursor)
-            glfwSetInputMode(m_nativeWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            disableCursor();
         else
-            glfwSetInputMode(m_nativeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            enableCursor();
     }
 
-    bool Window::isEnableCursor() const
+    void Window::enableCursor()
+    {
+        m_enableCursor = true;
+        glfwSetInputMode(m_nativeWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    void Window::disableCursor()
+    {
+        m_enableCursor = false;
+        glfwSetInputMode(m_nativeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    bool Window::isCursorEnable() const
     {
         return m_enableCursor;
     }
@@ -189,6 +225,11 @@ namespace cybrion
     {
         switch (key)
         {
+
+        // toggle cursor
+        case KeyCode::F1:
+            toggleCursor();
+            break;
 
         // close window
         case KeyCode::ESCAPE:
@@ -208,6 +249,20 @@ namespace cybrion
 
     void Window::onMouseMoved(const vec2& delta)
     {
+        if (!m_enableCursor)
+        {
+            Camera& camera = Client::Get().getCamera();
+
+            camera.rotate(vec3(- delta.y, - delta.x, 0) * Client::Get().getDeltaTime() * 1.0f);
+            camera.updateViewMatrix();
+        }
+    }
+
+    void Window::onResize(u32 width, u32 height)
+    {
+        Camera& camera = Client::Get().getCamera();
+        camera.setAspect(getAspect());
+        camera.updateProjectionMatrix();
     }
 
     Window::~Window()

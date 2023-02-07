@@ -87,4 +87,5 @@ namespace cybrion
     using vector = std::vector<V>;
 
     constexpr f32 pi = 3.14159265358979323846;
+    constexpr f32 two_pi = pi * 2;
 } // namespace nith

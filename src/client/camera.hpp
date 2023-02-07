@@ -4,7 +4,7 @@
 
 namespace cybrion
 {
-    class Camera : public Transform
+    class Camera : public detail::Transform0
     {
     public:
         static constexpr vec3 XAxis = { 1, 0, 0 };
@@ -14,11 +14,14 @@ namespace cybrion
         Camera(f32 aspect, f32 fov, f32 near, f32 far);
 
         const mat4& getViewMatrix() const;
+        const mat4& getProjectionMatrix() const;
         const mat4& getProjectionViewMatrix() const;
 
         vec3 getUp() const;
         vec3 getRight() const;
         vec3 getForward() const;
+
+        void setAspect(f32 aspect);
 
         void updateViewMatrix();
         void updateProjectionMatrix();

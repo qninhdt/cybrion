@@ -16,6 +16,8 @@ namespace cybrion
         void close();
         void closeImmediately();
 
+        void tick(f32 deltaTime);
+
         GLFWwindow* getNativeWindow() const;
 
         u32 getWidth() const;
@@ -27,14 +29,17 @@ namespace cybrion
         bool isKeyPressed(KeyCode key) const;
 
         void toggleCursor();
+        void enableCursor();
+        void disableCursor();
 
-        bool isEnableCursor() const;
+        bool isCursorEnable() const;
 
         vec2 getDeltaMousePos() const;
 
         void onKeyPressed(KeyCode key, bool isRepeated);
         void onKeyReleased(KeyCode key);
         void onMouseMoved(const vec2& delta);
+        void onResize(u32 width, u32 height);
 
         ~Window();
 
