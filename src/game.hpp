@@ -2,12 +2,12 @@
 
 #include "world/chunk/chunk.hpp"
 #include "client/resource/block_loader.hpp"
-#include "world/block/nature/dirt_block.hpp"
+#include "world/block/nature/soil_block.hpp"
 #include "world/block/nature/air_block.hpp"
 
 namespace cybrion
 {
-    using GameBlockRegistry = BlockRegistry<DirtBlock, AirBlock>;
+    using GameBlockRegistry = BlockRegistry<SoilBlock, AirBlock>;
 
     class Game
     {
@@ -18,6 +18,7 @@ namespace cybrion
         void load();
 
         GameBlockRegistry& getBlockRegistry();
+        BlockLoader& getBlockLoader();
 
         static Game& Get();
 

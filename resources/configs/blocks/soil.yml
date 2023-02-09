@@ -1,0 +1,17 @@
+"[]":
+  display: opaque
+
+"[type=dirt]":
+  display_name: Dirt
+  
+"[type=basalt]":
+  display_name: Basalt
+  
+"[type=clay]":
+  display_name: Clay
+  
+"[type=silt]":
+  display_name: Silt
+  
+"[type=grass]":
+  display_name: Grass

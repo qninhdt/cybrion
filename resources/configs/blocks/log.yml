@@ -1,0 +1,6 @@
+"[axis=x]":
+  rotate_z: 270
+"[axis=y]":
+  # default
+"[axis=z]":
+  rotate_x: 90

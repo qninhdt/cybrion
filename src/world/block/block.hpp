@@ -21,25 +21,28 @@ namespace cybrion
         }
     };
 
-    enum class BlockFace
-    {
-        EAST,
-        UP,
-        SOUTH,
-        WEST,
-        DOWN,
-        NORTH
-    };
-
     class Block
     {
     public:
-        Block(const BlockType &type): m_type(type)
+        Block(const BlockType &type):
+            m_shape(BlockShape::CUBE),
+            m_type(type),
+            m_displayName(""),
+            m_rotationX(BlockRotation::R0),
+            m_rotationY(BlockRotation::R0),
+            m_rotationZ(BlockRotation::R0),
+            m_northTexture(0),
+            m_southTexture(0),
+            m_westTexture(0),
+            m_eastTexture(0),
+            m_topTexture(0),
+            m_bottomTexture(0),
+            m_toLocalFace{ 0, 1, 2, 3, 4, 5 },
+            m_toWorldFace{ 0 }
         {
         }
 
         Block(const Block& block) = delete;
-        //Block& operator=(Block&) = delete;
 
         u32 getId() const
         {
@@ -61,6 +64,16 @@ namespace cybrion
             return m_shape;
         }
 
+        u32 getTexture(u32 index)
+        {
+            return m_textures[index];
+        }
+
+        BlockFace getWorldFace(BlockFace face) const
+        {
+            return (BlockFace)m_toWorldFace[(u32)face];
+        }
+
         virtual string toString() const = 0;
 
     protected:
@@ -72,17 +85,56 @@ namespace cybrion
         template <typename... B>
         friend class BlockRegistry;
 
+        void rotateBlock()
+        {
+            auto& f = m_toLocalFace;
+            cycleFace(f[1], f[2], f[4], f[5], (u32)m_rotationX);
+            cycleFace(f[2], f[0], f[5], f[3], (u32)m_rotationY);
+            cycleFace(f[0], f[1], f[3], f[4], (u32)m_rotationZ);
+        
+            for (u32 i = 0; i < 6; ++i)
+                m_toWorldFace[m_toLocalFace[i]] = i;
+        }
+
+        void cycleFace(u32& f1, u32& f2, u32& f3, u32& f4, u32 n)
+        {
+            while (n--)
+            {
+                u32 temp = f4;
+                f4 = f3;
+                f3 = f2;
+                f2 = f1;
+                f1 = temp;
+            }
+        }
+
         u32 m_id;
 
         BlockShape m_shape;
         BlockType m_type;
         string m_displayName;
-        u32 m_northTexture;
-        u32 m_southTexture;
-        u32 m_westTexture;
-        u32 m_eastTexture;
-        u32 m_topTexture;
-        u32 m_bottomTexture;
+
+        BlockRotation m_rotationX;
+        BlockRotation m_rotationY;
+        BlockRotation m_rotationZ;
+
+        union
+        {
+            struct
+            {
+                u32 m_eastTexture;
+                u32 m_topTexture;
+                u32 m_southTexture;
+                u32 m_westTexture;
+                u32 m_bottomTexture;
+                u32 m_northTexture;
+            };
+            u32 m_textures[6];
+        };
+
+        u32 m_toWorldFace[6];
+        u32 m_toLocalFace[6];
+        
     };
 
     template <typename B, typename... S>
@@ -155,6 +207,14 @@ namespace cybrion
         Block& getBlock(u32 id)
         {
             return *m_idToBlock[id];
+        }
+
+        void precompute()
+        {
+            for (u32 i = 0; i < BlockStateCount(); ++i)
+            {
+                m_idToBlock[i]->rotateBlock();
+            }
         }
 
         static constexpr u32 BlockStateCount()

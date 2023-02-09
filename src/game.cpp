@@ -1,5 +1,5 @@
 #include "game.hpp"
-#include "world/block/nature/dirt_block.hpp"
+#include "world/block/nature/soil_block.hpp"
 #include "world/block/nature/air_block.hpp"
 
 namespace cybrion
@@ -19,17 +19,21 @@ namespace cybrion
         // load block configs
         m_blockLoader.load();
 
-        DirtBlock& dirt = (DirtBlock&) m_blockRegistry.getBlock(BlockType::DIRT);
-        std::cout << dirt.getDisplayName() << '\n';
-        dirt = dirt.set<"worm">(true);
-        std::cout << dirt.getDisplayName() << '\n';
-        dirt = dirt.set<"type">(DirtType::CLAY);
-        std::cout << dirt.getDisplayName() << '\n';
+        // precompute some block properties
+        m_blockRegistry.precompute();
+
+        Block& dirt = m_blockRegistry.getBlock(BlockType::SOIL);
+        std::cout << EnumToString(dirt.getWorldFace(BlockFace::SOUTH)) << '\n';
     }
 
     GameBlockRegistry& Game::getBlockRegistry()
     {
         return m_blockRegistry;
+    }
+
+    BlockLoader& Game::getBlockLoader()
+    {
+        return m_blockLoader;
     }
 
     Game& Game::Get()

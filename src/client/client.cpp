@@ -2,7 +2,6 @@
 #include "client/GL/mesh.hpp"
 #include "core/entity.hpp"
 #include "world/chunk/chunk.hpp"
-#include "world/block/nature/dirt_block.hpp"
 
 namespace cybrion
 {
@@ -35,8 +34,6 @@ namespace cybrion
     {
         m_game = new Game();
         m_game->load();
-
-        
 
         using BasicShader = GL::Shader<"MVP">;
 

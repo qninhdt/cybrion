@@ -13,6 +13,11 @@ namespace cybrion
         loadConfigFiles();
     }
 
+    u32 BlockLoader::getTextureId(const string& name)
+    {
+        return m_textureIdMap[name];
+    }
+
     void BlockLoader::loadConfigFiles()
     {
         string folderPath = Client::Get().getResourcePath("configs/blocks/");
@@ -59,7 +64,7 @@ namespace cybrion
                 continue;
             }
 
-            u32 id = m_textureIdMap.size();
+            u32 id = name == "no_texture" ? 0 : m_textureIdMap.size() + m_textureIdMap.count("no_texture");
             m_textureIdMap[name] = id;
 
             m_textureArray.setSubImage(layer, data);
@@ -67,6 +72,11 @@ namespace cybrion
             stbi_image_free(data);
 
             layer += 1;
+        }
+
+        for (auto& [name, id] : m_textureIdMap)
+        {
+            std::cout << name << " : " << id << '\n';
         }
     }
 
@@ -96,7 +106,7 @@ namespace cybrion
                     {
                         auto view = std::views::split(string(it0.begin(), it0.end()), '=');
                         auto it1 = view.begin();
-                        string key   { (*it1).begin(), (*it1).end() }; it1++;
+                        string key { (*it1).begin(), (*it1).end() }; it1++;
 
                         if (it1 == view.end())
                         {
@@ -118,6 +128,7 @@ namespace cybrion
 
                 // handle value
                 YAML::Node value = it.second;
+                BlockLoader& loader = Game::Get().getBlockLoader();
                 for (auto it0 : value)
                 {
                     string key = it0.first.as<string>();
@@ -125,6 +136,42 @@ namespace cybrion
 
                     if (key == "display_name") OVERRIDE(m_displayName, value);
                     if (key == "shape") OVERRIDE(m_shape, StringToEnum<BlockShape>(value));
+
+                    if (key == "rotate_x") OVERRIDE(m_rotationX, StringToEnum<BlockRotation>(value));
+                    if (key == "rotate_y") OVERRIDE(m_rotationY, StringToEnum<BlockRotation>(value));
+                    if (key == "rotate_z") OVERRIDE(m_rotationZ, StringToEnum<BlockRotation>(value));
+
+                    if (key == "all")
+                    {
+                        u32 id = loader.getTextureId(value);
+                        OVERRIDE(m_topTexture    , id);
+                        OVERRIDE(m_bottomTexture , id);
+                        OVERRIDE(m_northTexture  , id);
+                        OVERRIDE(m_southTexture  , id);
+                        OVERRIDE(m_eastTexture   , id);
+                        OVERRIDE(m_westTexture   , id);
+                    }
+
+                    if (key == "side")
+                    {
+                        u32 id = loader.getTextureId(value);
+                        OVERRIDE(m_northTexture , id);
+                        OVERRIDE(m_southTexture , id);
+                        OVERRIDE(m_eastTexture  , id);
+                        OVERRIDE(m_westTexture  , id);
+                    }
+
+                    if (key == "top")
+                    {
+                        u32 id = loader.getTextureId(value);
+                        OVERRIDE(m_topTexture  , id);
+                    }
+
+                    if (key == "bottom")
+                    {
+                        u32 id = loader.getTextureId(value);
+                        OVERRIDE(m_bottomTexture, id);
+                    }
                 }
             }
         }
