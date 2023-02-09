@@ -38,6 +38,9 @@ namespace cybrion
         {
         }
 
+        Block(const Block& block) = delete;
+        //Block& operator=(Block&) = delete;
+
         u32 getId() const
         {
             return m_id;

@@ -2,14 +2,15 @@
 
 namespace cybrion::GL
 {
-    TextureArray::TextureArray(u32 width, u32 height, u32 layers, u32 numLevels, GLenum internalFormat, GLenum format, GLenum type) :
-        m_width(width),
-        m_height(height),
-        m_layers(layers),
-        m_numLevels(numLevels),
-        m_format(format),
-        m_type(type)
-    {
+    void TextureArray::init(u32 width, u32 height, u32 layers, u32 numLevels, GLenum internalFormat, GLenum format, GLenum type)
+    {    
+        m_width = width;
+        m_height = height;
+        m_layers = layers;
+        m_numLevels = numLevels;
+        m_format = format;
+        m_type = type;
+    
         glGenTextures(1, &m_id);
 
         glActiveTexture(GL_TEXTURE0);

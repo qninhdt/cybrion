@@ -1,3 +1,4 @@
+#include <stb_image.h>
 #include "block_loader.hpp"
 #include "client/client.hpp"
 
@@ -6,22 +7,66 @@
 
 namespace cybrion
 {
+    void BlockLoader::load()
+    {
+        loadTextures();
+        loadConfigFiles();
+    }
+
     void BlockLoader::loadConfigFiles()
     {
         string folderPath = Client::Get().getResourcePath("configs/blocks/");
     
         for (auto& entry : std::filesystem::directory_iterator(folderPath))
         {
-            string path = entry.path().generic_string();
+            string path = entry.path().string();
             
             if (loadConfigFile(path))
-            {
                 CYBRION_GAME_TRACE("Loaded file {}", path);
-            }
             else
-            {
                 CYBRION_GAME_WARN("Cannot load file {}", path);
+        }
+    }
+
+    void BlockLoader::loadTextures()
+    {
+        string folderPath = Client::Get().getResourcePath("textures/blocks/");
+
+        // count number of block textures
+        u32 layerCount = 0;
+        for (auto& entry : std::filesystem::directory_iterator(folderPath)) {
+            layerCount += 1;
+        }
+
+        // init texture array
+        m_textureArray.init(16, 16, layerCount, 4, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
+
+        // loading textures
+        u32 layer = 0;
+        stbi_set_flip_vertically_on_load(true);
+        for (auto& entry : std::filesystem::directory_iterator(folderPath))
+        {
+            string path = entry.path().string();
+            string name = entry.path().stem().string();
+            CYBRION_CLIENT_TRACE("Loaded block texture: {}", name);
+
+            i32 width, height, nchannels;
+            u8* data = stbi_load(path.c_str(), &width, &height, &nchannels, STBI_rgb_alpha);
+
+            if (width != 16 || height != 16)
+            {
+                CYBRION_CLIENT_ERROR("Incorrect texture size");
+                continue;
             }
+
+            u32 id = m_textureIdMap.size();
+            m_textureIdMap[name] = id;
+
+            m_textureArray.setSubImage(layer, data);
+
+            stbi_image_free(data);
+
+            layer += 1;
         }
     }
 
@@ -55,7 +100,7 @@ namespace cybrion
 
                         if (it1 == view.end())
                         {
-                            CYBRION_CLIENT_ERROR("An error occurred while loading {}", std::filesystem::path(path).filename().generic_string());
+                            CYBRION_CLIENT_ERROR("An error occurred while loading {}", std::filesystem::path(path).filename().string());
                             validKey = false;
                             break;
                         }

@@ -17,7 +17,7 @@ namespace cybrion
         m_blockRegistry.init();
 
         // load block configs
-        m_blockLoader.loadConfigFiles();
+        m_blockLoader.load();
 
         DirtBlock& dirt = (DirtBlock&) m_blockRegistry.getBlock(BlockType::DIRT);
         std::cout << dirt.getDisplayName() << '\n';
@@ -25,12 +25,6 @@ namespace cybrion
         std::cout << dirt.getDisplayName() << '\n';
         dirt = dirt.set<"type">(DirtType::CLAY);
         std::cout << dirt.getDisplayName() << '\n';
-
-        std::cout << m_blockRegistry.getBlock(BlockType::AIR).getId() << '\n';
-        std::cout << dirt.getId() << '\n';
-
-
-        //std::cout << dirt.getDisplayName() << '\n';
     }
 
     GameBlockRegistry& Game::getBlockRegistry()

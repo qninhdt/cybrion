@@ -8,16 +8,19 @@ using namespace cybrion;
 
 int main()
 {
+    // block type
+    RegisterEnum(BlockType::AIR  , "air");
+    RegisterEnum(BlockType::DIRT , "dirt");
+
+    // dirt type
     RegisterEnum(DirtType::SOIL   , "soil");
     RegisterEnum(DirtType::BASALT , "basalt");
     RegisterEnum(DirtType::CLAY   , "clay");
 
+    // block shape
     RegisterEnum(BlockShape::CUBE   , "cube");
     RegisterEnum(BlockShape::CUSTOM , "custom");
     RegisterEnum(BlockShape::X      , "cube");
-
-    RegisterEnum(BlockType::AIR   , "air");
-    RegisterEnum(BlockType::DIRT  , "dirt");
 
     Log::Init();
 

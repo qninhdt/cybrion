@@ -5,7 +5,8 @@ namespace cybrion::GL
     class TextureArray
     {
     public:
-        TextureArray(u32 width, u32 height, u32 layers, u32 numLevels, GLenum internalFormat, GLenum format, GLenum type);
+
+        void init(u32 width, u32 height, u32 layers, u32 numLevels, GLenum internalFormat, GLenum format, GLenum type);
 
         void setSubImage(u32 layer, void* data);
 
