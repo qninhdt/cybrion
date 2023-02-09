@@ -1,5 +1,8 @@
 #include "client/client.hpp"
 #include "client/GL/mesh.hpp"
+#include "core/entity.hpp"
+#include "world/chunk/chunk.hpp"
+#include "world/block/nature/dirt_block.hpp"
 
 namespace cybrion
 {
@@ -7,8 +10,11 @@ namespace cybrion
 
     Client::Client():
         m_rootPath(CYBRION_ROOT_PATH),
+        m_debugScreen(m_window),   
         m_window(1600, 800, "Cybrion"),
-        m_camera(m_window.getAspect(), glm::radians(50.0f), 0.2f, 1000.0f)
+        m_camera(m_window.getAspect(), glm::radians(50.0f), 0.2f, 1000.0f),
+        m_showWireframe(false),
+        m_game(nullptr)
     {
         s_client = this;
     }
@@ -19,9 +25,21 @@ namespace cybrion
         m_shaderManager.loadShaders();
     }
 
+    void Client::init()
+    {
+        GL::Mesh::GenerateGlobalIBO();
+        m_debugScreen.init();
+    }
+
     void Client::start()
     {
+        m_game = new Game();
+        m_game->load();
+
+        
+
         using BasicShader = GL::Shader<"MVP">;
+
         auto shader = m_shaderManager.getShader<BasicShader>("basic");
 
         GL::Mesh mesh(true);
@@ -58,10 +76,12 @@ namespace cybrion
 
             mesh.drawTriangles();
 
+            // render debug screen
+            m_debugScreen.render();
+
             m_window.endLoop();
 
             m_frameProfiler.tick();
-            std::cout << m_frameProfiler.getDeltaTime() << '\n';
         }
     }
 
@@ -93,6 +113,16 @@ namespace cybrion
     f32 Client::getDeltaTime() const
     {
         return m_frameProfiler.getDeltaTime();
+    }
+
+    void Client::toggleWireframe()
+    {
+        m_showWireframe = !m_showWireframe;
+
+        if (m_showWireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
     Client& Client::Get()

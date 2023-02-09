@@ -213,6 +213,6 @@ namespace cybrion
 
     u32 ShaderManager::getShaderCount() const
     {
-        return m_shaders.size();
+        return (u32)m_shaders.size();
     }
 }

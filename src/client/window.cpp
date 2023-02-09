@@ -223,23 +223,31 @@ namespace cybrion
 
     void Window::onKeyPressed(KeyCode key, bool isRepeated)
     {
-        switch (key)
+        if (!isRepeated)
         {
+            switch (key)
+            {
 
-        // toggle cursor
-        case KeyCode::F1:
-            toggleCursor();
-            break;
+                // toggle cursor
+            case KeyCode::F1:
+                toggleCursor();
+                break;
 
-        // close window
-        case KeyCode::ESCAPE:
-            close();
-            break;
+                // close window
+            case KeyCode::ESCAPE:
+                close();
+                break;
 
-        // reload shaders
-        case KeyCode::R:
-            Client::Get().getShaderManager().reloadShaders();
-            break;
+                // reload shaders
+            case KeyCode::R:
+                Client::Get().getShaderManager().reloadShaders();
+                break;
+
+                // toggle wireframe
+            case KeyCode::F2:
+                Client::Get().toggleWireframe();
+                break;
+            }
         }
     }
 

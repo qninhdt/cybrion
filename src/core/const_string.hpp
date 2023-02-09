@@ -16,6 +16,8 @@ namespace cybrion
 
         constexpr operator char const* () const { return value; }
 
+        constexpr string to_string() const { return string((const char*)value); }
+
         constexpr bool operator==(const const_string&) const = default;
     };
 

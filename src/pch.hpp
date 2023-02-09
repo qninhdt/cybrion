@@ -29,6 +29,7 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
 #include <yaml-cpp/yaml.h>
+#include <entt/entt.hpp>
 
 // common files
 #include "common.hpp""
