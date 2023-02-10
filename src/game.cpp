@@ -14,16 +14,20 @@ namespace cybrion
     void Game::load()
     {
         // register blocks
-        m_blockRegistry.init();
+        m_blockRegistry.load();
 
         // load block configs
         m_blockLoader.load();
 
         // precompute some block properties
-        m_blockRegistry.precompute();
+        m_blockRegistry.computeRotation();
     }
 
-    GameBlockRegistry& Game::getBlockRegistry()
+    void Game::tick()
+    {
+    }
+
+    BlockRegistry& Game::getBlockRegistry()
     {
         return m_blockRegistry;
     }

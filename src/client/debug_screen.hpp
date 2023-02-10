@@ -1,21 +1,18 @@
 #pragma once
 
-#include "client/window.hpp"
-
 namespace cybrion
 {
     class DebugScreen
     {
     public:
-        DebugScreen(Window& window);
 
-        void init();
+        void load();
 
         ~DebugScreen();
 
-        void render();
+        void render(f32 deltaTime);
     private:
-        Window* m_window;
+        GLFWwindow* m_window;
         ImGuiIO* m_io;
         bool show_demo_window = true;
         bool show_another_window = false;

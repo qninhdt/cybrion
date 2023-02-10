@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 project ("cybrion")
 
 add_executable(${PROJECT_NAME}
-    "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/client.cpp" "src/util/file.cpp" "src/client/window.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp" "src/client/transform.cpp" "src/client/camera.cpp" "src/client/frame_profiler.cpp" "src/client/debug_screen.cpp" "src/world/chunk/chunk.cpp" "src/util/math.hpp" "src/core/registry.cpp" "src/world/chunk/chunk_system.cpp" "src/client/resource/block_loader.cpp" "src/game.cpp" "src/world/block/block.cpp" "src/client/graphic/block_renderer.cpp")
+    "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/client_game.cpp" "src/util/file.cpp" "src/client/application.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp" "src/client/transform.cpp" "src/client/camera.cpp" "src/client/frame_profiler.cpp" "src/client/debug_screen.cpp" "src/world/chunk/chunk.cpp" "src/util/math.hpp" "src/core/registry.cpp" "src/world/chunk/chunk_system.cpp" "src/client/resource/block_loader.cpp" "src/game.cpp" "src/world/block/block.cpp" "src/client/graphic/block_renderer.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 

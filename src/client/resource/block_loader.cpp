@@ -1,6 +1,6 @@
-#include <stb_image.h>
 #include "block_loader.hpp"
-#include "client/client.hpp"
+
+#include "client/application.hpp"
 
 #define OVERRIDE(field, value)\
     for (auto& block: blocks) block->##field = value
@@ -25,7 +25,7 @@ namespace cybrion
 
     void BlockLoader::loadConfigFiles()
     {
-        string folderPath = Client::Get().getResourcePath("configs/blocks/");
+        string folderPath = Application::Get().getResourcePath("configs/blocks/");
     
         for (auto& entry : std::filesystem::directory_iterator(folderPath))
         {
@@ -40,7 +40,7 @@ namespace cybrion
 
     void BlockLoader::loadTextures()
     {
-        string folderPath = Client::Get().getResourcePath("textures/blocks/");
+        string folderPath = Application::Get().getResourcePath("textures/blocks/");
 
         // count number of block textures
         u32 layerCount = 0;
@@ -128,10 +128,6 @@ namespace cybrion
                 vector<Block*> blocks;
 
                 Game::Get().getBlockRegistry().queryBlocks(type, stateMap, blocks);
-
-                //std::cout << "[";
-                //for (auto [a, b] : stateMap) std::cout << a << "=" << b << ',';
-                //std::cout << "]\n";
 
                 // handle value
                 YAML::Node value = it.second;

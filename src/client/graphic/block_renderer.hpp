@@ -27,7 +27,7 @@ namespace cybrion
     
     private:
 
-        friend class Client;
+        friend class ClientGame;
 
         template <typename T>
         void cycle4(T& a, T& b, T& c, T& d, u32 n)

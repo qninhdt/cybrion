@@ -2,13 +2,22 @@
 
 #include "world/chunk/chunk.hpp"
 #include "client/resource/block_loader.hpp"
+
 #include "world/block/nature/soil_block.hpp"
 #include "world/block/nature/air_block.hpp"
 #include "world/block/nature/log_block.hpp"
 
 namespace cybrion
 {
-    using GameBlockRegistry = BlockRegistry<AirBlock, SoilBlock, LogBlock>;
+    // REGISTER NEW BLOCK HERE
+    //           |
+    //           |
+    //           V
+    using BlockRegistry = BaseBlockRegistry<
+        AirBlock,
+        SoilBlock,
+        LogBlock
+    >;
 
     class Game
     {
@@ -17,8 +26,9 @@ namespace cybrion
         Game();
 
         void load();
+        void tick();
 
-        GameBlockRegistry& getBlockRegistry();
+        BlockRegistry& getBlockRegistry();
         BlockLoader& getBlockLoader();
 
         static Game& Get();
@@ -27,7 +37,7 @@ namespace cybrion
         static Game* s_game;
 
         BlockLoader m_blockLoader;
-        GameBlockRegistry m_blockRegistry;
+        BlockRegistry m_blockRegistry;
     };
 }
 

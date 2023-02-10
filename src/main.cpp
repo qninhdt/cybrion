@@ -1,4 +1,4 @@
-#include "client/client.hpp"
+#include "client/application.hpp"
 
 using namespace cybrion;
 
@@ -50,16 +50,11 @@ int main()
 
     Log::Init();
 
-    Client client;
-    Window& window = client.getWindow();
+    Application app;
 
-    if (window.open())
-        CYBRION_CLIENT_TRACE("Main window is opened ({} x {})", window.getWidth(), window.getHeight());
+    if (app.open())
+        CYBRION_CLIENT_TRACE("Main window is opened ({} x {})", app.getWidth(), app.getHeight());
 
-    window.disableCursor();
-
-    client.loadResources();
-
-    client.init();
-    client.start();
+    app.load();
+    app.run();
 }

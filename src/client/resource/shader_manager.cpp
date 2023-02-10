@@ -1,13 +1,14 @@
 #include "client/resource/shader_manager.hpp"
-#include "client/client.hpp"
+#include "client/application.hpp"
 #include "util/file.hpp"
 
 namespace cybrion
 {
     bool ShaderManager::loadShaders()
     {   
+
         u32 count = 0, total = 0;
-        string configPath = Client::Get().getResourcePath("shader.yml");
+        string configPath = Application::Get().getResourcePath("shader.yml");
      
         // check if config file exist
         if (!std::filesystem::exists(configPath))
@@ -127,8 +128,8 @@ namespace cybrion
         string vertFile = name + ".vert";
         string fragFile = name + ".frag";
 
-        string vertPath = Client::Get().getResourcePath("shaders/" + vertFile);
-        string fragPath = Client::Get().getResourcePath("shaders/" + fragFile);
+        string vertPath = Application::Get().getResourcePath("shaders/" + vertFile);
+        string fragPath = Application::Get().getResourcePath("shaders/" + fragFile);
 
         if (!util::ReadFile(vertPath, vertSource))
         {

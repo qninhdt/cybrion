@@ -83,7 +83,7 @@ namespace cybrion
         friend class BlockLoader;
 
         template <typename... B>
-        friend class BlockRegistry;
+        friend class BaseBlockRegistry;
 
         void rotateBlock()
         {
@@ -161,7 +161,7 @@ namespace cybrion
 
     private:
         template <typename... B>
-        friend class BlockRegistry;
+        friend class BaseBlockRegistry;
 
         static constexpr BlockType BlockType = type;
 
@@ -182,11 +182,10 @@ namespace cybrion
     }
 
     template <typename... B>
-    class BlockRegistry : private detail::block_registry<B> ...
+    class BaseBlockRegistry : private detail::block_registry<B> ...
     {
     public:
-
-        void init()
+        void load()
         {
             registerImpl<B...>(0);
         }
@@ -211,7 +210,7 @@ namespace cybrion
             return *m_idToBlock[id];
         }
 
-        void precompute()
+        void computeRotation()
         {
             for (u32 i = 0; i < BlockStateCount(); ++i)
             {
@@ -238,9 +237,9 @@ namespace cybrion
         template <typename T, typename... R>
         void registerImpl(u32 index)
         {
-            auto& self = (detail::block_registry<T>&)*this;
+            auto& self = (detail::block_registry<T>&) * this;
             BlockType type = T::BlockType;
-            
+
             T block;
             u32 idx = 0;
             T::each_possible_values(block, [&] {
