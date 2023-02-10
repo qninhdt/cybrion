@@ -62,6 +62,9 @@ namespace cybrion
         glfwSetKeyCallback(m_nativeWindow, GlfwKeyPressedCallback);
 
         glClearColor(1, 1, 1, 1);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
 
         return true;
     }
@@ -262,6 +265,17 @@ namespace cybrion
             Camera& camera = Client::Get().getCamera();
 
             camera.rotate(vec3(- delta.y, - delta.x, 0) * Client::Get().getDeltaTime() * 1.0f);
+            auto r = camera.getRotation();
+
+            if (r.x > pi / 2 - 0.001f && r.x < pi * 3 / 2 + 0.001f)
+            {
+                if (r.x - pi / 2 - 0.001f < pi * 3 / 2 + 0.001f - r.x)
+                    r.x = pi / 2 - 0.001f;
+                else
+                    r.x = pi * 3 / 2 + 0.001f;
+            }
+
+            camera.setRotation(r);
             camera.updateViewMatrix();
         }
     }

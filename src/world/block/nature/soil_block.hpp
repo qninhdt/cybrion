@@ -15,13 +15,10 @@ namespace cybrion
 
     class SoilBlock : public TBlock<
         SoilBlock,
+        BlockType::SOIL,
         block::state<SoilType, "type", 5>
     >
     {
     public:
-        SoilBlock() : TBlock(BlockType::SOIL)
-        {
-            
-        }
     };
 }

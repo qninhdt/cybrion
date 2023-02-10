@@ -18,6 +18,11 @@ namespace cybrion
         return m_textureIdMap[name];
     }
 
+    void BlockLoader::bindTextureArray()
+    {
+        m_textureArray.bind(0);
+    }
+
     void BlockLoader::loadConfigFiles()
     {
         string folderPath = Client::Get().getResourcePath("configs/blocks/");
@@ -44,10 +49,9 @@ namespace cybrion
         }
 
         // init texture array
-        m_textureArray.init(16, 16, layerCount, 4, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
+        m_textureArray.init(16, 16, layerCount, 4, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 
         // loading textures
-        u32 layer = 0;
         stbi_set_flip_vertically_on_load(true);
         for (auto& entry : std::filesystem::directory_iterator(folderPath))
         {
@@ -64,14 +68,12 @@ namespace cybrion
                 continue;
             }
 
-            u32 id = name == "no_texture" ? 0 : m_textureIdMap.size() + m_textureIdMap.count("no_texture");
+            u32 id = name == "no_texture" ? 0 : m_textureIdMap.size() + (m_textureIdMap.count("no_texture") == 0);
             m_textureIdMap[name] = id;
 
-            m_textureArray.setSubImage(layer, data);
+            m_textureArray.setSubImage(id, data);
 
             stbi_image_free(data);
-
-            layer += 1;
         }
 
         for (auto& [name, id] : m_textureIdMap)
@@ -124,7 +126,12 @@ namespace cybrion
                 if (!validKey) continue;
 
                 vector<Block*> blocks;
+
                 Game::Get().getBlockRegistry().queryBlocks(type, stateMap, blocks);
+
+                //std::cout << "[";
+                //for (auto [a, b] : stateMap) std::cout << a << "=" << b << ',';
+                //std::cout << "]\n";
 
                 // handle value
                 YAML::Node value = it.second;

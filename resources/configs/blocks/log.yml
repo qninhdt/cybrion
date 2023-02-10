@@ -1,6 +1,16 @@
+"[]":
+
+"[type=oak]":
+  display_name: Oak
+  top: oak_log_top
+  side: oak_log_side
+  bottom: oak_log_top
+
 "[axis=x]":
   rotate_z: 270
+  
 "[axis=y]":
-  # default
+
 "[axis=z]":
   rotate_x: 90
+  

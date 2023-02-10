@@ -6,21 +6,6 @@
 
 namespace cybrion
 {
-    union packed_block
-    {
-        struct
-        {
-            u16 type;
-            u16 state;
-        };
-        u32 data;
-
-        bool operator==(const packed_block& other) const
-        {
-            return data == other.data;
-        }
-    };
-
     class Block
     {
     public:
@@ -74,6 +59,21 @@ namespace cybrion
             return (BlockFace)m_toWorldFace[(u32)face];
         }
 
+        BlockRotation getRotationX() const
+        {
+            return m_rotationX;
+        }
+
+        BlockRotation getRotationY() const
+        {
+            return m_rotationY;
+        }
+
+        BlockRotation getRotationZ() const
+        {
+            return m_rotationZ;
+        }
+
         virtual string toString() const = 0;
 
     protected:
@@ -91,7 +91,7 @@ namespace cybrion
             cycleFace(f[1], f[2], f[4], f[5], (u32)m_rotationX);
             cycleFace(f[2], f[0], f[5], f[3], (u32)m_rotationY);
             cycleFace(f[0], f[1], f[3], f[4], (u32)m_rotationZ);
-        
+            
             for (u32 i = 0; i < 6; ++i)
                 m_toWorldFace[m_toLocalFace[i]] = i;
         }
@@ -137,11 +137,11 @@ namespace cybrion
         
     };
 
-    template <typename B, typename... S>
+    template <typename B, BlockType type, typename... S>
     class TBlock : public Block, public block::state_holder<S...>
     {
     public:
-        TBlock(BlockType type) : Block(type)
+        TBlock() : Block(type)
         {
         }
 
@@ -162,6 +162,8 @@ namespace cybrion
     private:
         template <typename... B>
         friend class BlockRegistry;
+
+        static constexpr BlockType BlockType = type;
 
         bool checkQuery(const umap<string, string>& query) const override
         {
@@ -237,7 +239,7 @@ namespace cybrion
         void registerImpl(u32 index)
         {
             auto& self = (detail::block_registry<T>&)*this;
-            BlockType type = self.blocks[0].getType();
+            BlockType type = T::BlockType;
             
             T block;
             u32 idx = 0;
@@ -245,7 +247,6 @@ namespace cybrion
                 self.blocks[idx] = block;
                 self.blocks[idx].m_id = idx + index;
                 m_idToBlock[idx + index] = &self.blocks[idx];
-                //std::cout << block.toString() << '\n';
                 idx += 1;
             });
 
@@ -257,17 +258,5 @@ namespace cybrion
 
         Block* m_idToBlock[BlockStateCount()];
         std::pair<u32, u32> m_typeToRange[u32(BlockType::ENUM_SIZE)];
-    };
-}
-
-namespace std
-{
-    template <>
-    struct hash<cybrion::packed_block>
-    {
-        size_t operator()(const cybrion::packed_block& block) const
-        {
-            return hash<cybrion::u32>()(block.data);
-        }
     };
 }

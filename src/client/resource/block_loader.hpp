@@ -12,6 +12,8 @@ namespace cybrion
 
         u32 getTextureId(const string& name);
 
+        void bindTextureArray();
+
     private:
 
         void loadConfigFiles();

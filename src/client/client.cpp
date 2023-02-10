@@ -2,6 +2,8 @@
 #include "client/GL/mesh.hpp"
 #include "core/entity.hpp"
 #include "world/chunk/chunk.hpp"
+#include "client/graphic/block_renderer.hpp"
+#include "world/block/nature/log_block.hpp"
 
 namespace cybrion
 {
@@ -34,30 +36,40 @@ namespace cybrion
     {
         m_game = new Game();
         m_game->load();
+        initBlockRenderers();
 
         using BasicShader = GL::Shader<"MVP">;
-
         auto shader = m_shaderManager.getShader<BasicShader>("basic");
 
         GL::Mesh mesh(true);
 
         mesh.setAttributes({
-            { GL::Type::VEC3 }
+            { GL::Type::VEC3 },
+            { GL::Type::VEC2 },
+            { GL::Type::UINT }
         });
 
-        mesh.setScale({ 2, 2, 2 });
-        mesh.setPosition({ 0, 0, 2 });
-        mesh.updateModelMatrix();
+        u32 size = 0;
+        CubeVertex data[1000];
 
-        f32 vertices[] = {
-            +0.5f, -0.5f, 0,
-            -0.5f, -0.5f, 0,
-            -0.5f, +0.5f, 0,
-            +0.5f, +0.5f, 0,
-        };
+        LogBlock& log = (LogBlock&)Game::Get().getBlockRegistry().getBlock(BlockType::LOG);
+        log = log.set<"type">(WoodType::OAK);
+        log = log.set<"axis">(LogAxis::Y);
 
-        mesh.setVertices(vertices, 12);
-        mesh.setDrawCount(6);
+        auto& renderer = getBlockRenderer(log.getId());
+        renderer.generateCubeTexture();
+
+        bool cull[6] = { 0 };
+        renderer.generateCubeMesh(cull, data, size);
+
+        mesh.setVertices(data, 24);
+        mesh.setDrawCount(36);
+
+        Game::Get().getBlockLoader().bindTextureArray();
+
+        m_camera.setPosition({ 0, 1, 2 });
+        m_camera.setDirection({ 0, 0, -1 });
+        m_camera.updateViewMatrix();
 
         while (!m_window.isClosed())
         {
@@ -67,8 +79,7 @@ namespace cybrion
 
             shader.use();
             shader.setUniform<"MVP">(
-                m_camera.getProjectionViewMatrix() *
-                mesh.getModelMatrix()
+                m_camera.getProjectionViewMatrix()
             );
 
             mesh.drawTriangles();
@@ -112,6 +123,11 @@ namespace cybrion
         return m_frameProfiler.getDeltaTime();
     }
 
+    BlockRenderer& Client::getBlockRenderer(u32 id)
+    {
+        return m_blockRenderers[id];
+    }
+
     void Client::toggleWireframe()
     {
         m_showWireframe = !m_showWireframe;
@@ -125,5 +141,14 @@ namespace cybrion
     Client& Client::Get()
     {
         return *s_client;
+    }
+
+    void Client::initBlockRenderers()
+    {
+        for (u32 i = 0; i < GameBlockRegistry::BlockStateCount(); ++i)
+        {
+            Block& block = Game::Get().getBlockRegistry().getBlock(i);
+            m_blockRenderers[block.getId()].m_block = &block;
+        }
     }
 }

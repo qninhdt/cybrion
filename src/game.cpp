@@ -1,5 +1,5 @@
 #include "game.hpp"
-#include "world/block/nature/soil_block.hpp"
+#include "world/block/nature/log_block.hpp"
 #include "world/block/nature/air_block.hpp"
 
 namespace cybrion
@@ -21,9 +21,6 @@ namespace cybrion
 
         // precompute some block properties
         m_blockRegistry.precompute();
-
-        Block& dirt = m_blockRegistry.getBlock(BlockType::SOIL);
-        std::cout << EnumToString(dirt.getWorldFace(BlockFace::SOUTH)) << '\n';
     }
 
     GameBlockRegistry& Game::getBlockRegistry()

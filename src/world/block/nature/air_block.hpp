@@ -4,9 +4,7 @@
 
 namespace cybrion
 {
-    class AirBlock : public TBlock<AirBlock>
+    class AirBlock : public TBlock<AirBlock, BlockType::AIR>
     {
-    public:
-            AirBlock() : TBlock(BlockType::AIR) {}
     };
 }

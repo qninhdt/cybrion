@@ -4,10 +4,11 @@
 #include "client/resource/block_loader.hpp"
 #include "world/block/nature/soil_block.hpp"
 #include "world/block/nature/air_block.hpp"
+#include "world/block/nature/log_block.hpp"
 
 namespace cybrion
 {
-    using GameBlockRegistry = BlockRegistry<SoilBlock, AirBlock>;
+    using GameBlockRegistry = BlockRegistry<AirBlock, SoilBlock, LogBlock>;
 
     class Game
     {

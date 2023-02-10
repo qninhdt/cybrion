@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/palette.hpp"
+#include "core/linear_palette.hpp"
 #include "world/block/block.hpp"
 
 namespace cybrion
@@ -10,6 +10,6 @@ namespace cybrion
 
     struct ChunkData
     {
-        Palette<packed_block, CHUNK_SIZE> blocks;
+        
     };
 }

@@ -196,7 +196,7 @@ namespace cybrion::GL
         std::vector<u32> indices;
         for (u32 i = 0; i < MAX_TRIANGLES; ++i)
         {
-            u32 j = i * 6;
+            u32 j = i * 4;
             indices.insert(indices.end(), {
                 j + 0, j + 1, j + 2,
                 j + 0, j + 2, j + 3,

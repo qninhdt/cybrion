@@ -1,8 +1,4 @@
 #include "client/client.hpp"
-#include "client/GL/mesh.hpp"
-#include "client/camera.hpp"
-#include "world/block/nature/soil_block.hpp"
-#include "core/enum.hpp"
 
 using namespace cybrion;
 
@@ -11,6 +7,7 @@ int main()
     // block type
     RegisterEnum(BlockType::AIR  , "air");
     RegisterEnum(BlockType::SOIL , "soil");
+    RegisterEnum(BlockType::LOG  , "log");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");
@@ -42,6 +39,14 @@ int main()
     RegisterEnum(BlockFace::WEST   , "west");
     RegisterEnum(BlockFace::BOTTOM , "bottom");
     RegisterEnum(BlockFace::NORTH  , "north");
+
+    // wood type
+    RegisterEnum(WoodType::OAK, "oak");
+
+    // log axis
+    RegisterEnum(LogAxis::X, "x");
+    RegisterEnum(LogAxis::Y, "y");
+    RegisterEnum(LogAxis::Z, "z");
 
     Log::Init();
 

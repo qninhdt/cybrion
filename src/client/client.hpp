@@ -6,6 +6,7 @@
 #include "client/resource/shader_manager.hpp"
 #include "client/debug_screen.hpp"
 #include "client/resource/block_loader.hpp"
+#include "client/graphic/block_renderer.hpp"
 #include "game.hpp"
 
 namespace cybrion
@@ -29,11 +30,16 @@ namespace cybrion
         f32 getFPS() const;
         f32 getDeltaTime() const;
 
+        BlockRenderer& getBlockRenderer(u32 id);
+
         void toggleWireframe();
 
         static Client& Get();
 
     private:
+
+        void initBlockRenderers();
+
         string m_rootPath;
 
         FrameProfiler m_frameProfiler;
@@ -43,6 +49,8 @@ namespace cybrion
         ShaderManager m_shaderManager;
         Game* m_game;
         bool m_showWireframe;
+
+        BlockRenderer m_blockRenderers[GameBlockRegistry::BlockStateCount()];
 
         static Client* s_client;
     };
