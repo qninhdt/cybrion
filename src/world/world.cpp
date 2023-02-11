@@ -11,7 +11,22 @@ namespace cybrion
     {
         Entity chunk(m_registry.create());
         auto& data = chunk.assign<ChunkData>();
+
         data.position = pos;
+        for (auto& [dir, face] : ChunkData::Directions)
+        {
+            ivec3 npos = dir + pos;
+            auto it = m_chunkMap.find(npos);
+            
+            if (it != m_chunkMap.end())
+            {
+                Entity& neighbor = it->second;
+                auto& neighborData = neighbor.get<ChunkData>();
+
+                data.neighbors[(u32)face] = neighbor;
+                neighborData.neighbors[(u32)Block::GetOppositeFace(face)] = chunk;
+            }
+        }
  
         LogBlock& dirt = (LogBlock&) Game::Get().getBlockRegistry().getBlock(BlockType::LOG);
 

@@ -3,8 +3,20 @@
 
 namespace cybrion
 {
+    array<tuple<ivec3, BlockFace>, 6> ChunkData::Directions = { {
+        { { +1, 0, 0 }, BlockFace::EAST   },
+        { { 0, +1, 0 }, BlockFace::TOP    },
+        { { 0, 0, +1 }, BlockFace::SOUTH  },
+        { { -1, 0, 0 }, BlockFace::WEST   },
+        { { 0, -1, 0 }, BlockFace::BOTTOM },
+        { { 0, 0, -1 }, BlockFace::NORTH  },
+    } };
+
     Block& ChunkData::getBlock(const uvec3& pos) const
     {
+        assert(pos.x < CHUNK_SIZE);
+        assert(pos.y < CHUNK_SIZE);
+        assert(pos.z < CHUNK_SIZE);
         u32 blockId = blocks.get(PosToIndex(pos));
         return Game::Get().getBlockRegistry().getBlock(blockId);
     }

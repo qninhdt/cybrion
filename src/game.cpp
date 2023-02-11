@@ -22,13 +22,13 @@ namespace cybrion
         // precompute some block properties
         m_blockRegistry.computeRotation();
 
-        m_world.loadChunk({ 0, 0, 0 });
         m_world.loadChunk({ 1, 0, 0 });
         m_world.loadChunk({ 0, 1, 0 });
         m_world.loadChunk({ 0, 0, 1 });
         m_world.loadChunk({ -1, 0, 0 });
         m_world.loadChunk({ 0, -1, 0 });
         m_world.loadChunk({ 0, 0, -1 });
+        m_world.loadChunk({ 0, 0, 0 });
     }
 
     void Game::tick()

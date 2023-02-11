@@ -32,13 +32,14 @@ namespace cybrion
         void buildChunkMeshes(f32 maxDuration);
         void buildChunkMesh(Entity& chunk);
         void rebuildChunkMesh(Entity& chunk);
+        void rebuildChunkMeshes(f32 maxDuration);
 
     private:
         static CubeVertex s_opaqueVertices[400000];
 
         std::array<ChunkData*, 6> getNeighborChunkData(ChunkData& data);
 
-        bool getBlockIfIsOutside(const ivec3& pos, Block*& block, std::array<ChunkData*, 6>& neighbors);
+        bool getBlockIfIsOutside(const ivec3& pos, Block** block, std::array<ChunkData*, 6>& neighbors);
 
         World& m_world;
         queue<Entity> m_buildMeshQueue;

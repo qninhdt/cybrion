@@ -31,6 +31,7 @@ namespace cybrion
     void ClientGame::render(f32 deltaTime)
     {
         m_worldRenderer.buildChunkMeshes(1); // allow build meshes in 1 second
+        m_worldRenderer.rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
 
         m_worldRenderer.render(deltaTime);
     }

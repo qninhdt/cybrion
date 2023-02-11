@@ -15,19 +15,14 @@ namespace cybrion
 
         ivec3 position;
         
-        Entity eastChunk;
-        Entity topChunk;
-        Entity southChunk;
-        Entity westChunk;
-        Entity bottomChunk;
-        Entity northChunk;
+        Entity neighbors[6];
 
         Block& getBlock(const uvec3& pos) const;
-        Block* tryGetBlock(const ivec3& pos);
         void setBlock(const uvec3& pos, const Block& block);
-
         vec3 getWorldPosition() const;
 
         static u32 PosToIndex(const uvec3& pos);
+
+        static array<tuple<ivec3, BlockFace>, 6> Directions;
     };
 }

@@ -38,7 +38,6 @@ namespace cybrion
     {
         Entity chunk(entity);
         m_buildMeshQueue.push(chunk);
-
     }
 
     void WorldRenderer::buildChunkMeshes(f32 maxDuration)
@@ -55,7 +54,8 @@ namespace cybrion
 
     void WorldRenderer::buildChunkMesh(Entity& chunk)
     {
-        m_stopwatch.reset();
+        Stopwatch stopwatch;
+        stopwatch.reset();
 
         auto& [opaqueMesh, visibleBlocks, isDirty] = chunk.assign<ChunkRenderer>();
         auto& data = chunk.get<ChunkData>();
@@ -82,25 +82,30 @@ namespace cybrion
                         continue;
 
                     bool visible = false;
+
+                    // blocks that are not visible now because their neighbors are not loaded
+                    // but may be visible when their neighbors are loaded
+                    bool maybeVisible = false; 
+
                     for (auto& [dir, face] : BlockRenderer::CubeDirections)
                     {
                         Block* neighbor = nullptr;
                         ivec3 npos = ivec3(pos) + dir;
 
-                        if (!getBlockIfIsOutside(npos, neighbor, neighbors))
-                            neighbor = &data.getBlock(npos);
+                        if (!getBlockIfIsOutside(npos, &neighbor, neighbors))
+                            neighbor = &data.getBlock(uvec3(npos));
 
                         // cull this face when neighbor block is opaque
-                        culling[u32(face)] = neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE;
+                        culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
                         visible |= !culling[u32(face)];
+                        maybeVisible |= !neighbor;
                     }
-
-                    cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, s_opaqueVertices, opaqueSize);
 
                     if (visible)
-                    {
+                        cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, s_opaqueVertices, opaqueSize);
+
+                    if (visible || maybeVisible)
                         visibleBlocks[pos] = &block;
-                    }
                 }
             }
         }
@@ -110,14 +115,14 @@ namespace cybrion
 
         opaqueMesh.setVertices(s_opaqueVertices, opaqueSize);
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
-        //CYBRION_CLIENT_TRACE("Built chunk mesh   : {}", m_stopwatch.getDeltaTime());
-
-        rebuildChunkMesh(chunk);
+        CYBRION_CLIENT_TRACE("Built chunk mesh   : {}", stopwatch.getDeltaTime());
+        m_rebuildMeshQueue.push(chunk);
     }
 
     void WorldRenderer::rebuildChunkMesh(Entity& chunk)
     {
-        m_stopwatch.reset();
+        Stopwatch stopwatch;
+        stopwatch.reset();
 
         auto& [opaqueMesh, visibleBlocks, isDirty] = chunk.get<ChunkRenderer>();
         auto& data = chunk.get<ChunkData>();
@@ -136,7 +141,7 @@ namespace cybrion
                 Block* neighbor = nullptr;
                 ivec3 npos = ivec3(pos) + dir;
 
-                if (!getBlockIfIsOutside(npos, neighbor, neighbors))
+                if (!getBlockIfIsOutside(npos, &neighbor, neighbors))
                     neighbor = &data.getBlock(uvec3(npos));
 
                 culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
@@ -147,40 +152,51 @@ namespace cybrion
 
         opaqueMesh.setVertices(s_opaqueVertices, opaqueSize);
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
-        //CYBRION_CLIENT_TRACE("Rebuilt chunk mesh : {}", m_stopwatch.getDeltaTime());
+        CYBRION_CLIENT_TRACE("Rebuilt chunk mesh : {}", stopwatch.getDeltaTime());
+    }
+
+    void WorldRenderer::rebuildChunkMeshes(f32 maxDuration)
+    {
+        m_stopwatch.reset();
+
+        while (!m_rebuildMeshQueue.empty() && maxDuration > m_stopwatch.getDeltaTime())
+        {
+            Entity chunk = m_rebuildMeshQueue.front();
+            m_rebuildMeshQueue.pop();
+
+            rebuildChunkMesh(chunk);
+        }
     }
 
     std::array<ChunkData*, 6> WorldRenderer::getNeighborChunkData(ChunkData& data)
     {
-        return {
-            data.eastChunk   .valid() ? &data.eastChunk   .get<ChunkData>() : nullptr,
-            data.bottomChunk .valid() ? &data.bottomChunk. get<ChunkData>() : nullptr,
-            data.northChunk  .valid() ? &data.northChunk  .get<ChunkData>() : nullptr,
-            data.westChunk   .valid() ? &data.westChunk   .get<ChunkData>() : nullptr,
-            data.topChunk    .valid() ? &data.topChunk    .get<ChunkData>() : nullptr,
-            data.southChunk  .valid() ? &data.southChunk  .get<ChunkData>() : nullptr,
-        };
+        std::array<ChunkData*, 6> result;
+        
+        for (u32 i = 0; i < 6; ++i)
+            result[i] = data.neighbors[i].valid() ? &data.neighbors[i].get<ChunkData>() : nullptr;
+        
+        return result;
     }
 
-    bool WorldRenderer::getBlockIfIsOutside(const ivec3& pos, Block*& block, std::array<ChunkData*, 6>& neighbors)
+    bool WorldRenderer::getBlockIfIsOutside(const ivec3& pos, Block** block, std::array<ChunkData*, 6>& neighbors)
     {
         if (pos.x < 0) {
-            if (neighbors[0]) block = &neighbors[0]->getBlock({ 1, pos.y, pos.z });
+            if (neighbors[3]) *block = &neighbors[3]->getBlock({ 31, pos.y, pos.z });
             return true;
         } else if (pos.y < 0) { 
-            if (neighbors[1]) block = &neighbors[1]->getBlock({ pos.x, 1, pos.z });
+            if (neighbors[4]) *block = &neighbors[4]->getBlock({ pos.x, 31, pos.z });
             return true;
         } else if (pos.z < 0) {
-            if (neighbors[2]) block = &neighbors[2]->getBlock({ pos.x, pos.y, 1 });
+            if (neighbors[5]) *block = &neighbors[5]->getBlock({ pos.x, pos.y, 31 });
             return true;
         } else if (pos.x >= CHUNK_SIZE) {
-            if (neighbors[3]) block = &neighbors[3]->getBlock({ 31, pos.y, pos.z });
+            if (neighbors[0]) *block = &neighbors[0]->getBlock({ 0, pos.y, pos.z });
             return true;
         } else if (pos.y >= CHUNK_SIZE) {
-            if (neighbors[4]) block = &neighbors[4]->getBlock({ pos.x, 31, pos.z });
+            if (neighbors[1]) *block = &neighbors[1]->getBlock({ pos.x, 0, pos.z });
             return true;
         } else if (pos.z >= CHUNK_SIZE) {
-            if (neighbors[5]) block = &neighbors[5]->getBlock({ pos.x, pos.y, 31 });
+            if (neighbors[2]) *block = &neighbors[2]->getBlock({ pos.x, pos.y, 0 });
             return true;
         }
         return false;

@@ -8,6 +8,8 @@ namespace cybrion
     {
     public:
         
+        static Entity Null;
+        
         Entity() : m_handle(entt::null) {}
         Entity(const entt::entity& handle): m_handle(handle) {}
         Entity(const Entity& other) : Entity(other.m_handle) {}

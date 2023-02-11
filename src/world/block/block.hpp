@@ -87,6 +87,9 @@ namespace cybrion
             return m_id == other.m_id;
         }
 
+        static BlockFace GetFaceFromDirection(const ivec3& dir);
+        static BlockFace GetOppositeFace(const BlockFace& face);
+
         virtual string toString() const = 0;
 
     protected:
