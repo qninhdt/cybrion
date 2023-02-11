@@ -8,9 +8,10 @@ namespace cybrion
     ClientGame* ClientGame::s_clientGame = nullptr;
 
     ClientGame::ClientGame():
-        m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.2f, 1000.0f),
+        m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.2f, 1200.0f),
         m_showWireframe(false),
-        m_game(nullptr)
+        m_game(nullptr),
+        m_worldRenderer(getWorld())
     {
         s_clientGame = this;
     }
@@ -19,6 +20,7 @@ namespace cybrion
     {
         Game::load();
         createBlockRenderers();
+
     }
 
     void ClientGame::tick()
@@ -28,41 +30,25 @@ namespace cybrion
 
     void ClientGame::render(f32 deltaTime)
     {
+        m_worldRenderer.buildChunkMeshes(1); // allow build meshes in 1 second
 
-       /* using BasicShader = GL::Shader<"MVP">;
-        auto shader = Application::Get().getShaderManager().getShader<BasicShader>("basic");
+        m_worldRenderer.render(deltaTime);
+    }
 
-        GL::Mesh mesh(true);
+    void ClientGame::run()
+    {
+        while (!Application::Get().isClosed())
+        {
+            m_stopwatch.reset();
 
-        mesh.setAttributes({
-            { GL::Type::VEC3 },
-            { GL::Type::VEC2 },
-            { GL::Type::UINT }
-        });
+            tick();
 
-        u32 size = 0;
-        CubeVertex data[1000];
+            auto sleepTime = std::chrono::milliseconds(
+                u64(GAME_TICK - m_stopwatch.getDeltaTime() * 1000)
+            );
 
-        LogBlock& log = (LogBlock&)Game::Get().getBlockRegistry().getBlock(BlockType::LOG);
-        log = log.set<"type">(WoodType::OAK);
-        log = log.set<"axis">(LogAxis::Y);
-
-        auto& renderer = getBlockRenderer(log.getId());
-        renderer.generateCubeTexture();
-
-        bool cull[6] = { 0 };
-        renderer.generateCubeMesh(cull, data, size);
-
-        mesh.setVertices(data, 24);
-        mesh.setDrawCount(36);
-
-        Game::Get().getBlockLoader().bindTextureArray();
-
-        m_camera.setPosition({ 0, 1, 2 });
-        m_camera.setDirection({ 0, 0, -1 });
-        m_camera.updateViewMatrix();*/
-
-        
+            std::this_thread::sleep_for(sleepTime);
+        }
     }
 
     Camera& ClientGame::getCamera()
@@ -85,6 +71,68 @@ namespace cybrion
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
+    void ClientGame::onKeyPressed(KeyCode key, bool isRepeated)
+    {
+        if (!isRepeated)
+        {
+            switch (key)
+            {
+
+            // toggle cursor
+            case KeyCode::F1:
+                Application::Get().toggleCursor();
+                break;
+
+                // close window
+            case KeyCode::ESCAPE:
+                Application::Get().close();
+                break;
+
+                // reload shaders
+            case KeyCode::R:
+                Application::Get().getShaderManager().reloadShaders();
+                break;
+
+                // toggle wireframe
+            case KeyCode::F2:
+                ClientGame::Get().toggleWireframe();
+                break;
+            }
+        }
+    }
+
+    void ClientGame::onKeyReleased(KeyCode key)
+    {
+    }
+
+    void ClientGame::onMouseMoved(const vec2& delta)
+    {
+        if (!Application::Get().isCursorEnable())
+        {
+             m_camera.rotate(vec3(- delta.y, - delta.x, 0) * Application::Get().getDeltaTime() * 1.0f);
+             auto r = m_camera.getRotation();
+
+             if (r.x > pi / 2 - 0.001f && r.x < pi * 3 / 2 + 0.001f)
+             {
+                 if (r.x - pi / 2 - 0.001f < pi * 3 / 2 + 0.001f - r.x)
+                     r.x = pi / 2 - 0.001f;
+                 else
+                     r.x = pi * 3 / 2 + 0.001f;
+             }
+
+             m_camera.setRotation(r);
+             m_camera.updateViewMatrix();
+        }
+    }
+
+    void ClientGame::onWindowResized(u32 width, u32 height)
+    {
+        if (width == 0 || height == 0) return;
+
+        m_camera.setAspect(width * 1.0f / height);
+        m_camera.updateProjectionMatrix();
+    }
+
     ClientGame& ClientGame::Get()
     {
         return *s_clientGame;
@@ -96,6 +144,7 @@ namespace cybrion
         {
             Block& block = Game::Get().getBlockRegistry().getBlock(i);
             m_blockRenderers[block.getId()].m_block = &block;
+            m_blockRenderers[block.getId()].generateCubeTexture();
         }
     }
 }

@@ -4,35 +4,44 @@
 
 namespace cybrion
 {
-    class entity
+    class Entity
     {
     public:
         
-        entity() : entity(entt::entity(0)) {}
+        Entity() : m_handle(entt::null) {}
+        Entity(const entt::entity& handle): m_handle(handle) {}
+        Entity(const Entity& other) : Entity(other.m_handle) {}
 
-        entity(entt::entity handle) : m_registry(GetRegistry()), m_handle(handle) {}
+        Entity& operator = (const Entity& other) = default;
+        Entity& operator = (Entity&& other) = default;
 
-        entity(const entity& other) : entity(other.m_handle) {}
-
+        bool valid() const
+        {
+            return GetRegistry().valid(m_handle);
+        }
+            
         template <typename Component, typename... Args>
-        entity& assign(Args &&... args) {
-            m_registry.emplace<Component>(m_handle, std::forward<Args>(args)...);
-            return *this;
+        Component& assign(Args &&... args) {
+            return GetRegistry().emplace<Component>(m_handle, std::forward<Args>(args)...);
         }
 
         template <typename Component>
-        entity& remove() {
-            m_registry.remove<Component>(m_handle);
+        Entity& remove() {
+            GetRegistry().remove<Component>(m_handle);
             return *this;
         }
 
         template <typename Component>
         Component& get() {
-            return m_registry.get<Component>(m_handle);
+            return GetRegistry().get<Component>(m_handle);
+        }
+
+        template <typename Component>
+        Component* tryGet() {
+            return GetRegistry().try_get<Component>(m_handle);
         }
 
     private:
         entt::entity m_handle;
-        entt::registry& m_registry;
     };
 }

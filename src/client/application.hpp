@@ -28,6 +28,7 @@ namespace cybrion
         uvec2 getPos() const;
         f32 getAspect() const;
         bool isClosed() const;
+        bool isPlayingGame() const;
 
         bool isKeyPressed(KeyCode key) const;
 
@@ -39,10 +40,7 @@ namespace cybrion
 
         vec2 getDeltaMousePos() const;
 
-        void onKeyPressed(KeyCode key, bool isRepeated);
-        void onKeyReleased(KeyCode key);
-        void onMouseMoved(const vec2& delta);
-        void onResize(u32 width, u32 height);
+        
 
         ShaderManager& getShaderManager();
         string getResourcePath(const string& path) const;
@@ -70,6 +68,8 @@ namespace cybrion
 
         // game
         ClientGame* m_game;
+        bool m_playingGame;
+        std::thread m_gameThread;
 
         // window
         GLFWwindow* m_window;

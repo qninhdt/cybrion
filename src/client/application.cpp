@@ -17,7 +17,8 @@ namespace cybrion
         m_window(nullptr),
         m_pos(0, 0),
         m_game(nullptr),
-        m_rootPath(CYBRION_ROOT_PATH)
+        m_rootPath(CYBRION_ROOT_PATH),
+        m_playingGame(false)
     {
         s_application = this;
     }
@@ -31,7 +32,7 @@ namespace cybrion
             return false;
         }
 
-        glfwWindowHint(GLFW_SAMPLES, 4);
+        //glfwWindowHint(GLFW_SAMPLES, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -80,7 +81,7 @@ namespace cybrion
         // generate global Indexed Buffer Object
         GL::Mesh::GenerateGlobalIBO();
 
-        // debug screen
+        // load debug screen
         m_debugScreen.load();
 
         CYBRION_CLIENT_TRACE("Start loading resources ({})", getResourcePath(""));
@@ -91,6 +92,10 @@ namespace cybrion
     {
         startGame();
 
+        ClientGame::Get().getCamera().setPosition({ 16, 16, -32 });
+        ClientGame::Get().getCamera().setDirection({ 0, 0, +1 });
+        ClientGame::Get().getCamera().updateViewMatrix();
+
         // main loop
         f32 deltaTime = 0;
         while (!isClosed())
@@ -99,13 +104,31 @@ namespace cybrion
             // --------------------------------------------
             glfwPollEvents();
 
+            Camera& camera = ClientGame::Get().getCamera();
+
+            bool right = isKeyPressed(KeyCode::D);
+            bool forward = isKeyPressed(KeyCode::W);
+            bool up = isKeyPressed(KeyCode::SPACE);
+            bool left = !right && isKeyPressed(KeyCode::A);
+            bool backward = !forward && isKeyPressed(KeyCode::S);
+            bool down = !up && isKeyPressed(KeyCode::LEFT_SHIFT);
+
+            if (right || left || forward || backward || up || down)
+            {
+                vec3 dir = glm::normalize(
+                    f32(right - left) * camera.getRight() +
+                    f32(up - down) * camera.getUp() +
+                    f32(forward - backward) * camera.getForward()
+                );
+
+                camera.move(dir * deltaTime * 10.0f);
+                camera.updateViewMatrix();
+            }
+
             // tick
             // --------------------------------------------
             m_frameProfiler.tick();
             deltaTime = m_frameProfiler.getDeltaTime();
-
-            if (m_game)
-                m_game->tick();
 
             // render
             // --------------------------------------------
@@ -133,33 +156,16 @@ namespace cybrion
 
     void Application::startGame()
     {
+        /// NOTE: game should be loaded in thread
         m_game = new ClientGame();
         m_game->load();
+
+        m_playingGame = true;
+
+        m_gameThread = std::thread([&] {
+            m_game->run();
+        });
     }
-
-    /*void Application::tick(f32 deltaTime)
-    {
-        Camera& camera = Client::Get().getCamera();
-
-        bool right    = isKeyPressed(KeyCode::D);
-        bool forward  = isKeyPressed(KeyCode::W);
-        bool up       = isKeyPressed(KeyCode::SPACE);
-        bool left     = !right   && isKeyPressed(KeyCode::A);
-        bool backward = !forward && isKeyPressed(KeyCode::S);
-        bool down     = !up      && isKeyPressed(KeyCode::LEFT_SHIFT);
-
-        if (right || left || forward || backward || up || down)
-        {
-            vec3 dir = glm::normalize(
-                f32(right   - left    ) * camera.getRight()   +
-                f32(up      - down    ) * camera.getUp()      +
-                f32(forward - backward) * camera.getForward()
-            );
-
-            camera.move(dir * deltaTime * 10.0f);
-            camera.updateViewMatrix();
-        }
-    }*/
 
     GLFWwindow* Application::getWindow() const
     {
@@ -200,7 +206,8 @@ namespace cybrion
 
         glViewport(0, 0, width, height);
 
-        app.onResize(width, height);
+        if (app.isPlayingGame())
+            app.m_game->onWindowResized(width, height);
     }
 
     void Application::GlfwCloseCallback(GLFWwindow* window)
@@ -221,7 +228,8 @@ namespace cybrion
             app.m_mousePos = { f32(x), f32(y) };
         }
 
-        app.onMouseMoved(app.m_mousePos - app.m_lastMousePos);
+        if (app.isPlayingGame())
+            app.m_game->onMouseMoved(app.m_mousePos - app.m_lastMousePos);
     }
 
     void Application::GlfwKeyPressedCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -229,11 +237,20 @@ namespace cybrion
         Application& app = *(Application*)glfwGetWindowUserPointer(window);
 
         if (action == GLFW_PRESS)
-            app.onKeyPressed((KeyCode)key, false);
+        {
+            if (app.isPlayingGame())
+                app.m_game->onKeyPressed((KeyCode)key, false);
+        }
         else if (action == GLFW_REPEAT)
-            app.onKeyPressed((KeyCode)key, true);
+        {
+            if (app.isPlayingGame())
+                app.m_game->onKeyPressed((KeyCode)key, true);
+        }
         else
-            app.onKeyReleased((KeyCode)key);
+        {
+            if (app.isPlayingGame())
+                app.m_game->onKeyReleased((KeyCode)key);
+        }
     }
 
     u32 Application::getWidth() const
@@ -259,6 +276,11 @@ namespace cybrion
     bool Application::isClosed() const
     {
         return m_isClosed;
+    }
+
+    bool Application::isPlayingGame() const
+    {
+        return m_playingGame;
     }
 
     bool Application::isKeyPressed(KeyCode key) const
@@ -296,71 +318,10 @@ namespace cybrion
         return m_mousePos - m_lastMousePos;
     }
 
-    void Application::onKeyPressed(KeyCode key, bool isRepeated)
-    {
-        if (!isRepeated)
-        {
-            switch (key)
-            {
-
-                // toggle cursor
-            case KeyCode::F1:
-                toggleCursor();
-                break;
-
-                // close window
-            case KeyCode::ESCAPE:
-                close();
-                break;
-
-                // reload shaders
-            case KeyCode::R:
-                m_shaderManager.reloadShaders();
-                break;
-
-                // toggle wireframe
-            case KeyCode::F2:
-                ClientGame::Get().toggleWireframe();
-                break;
-            }
-        }
-    }
-
-    void Application::onKeyReleased(KeyCode key)
-    {
-    }
-
-    void Application::onMouseMoved(const vec2& delta)
-    {
-       /* if (!m_enableCursor)
-        {
-            Camera& camera = Client::Get().getCamera();
-
-            camera.rotate(vec3(- delta.y, - delta.x, 0) * Client::Get().getDeltaTime() * 1.0f);
-            auto r = camera.getRotation();
-
-            if (r.x > pi / 2 - 0.001f && r.x < pi * 3 / 2 + 0.001f)
-            {
-                if (r.x - pi / 2 - 0.001f < pi * 3 / 2 + 0.001f - r.x)
-                    r.x = pi / 2 - 0.001f;
-                else
-                    r.x = pi * 3 / 2 + 0.001f;
-            }
-
-            camera.setRotation(r);
-            camera.updateViewMatrix();
-        }*/
-    }
-
-    void Application::onResize(u32 width, u32 height)
-    {
-        /*Camera& camera = Client::Get().getCamera();
-        camera.setAspect(getAspect());
-        camera.updateProjectionMatrix();*/
-    }
-
     Application::~Application()
     {
+        m_gameThread.join();
+
         if (!m_isClosed)
             closeImmediately();
 

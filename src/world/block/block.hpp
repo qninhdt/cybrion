@@ -9,10 +9,12 @@ namespace cybrion
     class Block
     {
     public:
+
         Block(const BlockType &type):
             m_shape(BlockShape::CUBE),
             m_type(type),
             m_displayName(""),
+            m_display(BlockDisplay::OPAQUE),
             m_rotationX(BlockRotation::R0),
             m_rotationY(BlockRotation::R0),
             m_rotationZ(BlockRotation::R0),
@@ -23,7 +25,8 @@ namespace cybrion
             m_topTexture(0),
             m_bottomTexture(0),
             m_toLocalFace{ 0, 1, 2, 3, 4, 5 },
-            m_toWorldFace{ 0 }
+            m_toWorldFace{ 0 },
+            m_id(0)
         {
         }
 
@@ -42,6 +45,11 @@ namespace cybrion
         string getDisplayName() const
         {
             return m_displayName;
+        }
+
+        BlockDisplay getDisplay() const
+        {
+            return m_display;
         }
 
         BlockShape getShape() const
@@ -72,6 +80,11 @@ namespace cybrion
         BlockRotation getRotationZ() const
         {
             return m_rotationZ;
+        }
+
+        bool operator== (const Block& other) const
+        {
+            return m_id == other.m_id;
         }
 
         virtual string toString() const = 0;
@@ -110,6 +123,7 @@ namespace cybrion
 
         u32 m_id;
 
+        BlockDisplay m_display;
         BlockShape m_shape;
         BlockType m_type;
         string m_displayName;

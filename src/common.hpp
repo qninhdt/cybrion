@@ -86,6 +86,12 @@ namespace cybrion
     template <typename V>
     using vector = std::vector<V>;
 
+    template <typename V>
+    using stack = std::stack<V>;
+
+    template <typename V>
+    using queue = std::queue<V>;
+
     constexpr f32 pi = 3.14159265358979323846;
     constexpr f32 two_pi = pi * 2;
 } // namespace nith

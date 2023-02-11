@@ -139,6 +139,7 @@ namespace cybrion
 
                     if (key == "display_name") OVERRIDE(m_displayName, value);
                     if (key == "shape") OVERRIDE(m_shape, StringToEnum<BlockShape>(value));
+                    if (key == "display") OVERRIDE(m_display, StringToEnum<BlockDisplay>(value));
 
                     if (key == "rotate_x") OVERRIDE(m_rotationX, StringToEnum<BlockRotation>(value));
                     if (key == "rotate_y") OVERRIDE(m_rotationY, StringToEnum<BlockRotation>(value));

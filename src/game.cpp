@@ -21,6 +21,8 @@ namespace cybrion
 
         // precompute some block properties
         m_blockRegistry.computeRotation();
+
+        m_world.loadChunk({ 0, 0, 0 });
     }
 
     void Game::tick()
@@ -35,6 +37,11 @@ namespace cybrion
     BlockLoader& Game::getBlockLoader()
     {
         return m_blockLoader;
+    }
+
+    World& Game::getWorld()
+    {
+        return m_world;
     }
 
     Game& Game::Get()

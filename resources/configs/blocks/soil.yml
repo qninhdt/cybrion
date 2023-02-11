@@ -6,7 +6,6 @@
   top: grass_top
   side: grass_side
   bottom: grass_bottom
-  rotate_z: 180
   
 "[type=basalt]":
   display_name: Basalt

@@ -1,24 +1,10 @@
 #pragma once
 
-#include "world/chunk/chunk.hpp"
 #include "client/resource/block_loader.hpp"
-
-#include "world/block/nature/soil_block.hpp"
-#include "world/block/nature/air_block.hpp"
-#include "world/block/nature/log_block.hpp"
+#include "world/world.hpp"
 
 namespace cybrion
 {
-    // REGISTER NEW BLOCK HERE
-    //           |
-    //           |
-    //           V
-    using BlockRegistry = BaseBlockRegistry<
-        AirBlock,
-        SoilBlock,
-        LogBlock
-    >;
-
     class Game
     {
     public:
@@ -31,6 +17,8 @@ namespace cybrion
         BlockRegistry& getBlockRegistry();
         BlockLoader& getBlockLoader();
 
+        World& getWorld();
+
         static Game& Get();
 
     private:
@@ -38,6 +26,7 @@ namespace cybrion
 
         BlockLoader m_blockLoader;
         BlockRegistry m_blockRegistry;
+        World m_world;
     };
 }
 

@@ -103,7 +103,7 @@ namespace cybrion
         }},
     } };
 
-    void BlockRenderer::generateCubeMesh(bool culling[6], CubeVertex* result, u32& index)
+    void BlockRenderer::generateCubeMesh(bool culling[6], const vec3& position, CubeVertex* result, u32& index)
     {
         for (u32 i = 0; i < 6; ++i)
         {
@@ -112,7 +112,7 @@ namespace cybrion
             for (u32 j = 0; j < 4; ++j)
             {
                 result[index++] = {
-                    CubeVertices[i][j],
+                    CubeVertices[i][j] + position,
                     m_cubeTexture[i][j].uv,
                     m_cubeTexture[i][j].textureId
                 };

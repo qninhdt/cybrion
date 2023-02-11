@@ -7,5 +7,5 @@ uniform sampler2DArray texures;
 
 void main() {
     gl_FragColor = texture(texures, vec3(uv, tex_id));
-	//gl_FragColor = vec4(uv, 1, 1);
+	//gl_FragColor = vec4(uv, 0, 1);
 }

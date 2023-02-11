@@ -54,7 +54,11 @@ int main()
 
     if (app.open())
         CYBRION_CLIENT_TRACE("Main window is opened ({} x {})", app.getWidth(), app.getHeight());
+    else    
+        return EXIT_FAILURE;
 
     app.load();
     app.run();
+
+    return EXIT_SUCCESS;
 }

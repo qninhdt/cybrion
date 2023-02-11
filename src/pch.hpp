@@ -14,6 +14,8 @@
 #include <array>
 #include <ranges>
 #include <chrono>
+#include <thread>
+#include <mutex>
 
 // third-party libraries
 #include <spdlog/spdlog.h>
