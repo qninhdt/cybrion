@@ -12,9 +12,16 @@ namespace cybrion
     //           |
     //           |
     //           V
-    using BlockRegistry = BaseBlockRegistry<
+    class BlockRegistry : public BaseBlockRegistry<
         AirBlock,
         SoilBlock,
         LogBlock
-    >;
+    >
+    {
+    public:
+        BlockRegistry();
+        static BlockRegistry& Get();
+    private:
+        static BlockRegistry* s_blockRegistry;
+    };
 }

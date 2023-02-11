@@ -4,6 +4,13 @@
 
 namespace cybrion
 {
+    ShaderManager* ShaderManager::s_shaderManager = nullptr;
+
+    ShaderManager::ShaderManager()
+    {
+        s_shaderManager = this;
+    }
+
     bool ShaderManager::loadShaders()
     {   
 
@@ -102,6 +109,11 @@ namespace cybrion
     {
         for (auto& [name, data] : m_shaders)
             glDeleteProgram(data->programId);
+    }
+
+    ShaderManager& ShaderManager::Get()
+    {
+        return *s_shaderManager;
     }
 
     bool ShaderManager::loadShader(const string& name, bool reloadable)

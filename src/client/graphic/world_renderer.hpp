@@ -11,7 +11,8 @@ namespace cybrion
 {
     struct ChunkRenderer
     {
-        GL::Mesh opaqueMesh;       
+        GL::Mesh opaqueMesh;
+        umap<uvec3, Block*> visibleBlocks;
         bool isDirty;
 
         ChunkRenderer();
@@ -33,8 +34,11 @@ namespace cybrion
         void rebuildChunkMesh(Entity& chunk);
 
     private:
-        
         static CubeVertex s_opaqueVertices[400000];
+
+        std::array<ChunkData*, 6> getNeighborChunkData(ChunkData& data);
+
+        bool getBlockIfIsOutside(const ivec3& pos, Block*& block, std::array<ChunkData*, 6>& neighbors);
 
         World& m_world;
         queue<Entity> m_buildMeshQueue;

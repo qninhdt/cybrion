@@ -25,9 +25,10 @@ namespace cybrion
 
         for (auto&& [entity, renderer] : m_registry.view<ChunkRenderer>().each())
         {
-            auto& [opaqueMesh, isDirty] = renderer;
+            auto& opaqueMesh = renderer.opaqueMesh;
             m_opaqueCubeShader.setUniform<"MVP">(
                 ClientGame::Get().getCamera().getProjectionViewMatrix()
+                * opaqueMesh.getModelMatrix()
             );
             opaqueMesh.drawTriangles();
         }
@@ -38,7 +39,6 @@ namespace cybrion
         Entity chunk(entity);
         m_buildMeshQueue.push(chunk);
 
-        CYBRION_CLIENT_TRACE("Add chunk to mesh queue");
     }
 
     void WorldRenderer::buildChunkMeshes(f32 maxDuration)
@@ -57,19 +57,15 @@ namespace cybrion
     {
         m_stopwatch.reset();
 
-        auto& [opaqueMesh, isDirty] = chunk.assign<ChunkRenderer>();
+        auto& [opaqueMesh, visibleBlocks, isDirty] = chunk.assign<ChunkRenderer>();
         auto& data = chunk.get<ChunkData>();
 
-        auto eastData = data.eastChunk.valid() ? &data.eastChunk.get<ChunkData>() : nullptr;
-        auto topData = data.topChunk.valid() ? &data.topChunk.get<ChunkData>() : nullptr;
-        auto southData = data.southChunk.valid() ? &data.southChunk.get<ChunkData>() : nullptr;
-        auto westData = data.westChunk.valid() ? &data.westChunk.get<ChunkData>() : nullptr;
-        auto bottomData = data.bottomChunk.valid() ? &data.bottomChunk.get<ChunkData>() : nullptr;
-        auto northData = data.northChunk.valid() ? &data.northChunk.get<ChunkData>() : nullptr;
+        auto neighbors = getNeighborChunkData(data);
 
         u32 opaqueSize = 0;
-
         bool culling[6] = { 0 };
+        vec3 align = vec3(0.5f, 0.5f, 0.5f) - vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+
         for (u32 x = 0; x < CHUNK_SIZE; ++x)
         {
             for (u32 y = 0; y < CHUNK_SIZE; ++y)
@@ -81,39 +77,113 @@ namespace cybrion
                     BlockDisplay display = block.getDisplay();
                     auto& cubeRenderer = ClientGame::Get().getBlockRenderer(block.getId());
 
-                    // dont render transparent block like air
+                    // dont render transparent blocks like air
                     if (display == BlockDisplay::TRANSPARENT)
                         continue;
 
+                    bool visible = false;
                     for (auto& [dir, face] : BlockRenderer::CubeDirections)
                     {
                         Block* neighbor = nullptr;
                         ivec3 npos = ivec3(pos) + dir;
 
-                        if (npos.x < 0) { if (eastData) neighbor = &eastData->getBlock({ 1, npos.y, npos.z }); }
-                        else if (npos.y < 0) { if (bottomData) neighbor = &bottomData->getBlock({ npos.x, 1, npos.z }); }
-                        else if (npos.z < 0) { if (northData) neighbor = &northData->getBlock({ npos.x, npos.y, 1 }); }
-                        else if (npos.x >= CHUNK_SIZE) { if (westData) neighbor = &westData->getBlock({ 31, npos.y, npos.z }); }
-                        else if (npos.y >= CHUNK_SIZE) { if (topData) neighbor = &topData->getBlock({ npos.x, 31, npos.z }); }
-                        else if (npos.z >= CHUNK_SIZE) { if (southData) neighbor = &southData->getBlock({ npos.x, npos.y, 31 }); }
-
-                        else
+                        if (!getBlockIfIsOutside(npos, neighbor, neighbors))
                             neighbor = &data.getBlock(npos);
 
                         // cull this face when neighbor block is opaque
                         culling[u32(face)] = neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE;
+                        visible |= !culling[u32(face)];
                     }
 
-                    cubeRenderer.generateCubeMesh(culling, vec3(pos), s_opaqueVertices, opaqueSize);
+                    cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, s_opaqueVertices, opaqueSize);
+
+                    if (visible)
+                    {
+                        visibleBlocks[pos] = &block;
+                    }
                 }
             }
         }
 
+        opaqueMesh.setPosition(data.getWorldPosition());
+        opaqueMesh.updateModelMatrix();
+
         opaqueMesh.setVertices(s_opaqueVertices, opaqueSize);
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
-        CYBRION_CLIENT_TRACE("Built chunk mesh");
+        //CYBRION_CLIENT_TRACE("Built chunk mesh   : {}", m_stopwatch.getDeltaTime());
 
-        std::cout << m_stopwatch.getDeltaTime() << '\n';
+        rebuildChunkMesh(chunk);
+    }
+
+    void WorldRenderer::rebuildChunkMesh(Entity& chunk)
+    {
+        m_stopwatch.reset();
+
+        auto& [opaqueMesh, visibleBlocks, isDirty] = chunk.get<ChunkRenderer>();
+        auto& data = chunk.get<ChunkData>();
+
+        auto neighbors = getNeighborChunkData(data);
+
+        u32 opaqueSize = 0;
+        bool culling[6] = { 0 };
+
+        for (auto& [pos, block] : visibleBlocks)
+        {
+            auto& cubeRenderer = ClientGame::Get().getBlockRenderer(block->getId());
+
+            for (auto& [dir, face] : BlockRenderer::CubeDirections)
+            {
+                Block* neighbor = nullptr;
+                ivec3 npos = ivec3(pos) + dir;
+
+                if (!getBlockIfIsOutside(npos, neighbor, neighbors))
+                    neighbor = &data.getBlock(uvec3(npos));
+
+                culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
+            }
+
+            cubeRenderer.generateCubeMesh(culling, vec3(pos), s_opaqueVertices, opaqueSize);
+        }
+
+        opaqueMesh.setVertices(s_opaqueVertices, opaqueSize);
+        opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
+        //CYBRION_CLIENT_TRACE("Rebuilt chunk mesh : {}", m_stopwatch.getDeltaTime());
+    }
+
+    std::array<ChunkData*, 6> WorldRenderer::getNeighborChunkData(ChunkData& data)
+    {
+        return {
+            data.eastChunk   .valid() ? &data.eastChunk   .get<ChunkData>() : nullptr,
+            data.bottomChunk .valid() ? &data.bottomChunk. get<ChunkData>() : nullptr,
+            data.northChunk  .valid() ? &data.northChunk  .get<ChunkData>() : nullptr,
+            data.westChunk   .valid() ? &data.westChunk   .get<ChunkData>() : nullptr,
+            data.topChunk    .valid() ? &data.topChunk    .get<ChunkData>() : nullptr,
+            data.southChunk  .valid() ? &data.southChunk  .get<ChunkData>() : nullptr,
+        };
+    }
+
+    bool WorldRenderer::getBlockIfIsOutside(const ivec3& pos, Block*& block, std::array<ChunkData*, 6>& neighbors)
+    {
+        if (pos.x < 0) {
+            if (neighbors[0]) block = &neighbors[0]->getBlock({ 1, pos.y, pos.z });
+            return true;
+        } else if (pos.y < 0) { 
+            if (neighbors[1]) block = &neighbors[1]->getBlock({ pos.x, 1, pos.z });
+            return true;
+        } else if (pos.z < 0) {
+            if (neighbors[2]) block = &neighbors[2]->getBlock({ pos.x, pos.y, 1 });
+            return true;
+        } else if (pos.x >= CHUNK_SIZE) {
+            if (neighbors[3]) block = &neighbors[3]->getBlock({ 31, pos.y, pos.z });
+            return true;
+        } else if (pos.y >= CHUNK_SIZE) {
+            if (neighbors[4]) block = &neighbors[4]->getBlock({ pos.x, 31, pos.z });
+            return true;
+        } else if (pos.z >= CHUNK_SIZE) {
+            if (neighbors[5]) block = &neighbors[5]->getBlock({ pos.x, pos.y, 31 });
+            return true;
+        }
+        return false;
     }
 
     ChunkRenderer::ChunkRenderer():

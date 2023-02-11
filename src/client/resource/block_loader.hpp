@@ -8,13 +8,18 @@ namespace cybrion
     {
     public:
 
+        BlockLoader();
+
         void load();
 
         u32 getTextureId(const string& name);
 
         void bindTextureArray();
 
+        static BlockLoader& Get();
+
     private:
+        static BlockLoader* s_blockLoader;
 
         void loadConfigFiles();
         void loadTextures();

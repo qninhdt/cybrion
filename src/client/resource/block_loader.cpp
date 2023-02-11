@@ -7,6 +7,18 @@
 
 namespace cybrion
 {
+    BlockLoader* BlockLoader::s_blockLoader = nullptr;
+
+    BlockLoader::BlockLoader()
+    {
+        s_blockLoader = this;
+    }
+
+    BlockLoader& BlockLoader::Get()
+    {
+        return *s_blockLoader;
+    }
+
     void BlockLoader::load()
     {
         loadTextures();

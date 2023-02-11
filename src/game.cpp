@@ -23,6 +23,12 @@ namespace cybrion
         m_blockRegistry.computeRotation();
 
         m_world.loadChunk({ 0, 0, 0 });
+        m_world.loadChunk({ 1, 0, 0 });
+        m_world.loadChunk({ 0, 1, 0 });
+        m_world.loadChunk({ 0, 0, 1 });
+        m_world.loadChunk({ -1, 0, 0 });
+        m_world.loadChunk({ 0, -1, 0 });
+        m_world.loadChunk({ 0, 0, -1 });
     }
 
     void Game::tick()

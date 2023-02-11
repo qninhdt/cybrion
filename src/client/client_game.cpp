@@ -90,7 +90,7 @@ namespace cybrion
 
                 // reload shaders
             case KeyCode::R:
-                Application::Get().getShaderManager().reloadShaders();
+                ShaderManager::Get().reloadShaders();
                 break;
 
                 // toggle wireframe
@@ -142,7 +142,7 @@ namespace cybrion
     {
         for (u32 i = 0; i < BlockRegistry::BlockStateCount(); ++i)
         {
-            Block& block = Game::Get().getBlockRegistry().getBlock(i);
+            Block& block = BlockRegistry::Get().getBlock(i);
             m_blockRenderers[block.getId()].m_block = &block;
             m_blockRenderers[block.getId()].generateCubeTexture();
         }

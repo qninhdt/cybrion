@@ -1,5 +1,4 @@
 #include "client/graphic/block_renderer.hpp"
-#include "game.hpp"
 
 namespace cybrion
 {

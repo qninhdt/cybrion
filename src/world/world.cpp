@@ -11,16 +11,23 @@ namespace cybrion
     {
         Entity chunk(m_registry.create());
         auto& data = chunk.assign<ChunkData>();
+        data.position = pos;
  
         LogBlock& dirt = (LogBlock&) Game::Get().getBlockRegistry().getBlock(BlockType::LOG);
 
         for (u32 x = 0; x < CHUNK_SIZE; ++x)
-            for (u32 y = 0; y < CHUNK_SIZE; ++y)
-                for (u32 z = 0; z < CHUNK_SIZE; ++z)
+        {
+            for (u32 z = 0; z < CHUNK_SIZE; ++z)
+            {
+                int height = sqrt((x*x+z*z)/2);
+
+                for (u32 y = 0; y < height; ++y)
                 {
                     dirt = dirt.set<"axis">((x + y + z) % 3);
                     data.setBlock({ x, y, z }, dirt);
                 }
+            }
+        }
 
         m_chunkMap[pos] = chunk;
 

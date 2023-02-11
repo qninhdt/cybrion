@@ -5,7 +5,7 @@ namespace cybrion
     class FrameProfiler
     {
     public:
-        static constexpr u32 MAX_DELTA_TIME_QUEUE_SIZE = 32;
+        static constexpr u32 MAX_DELTA_TIME_QUEUE_SIZE = 8;
 
         FrameProfiler();
 

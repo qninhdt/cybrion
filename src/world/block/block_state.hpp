@@ -19,18 +19,6 @@ namespace cybrion
 
             T value = (T)0;
 
-            //void serialize_state(u32& output) const
-            //{
-            //    output = (output << num_bits) | ((u32)value);
-            //}
-
-            //void deserialize_state(u32& input)
-            //{
-            //    constexpr u32 mask = ~u32(0) >> (32 - num_bits);
-            //    value = (type)(input & mask);
-            //    input >>= num_bits;
-            //}
-
             bool runtime_has(const string& name)
             {
                 return name == string((const char*)pname);
@@ -63,28 +51,6 @@ namespace cybrion
         template <const_string name>
         using bool_state = block::state<bool, name, 2>;
 
-   /*     template <typename T>
-        concept is_state = requires
-        {
-            typename T::type;
-            { T::num_values } -> std::same_as<const u32&>;
-            { T::num_bits } -> std::same_as<const u32&>;
-            { T::name_length } -> std::same_as<const u32&>;
-            { T::name } -> std::same_as <const const_string<T::name_length>&>;
-        };
-
-        template <typename T>
-        concept is_state_holder = requires(T t)
-        {
-            { t.get_holder() } -> std::same_as<decltype(t.get_holder())>;
-        };*/
-
-       /* template <is_state_holder T>
-        using holder_of = std::remove_reference_t<decltype(T{}.get_holder()) > ;
-
-        template <typename T>
-        concept is_state_or_state_holder = is_state<T> || is_state_holder<T>;*/
-
         template <typename... S>
         class state_holder : private S...
         {
@@ -103,14 +69,6 @@ namespace cybrion
             {
                 return get_impl<name, S...>();
             }
-
-            /*template <const_string name>
-            static constexpr bool has() {
-                return has_impl<name, S...>();
-            }
-
-            template <const_string name>
-            using type = decltype(type_impl<name, S...>());*/
 
             template <const_string name>
             i32 set(const auto& value)
@@ -142,17 +100,6 @@ namespace cybrion
                     return "[" + str + "]";
                 }
             }
-
-            //void serialize_state(u32& output) const
-            //{
-            //    bool dont_care_me = 0;
-            //    (dont_care_me = ... = (S::serialize_state(output), 0)); // trick
-            //}
-
-            //void deserialize_state(u32& input)
-            //{
-            //    (S::deserialize_state(input), ...);
-            //}
 
             template <typename H>
             static void each_possible_values(H& holder, auto callback)
@@ -241,29 +188,6 @@ namespace cybrion
                         each_possible_values_impl<R...>(holder, callback);
                 }
             }
-            /*template <const_string name, is_state T, typename... R>
-            static auto type_impl()
-            {
-                if constexpr (T::name == name)
-                    return typename T::type{};
-                else
-                {
-                    static_assert(sizeof...(R) > 0);
-                    return type_impl<name, R...>();
-                }
-            }
-
-            template <const_string name, is_state_holder T, typename... R>
-            static auto type_impl()
-            {
-                if constexpr (T::template has<name>())
-                    return typename T::template type<name>{};
-                else
-                {
-                    static_assert(sizeof...(R) > 0);
-                    return type_impl<name, R...>();
-                }
-            }*/
 
             template <const_string name, typename T, typename... R>
             auto& get_impl() const
@@ -276,29 +200,6 @@ namespace cybrion
                     return get_impl<name, R...>();
                 }
             }
-
-            /*template <const_string name, is_state T, typename ...R>
-            static constexpr bool has_impl()
-            {
-                if constexpr (T::name == name)
-                    return true;
-                else if constexpr (sizeof...(R) > 0)
-                    return has_impl<name, R...>();
-                else
-                    return false;
-            }
-
-            template <const_string name, is_state_holder T, typename ...R>
-            static constexpr bool has_impl()
-            {
-                if constexpr (T::template has<name>())
-                    return true;
-
-                if constexpr (sizeof...(R) > 0)
-                    return has_impl<name, R...>();
-                else
-                    return false;
-            }*/
         };
     }
 }

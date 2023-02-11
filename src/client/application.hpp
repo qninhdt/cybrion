@@ -29,7 +29,6 @@ namespace cybrion
         f32 getAspect() const;
         bool isClosed() const;
         bool isPlayingGame() const;
-
         bool isKeyPressed(KeyCode key) const;
 
         void toggleCursor();

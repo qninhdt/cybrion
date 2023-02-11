@@ -1,12 +1,13 @@
-﻿# CMakeList.txt : CMake project for cybrion, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
 project ("cybrion")
 
+if (MSVC)
+    add_compile_options("/MP")
+endif()
+
 add_executable(${PROJECT_NAME}
-    "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/client_game.cpp" "src/util/file.cpp" "src/client/application.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp" "src/client/transform.cpp" "src/client/camera.cpp" "src/client/frame_profiler.cpp" "src/client/debug_screen.cpp" "src/world/chunk/chunk.cpp" "src/util/math.hpp" "src/core/registry.cpp" "src/world/world.cpp" "src/client/resource/block_loader.cpp" "src/game.cpp" "src/world/block/block.cpp" "src/client/graphic/block_renderer.cpp" "src/client/graphic/world_renderer.cpp" "src/client/stopwatch.cpp")
+    "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/client_game.cpp" "src/util/file.cpp" "src/client/application.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp" "src/client/transform.cpp" "src/client/camera.cpp" "src/client/frame_profiler.cpp" "src/client/debug_screen.cpp" "src/world/chunk/chunk.cpp" "src/util/math.hpp" "src/core/registry.cpp" "src/world/world.cpp" "src/client/resource/block_loader.cpp" "src/game.cpp" "src/world/block/block.cpp" "src/client/graphic/block_renderer.cpp" "src/client/graphic/world_renderer.cpp" "src/client/stopwatch.cpp" "src/world/block/block_registry.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 
@@ -52,8 +53,3 @@ target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp)
 
 add_subdirectory(third_party/nanobench)
 target_link_libraries(${PROJECT_NAME} PUBLIC nanobench)
-
-if (MSVC)
-    target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:/INCREMENTAL>)
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:/ZI>)
-endif()

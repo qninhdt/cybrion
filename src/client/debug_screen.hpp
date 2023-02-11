@@ -2,6 +2,8 @@
 
 namespace cybrion
 {
+    class Application;
+
     class DebugScreen
     {
     public:

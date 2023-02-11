@@ -7,6 +7,8 @@ namespace cybrion
     class ShaderManager
     {
     public:
+        ShaderManager();
+
         bool loadShaders();
         bool reloadShaders();
         u32 getShaderCount() const;
@@ -25,7 +27,11 @@ namespace cybrion
 
         ~ShaderManager();
 
+        static ShaderManager& Get();
+
     private:
+
+        static ShaderManager* s_shaderManager;
 
         bool loadShader(const string& name, bool reloadable);
 

@@ -1,5 +1,4 @@
 #include "client/debug_screen.hpp"
-
 #include "client/application.hpp"
 
 namespace cybrion
