@@ -4,7 +4,7 @@
 #include "client/frame_profiler.hpp"
 #include "client/resource/shader_manager.hpp"
 #include "client/debug_screen.hpp"
-#include "client_game.hpp"
+#include "client/local_game.hpp"
 
 namespace cybrion
 {
@@ -66,9 +66,8 @@ namespace cybrion
         ShaderManager m_shaderManager;
 
         // game
-        ClientGame* m_game;
+        LocalGame* m_game;
         bool m_playingGame;
-        std::thread m_gameThread;
 
         // window
         GLFWwindow* m_window;

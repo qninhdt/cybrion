@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/entity.hpp"
+#include "core/Object.hpp"
 #include "world/block/block_state.hpp"
 #include "world/block/block_defs.hpp"
 

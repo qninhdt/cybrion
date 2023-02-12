@@ -2817,9 +2817,9 @@ GLAPI PFNGLISLISTPROC glad_glIsList;
 typedef void (APIENTRYP PFNGLFRUSTUMPROC)(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
 GLAPI PFNGLFRUSTUMPROC glad_glFrustum;
 #define glFrustum glad_glFrustum
-typedef void (APIENTRYP PFNGLLOADIDENTITYPROC)(void);
-GLAPI PFNGLLOADIDENTITYPROC glad_glLoadIdentity;
-#define glLoadIdentity glad_glLoadIdentity
+typedef void (APIENTRYP PFNGLLOADIDObjectPROC)(void);
+GLAPI PFNGLLOADIDObjectPROC glad_glLoadIdObject;
+#define glLoadIdObject glad_glLoadIdObject
 typedef void (APIENTRYP PFNGLLOADMATRIXFPROC)(const GLfloat *m);
 GLAPI PFNGLLOADMATRIXFPROC glad_glLoadMatrixf;
 #define glLoadMatrixf glad_glLoadMatrixf

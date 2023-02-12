@@ -1,68 +1,71 @@
-#include "client/client_game.hpp"
+#include "client/local_game.hpp"
 
 #include "client/application.hpp"
 #include "client/GL/mesh.hpp"
 
 namespace cybrion
 {
-    ClientGame* ClientGame::s_clientGame = nullptr;
+    LocalGame* LocalGame::s_LocalGame = nullptr;
 
-    ClientGame::ClientGame():
+    LocalGame::LocalGame():
         m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.2f, 1200.0f),
         m_showWireframe(false),
-        m_game(nullptr),
         m_worldRenderer(getWorld())
     {
-        s_clientGame = this;
+        s_LocalGame = this;
     }
 
-    void ClientGame::load()
+    void LocalGame::load()
     {
         Game::load();
         createBlockRenderers();
 
+        loadPlayer(m_player);
+        m_camera.setTarget(m_player.getEntity());
     }
 
-    void ClientGame::tick()
+    void LocalGame::tick()
     {
         Game::tick();
     }
 
-    void ClientGame::render(f32 deltaTime)
+    void LocalGame::render(f32 lerpFactor)
     {
+
+        m_worldRenderer.updateEntityTransforms(lerpFactor);
+        m_camera.tick();
+
         m_worldRenderer.buildChunkMeshes(1); // allow build meshes in 1 second
         m_worldRenderer.rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
 
-        m_worldRenderer.render(deltaTime);
+        m_worldRenderer.render(lerpFactor);
     }
 
-    void ClientGame::run()
+    void LocalGame::onChunkLoaded(Object chunk)
     {
-        while (!Application::Get().isClosed())
-        {
-            m_stopwatch.reset();
-
-            tick();
-
-            auto sleepTime = std::chrono::milliseconds(
-                u64(GAME_TICK - m_stopwatch.getDeltaTime() * 1000)
-            );
-
-            std::this_thread::sleep_for(sleepTime);
-        }
+        m_worldRenderer.setupChunk(chunk);
     }
 
-    Camera& ClientGame::getCamera()
+    void LocalGame::onChunkUnloaded(Object chunk)
+    {
+    }
+
+    void LocalGame::onEntitySpawned(Object entity)
+    {
+        m_worldRenderer.setupEntity(entity);
+    }
+
+    Camera& LocalGame::getCamera()
     {
         return m_camera;
     }
 
-    BlockRenderer& ClientGame::getBlockRenderer(u32 id)
+    BlockRenderer& LocalGame::getBlockRenderer(u32 id)
     {
         return m_blockRenderers[id];
     }
 
-    void ClientGame::toggleWireframe()
+    void LocalGame::toggleWireframe()
     {
         m_showWireframe = !m_showWireframe;
 
@@ -72,12 +75,26 @@ namespace cybrion
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    void ClientGame::onKeyPressed(KeyCode key, bool isRepeated)
+    Player& LocalGame::getPlayer()
     {
+        return m_player;
+    }
+
+    void LocalGame::onKeyPressed(KeyCode key, bool isRepeated)
+    {
+        static int n = 1;
         if (!isRepeated)
         {
             switch (key)
             {
+
+            case KeyCode::B:
+                m_worldRenderer.rebuildChunkMeshes(1);
+                break;
+
+            case KeyCode::N:
+                getWorld().loadChunk({ n++, 0, 0 });
+                break;
 
             // toggle cursor
             case KeyCode::F1:
@@ -96,37 +113,27 @@ namespace cybrion
 
                 // toggle wireframe
             case KeyCode::F2:
-                ClientGame::Get().toggleWireframe();
+                LocalGame::Get().toggleWireframe();
                 break;
             }
         }
     }
 
-    void ClientGame::onKeyReleased(KeyCode key)
+    void LocalGame::onKeyReleased(KeyCode key)
     {
     }
 
-    void ClientGame::onMouseMoved(const vec2& delta)
+    void LocalGame::onMouseMoved(const vec2& delta)
     {
         if (!Application::Get().isCursorEnable())
         {
-             m_camera.rotate(vec3(- delta.y, - delta.x, 0) * Application::Get().getDeltaTime() * 1.0f);
-             auto r = m_camera.getRotation();
-
-             if (r.x > pi / 2 - 0.001f && r.x < pi * 3 / 2 + 0.001f)
-             {
-                 if (r.x - pi / 2 - 0.001f < pi * 3 / 2 + 0.001f - r.x)
-                     r.x = pi / 2 - 0.001f;
-                 else
-                     r.x = pi * 3 / 2 + 0.001f;
-             }
-
-             m_camera.setRotation(r);
-             m_camera.updateViewMatrix();
+            auto& input = m_player.getInput();
+            input.deltaRotation += vec3(-delta.y, -delta.x, 0) * Application::Get().getDeltaTime() * 1.0f;
+            
         }
     }
 
-    void ClientGame::onWindowResized(u32 width, u32 height)
+    void LocalGame::onWindowResized(u32 width, u32 height)
     {
         if (width == 0 || height == 0) return;
 
@@ -134,12 +141,12 @@ namespace cybrion
         m_camera.updateProjectionMatrix();
     }
 
-    ClientGame& ClientGame::Get()
+    LocalGame& LocalGame::Get()
     {
-        return *s_clientGame;
+        return *s_LocalGame;
     }
 
-    void ClientGame::createBlockRenderers()
+    void LocalGame::createBlockRenderers()
     {
         for (u32 i = 0; i < BlockRegistry::BlockStateCount(); ++i)
         {

@@ -1,4 +1,5 @@
 #include "world/world.hpp"
+#include "world/entity/entity.hpp"
 #include "game.hpp"
 
 namespace cybrion
@@ -7,9 +8,19 @@ namespace cybrion
         m_registry(GetRegistry())
     {}
 
-    Entity World::loadChunk(const ivec3& pos)
+    Object World::spawnEntity(const vec3& pos)
     {
-        Entity chunk(m_registry.create());
+        Object entity(m_registry.create());
+        auto& data = entity.assign<EntityData>(pos);
+
+        Game::Get().onEntitySpawned(entity);
+
+        return entity;
+    }
+
+    Object World::loadChunk(const ivec3& pos)
+    {
+        Object chunk(m_registry.create());
         auto& data = chunk.assign<ChunkData>();
 
         data.position = pos;
@@ -20,7 +31,7 @@ namespace cybrion
             
             if (it != m_chunkMap.end())
             {
-                Entity& neighbor = it->second;
+                Object& neighbor = it->second;
                 auto& neighborData = neighbor.get<ChunkData>();
 
                 data.neighbors[(u32)face] = neighbor;
@@ -46,7 +57,18 @@ namespace cybrion
 
         m_chunkMap[pos] = chunk;
 
+        Game::Get().onChunkLoaded(chunk);
+
         return chunk;
+    }
+
+    void World::tick()
+    {
+        // store old entity transforms
+        for (auto&& [_, data] : m_registry.view<EntityData>().each())
+        {
+            data.oldTransform = data.transform;
+        }
     }
 
     Block& World::getBlock(const ivec3& pos)

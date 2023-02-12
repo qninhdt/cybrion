@@ -90,21 +90,22 @@ namespace cybrion
 
     void Application::run()
     {
+        Stopwatch stopwatch;
+
         startGame();
 
-        ClientGame::Get().getCamera().setPosition({ 16, 16, -32 });
-        ClientGame::Get().getCamera().setDirection({ 0, 0, +1 });
-        ClientGame::Get().getCamera().updateViewMatrix();
+        auto& input = LocalGame::Get().getPlayer().getInput();
 
         // main loop
         f32 deltaTime = 0;
+        stopwatch.reset();
         while (!isClosed())
         {
             // input
             // --------------------------------------------
             glfwPollEvents();
 
-            Camera& camera = ClientGame::Get().getCamera();
+            Camera& camera = LocalGame::Get().getCamera();
 
             bool right = isKeyPressed(KeyCode::D);
             bool forward = isKeyPressed(KeyCode::W);
@@ -121,8 +122,23 @@ namespace cybrion
                     f32(forward - backward) * camera.getForward()
                 );
 
-                camera.move(dir * deltaTime * 10.0f);
-                camera.updateViewMatrix();
+                input.isMoving = true;
+                input.moveDirection = dir;
+            }
+            else
+            {
+                input.isMoving = false;
+            }
+
+            // game tick
+            // --------------------------------------------
+            if (m_game)
+            {
+                while (stopwatch.getDeltaTime() >= GAME_TICK)
+                {
+                    m_game->tick();
+                    stopwatch.reduceDeltaTime(GAME_TICK);
+                }
             }
 
             // tick
@@ -132,10 +148,12 @@ namespace cybrion
 
             // render
             // --------------------------------------------
+            f32 lerpFactor = 1.0f * stopwatch.getDeltaTime() / GAME_TICK;
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (m_game)
-                m_game->render(deltaTime);
+                m_game->render(lerpFactor);
 
             m_debugScreen.render(deltaTime);
 
@@ -156,15 +174,10 @@ namespace cybrion
 
     void Application::startGame()
     {
-        /// NOTE: game should be loaded in thread
-        m_game = new ClientGame();
+        m_game = new LocalGame();
         m_game->load();
 
         m_playingGame = true;
-
-        m_gameThread = std::thread([&] {
-            m_game->run();
-        });
     }
 
     GLFWwindow* Application::getWindow() const
@@ -320,7 +333,7 @@ namespace cybrion
 
     Application::~Application()
     {
-        m_gameThread.join();
+        CYBRION_CLIENT_TRACE("Wait until game stopped");
 
         if (!m_isClosed)
             closeImmediately();

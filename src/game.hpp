@@ -2,6 +2,7 @@
 
 #include "client/resource/block_loader.hpp"
 #include "world/world.hpp"
+#include "player.hpp"
 
 namespace cybrion
 {
@@ -19,6 +20,12 @@ namespace cybrion
 
         World& getWorld();
 
+        void loadPlayer(Player& player);
+
+        virtual void onChunkLoaded(Object chunk) = 0;
+        virtual void onChunkUnloaded(Object chunk) = 0;
+        virtual void onEntitySpawned(Object entity) = 0;
+
         static Game& Get();
 
     private:
@@ -27,6 +34,8 @@ namespace cybrion
         BlockLoader m_blockLoader;
         BlockRegistry m_blockRegistry;
         World m_world;
+
+        Player* m_player;
     };
 }
 

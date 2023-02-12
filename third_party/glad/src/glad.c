@@ -747,7 +747,7 @@ PFNGLLINESTIPPLEPROC glad_glLineStipple = NULL;
 PFNGLLINEWIDTHPROC glad_glLineWidth = NULL;
 PFNGLLINKPROGRAMPROC glad_glLinkProgram = NULL;
 PFNGLLISTBASEPROC glad_glListBase = NULL;
-PFNGLLOADIDENTITYPROC glad_glLoadIdentity = NULL;
+PFNGLLOADIDObjectPROC glad_glLoadIdObject = NULL;
 PFNGLLOADMATRIXDPROC glad_glLoadMatrixd = NULL;
 PFNGLLOADMATRIXFPROC glad_glLoadMatrixf = NULL;
 PFNGLLOADNAMEPROC glad_glLoadName = NULL;
@@ -1615,7 +1615,7 @@ static void load_GL_VERSION_1_0(GLADloadproc load) {
 	glad_glGetTexGeniv = (PFNGLGETTEXGENIVPROC)load("glGetTexGeniv");
 	glad_glIsList = (PFNGLISLISTPROC)load("glIsList");
 	glad_glFrustum = (PFNGLFRUSTUMPROC)load("glFrustum");
-	glad_glLoadIdentity = (PFNGLLOADIDENTITYPROC)load("glLoadIdentity");
+	glad_glLoadIdObject = (PFNGLLOADIDObjectPROC)load("glLoadIdObject");
 	glad_glLoadMatrixf = (PFNGLLOADMATRIXFPROC)load("glLoadMatrixf");
 	glad_glLoadMatrixd = (PFNGLLOADMATRIXDPROC)load("glLoadMatrixd");
 	glad_glMatrixMode = (PFNGLMATRIXMODEPROC)load("glMatrixMode");

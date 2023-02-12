@@ -9,9 +9,14 @@ namespace cybrion
         m_lastTime = high_resolution_clock::now();
     }
 
-    f32 Stopwatch::getDeltaTime() const
+    u32 Stopwatch::getDeltaTime() const
     {
         auto time = high_resolution_clock::now();
-        return duration_cast<duration<f32>>(time - m_lastTime).count();
+        return duration_cast<milliseconds>(time - m_lastTime).count();
+    }
+
+    void Stopwatch::reduceDeltaTime(u32 amount)
+    {
+        m_lastTime += milliseconds(amount);
     }
 }

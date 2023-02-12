@@ -4,7 +4,6 @@
 #include "client/graphic/block_renderer.hpp"
 #include "client/GL/mesh.hpp"
 #include "client/GL/shader.hpp"
-#include "client/client_game.hpp"
 #include "client/stopwatch.hpp"
 
 namespace cybrion
@@ -28,11 +27,15 @@ namespace cybrion
 
         void render(f32 deltaTime);
 
-        void onChunkCreated(entt::registry&, entt::entity entity);
+        void setupChunk(Object chunk);
+        void setupEntity(Object entity);
+
         void buildChunkMeshes(f32 maxDuration);
-        void buildChunkMesh(Entity& chunk);
-        void rebuildChunkMesh(Entity& chunk);
+        void buildChunkMesh(Object& chunk);
+        void rebuildChunkMesh(Object& chunk);
         void rebuildChunkMeshes(f32 maxDuration);
+
+        void updateEntityTransforms(f32 lerpFactor);
 
     private:
         static CubeVertex s_opaqueVertices[400000];
@@ -42,8 +45,8 @@ namespace cybrion
         bool getBlockIfIsOutside(const ivec3& pos, Block** block, std::array<ChunkData*, 6>& neighbors);
 
         World& m_world;
-        queue<Entity> m_buildMeshQueue;
-        queue<Entity> m_rebuildMeshQueue;
+        queue<Object> m_buildMeshQueue;
+        queue<Object> m_rebuildMeshQueue;
         Stopwatch m_stopwatch;
 
         OpaqueCubeShader m_opaqueCubeShader;

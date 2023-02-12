@@ -4,18 +4,18 @@
 
 namespace cybrion
 {
-    class Entity
+    class Object
     {
     public:
         
-        static Entity Null;
+        static Object Null;
         
-        Entity() : m_handle(entt::null) {}
-        Entity(const entt::entity& handle): m_handle(handle) {}
-        Entity(const Entity& other) : Entity(other.m_handle) {}
+        Object() : m_handle(entt::null) {}
+        Object(const entt::entity& handle): m_handle(handle) {}
+        Object(const Object& other) : Object(other.m_handle) {}
 
-        Entity& operator = (const Entity& other) = default;
-        Entity& operator = (Entity&& other) = default;
+        Object& operator = (const Object& other) = default;
+        Object& operator = (Object&& other) = default;
 
         bool valid() const
         {
@@ -28,7 +28,7 @@ namespace cybrion
         }
 
         template <typename Component>
-        Entity& remove() {
+        Object& remove() {
             GetRegistry().remove<Component>(m_handle);
             return *this;
         }

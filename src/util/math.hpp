@@ -12,4 +12,13 @@ namespace cybrion::util
         }
         return result;
     }
+
+    template <typename T>
+    T Lerp(T a, T b, f32 t)
+    {
+        return a * (1 - t) + b * t;
+    }
+
+    f32 LerpAngle(f32 a, f32 b, f32 t);
+    vec3 LerpRotaion(vec3 a, vec3 b, f32 t);
 }

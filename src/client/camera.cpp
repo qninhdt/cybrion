@@ -1,4 +1,6 @@
 #include "client/camera.hpp"
+#include "world/entity/entity.hpp"
+#include "client/graphic/entity_renderer.hpp"
 
 namespace cybrion
 {
@@ -13,6 +15,19 @@ namespace cybrion
     {
         updateViewMatrix();
         updateProjectionMatrix();
+    }
+
+    void Camera::tick()
+    {
+        if (m_target.valid())
+        {
+            auto& mesh = m_target.get<EntityRenderer>().mesh;
+
+            setPosition(mesh.getPosition());
+            setRotation(mesh.getRotation());
+
+            updateViewMatrix();
+        }
     }
 
     const mat4& Camera::getViewMatrix() const
@@ -48,6 +63,11 @@ namespace cybrion
     void Camera::setAspect(f32 aspect)
     {
         m_aspect = aspect;
+    }
+
+    void Camera::setTarget(Object target)
+    {
+        m_target = target;
     }
 
     void Camera::updateViewMatrix()

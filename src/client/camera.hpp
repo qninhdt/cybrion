@@ -1,6 +1,7 @@
 #pragma once
 
-#include "transform.hpp"
+#include "core/transform.hpp"
+#include "core/object.hpp"
 
 namespace cybrion
 {
@@ -13,6 +14,8 @@ namespace cybrion
 
         Camera(f32 aspect, f32 fov, f32 near, f32 far);
 
+        void tick();
+
         const mat4& getViewMatrix() const;
         const mat4& getProjectionMatrix() const;
         const mat4& getProjectionViewMatrix() const;
@@ -23,11 +26,15 @@ namespace cybrion
 
         void setAspect(f32 aspect);
 
+        void setTarget(Object target);
+
         void updateViewMatrix();
         void updateProjectionMatrix();
 
     private:
         void updateProjectionViewMatrix();
+
+        Object m_target;
 
         f32 m_aspect;
         f32 m_fov;

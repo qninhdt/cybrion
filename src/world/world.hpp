@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/entity.hpp"
+#include "core/Object.hpp"
 #include "world/chunk/chunk.hpp"
 
 namespace cybrion
@@ -10,7 +10,10 @@ namespace cybrion
     public:
         World();
 
-        Entity loadChunk(const ivec3& pos);
+        Object spawnEntity(const vec3& pos);
+        Object loadChunk(const ivec3& pos);
+        
+        void tick();
 
         Block& getBlock(const ivec3& pos);
         Block* tryGetBlock(const ivec3& pos);
@@ -20,7 +23,7 @@ namespace cybrion
         static ivec3 GetChunkPos(const ivec3& pos);
         static uvec3 GetLocalPos(const ivec3& pos);
 
-        umap<ivec3, Entity> m_chunkMap;
+        umap<ivec3, Object> m_chunkMap;
         
         queue<ivec3> m_loadQueue;
 

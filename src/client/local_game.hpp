@@ -7,22 +7,25 @@
 #include "client/key_code.hpp"
 #include "client/stopwatch.hpp"
 #include "client/graphic/world_renderer.hpp"
+#include "client/local_player.hpp"
 
 namespace cybrion
 {
     constexpr u32 TICKS_PER_SECOND = 20;
     constexpr f32 GAME_TICK = 1000.0f / TICKS_PER_SECOND;
  
-    class ClientGame : public Game
+    class LocalGame : public Game
     {
     public:
-        ClientGame();
+        LocalGame();
 
         void load();
         void tick();
-        void render(f32 deltaTime);
+        void render(f32 lerpFactor);
 
-        void run();
+        void onChunkLoaded(Object chunk) override;
+        void onChunkUnloaded(Object chunk) override;
+        void onEntitySpawned(Object entity) override;
 
         void onKeyPressed(KeyCode key, bool isRepeated);
         void onKeyReleased(KeyCode key);
@@ -35,21 +38,23 @@ namespace cybrion
 
         void toggleWireframe();
 
-        static ClientGame& Get();
+        Player& getPlayer();
+
+        static LocalGame& Get();
 
     private:
 
         void createBlockRenderers();
 
         Camera m_camera;
+        LocalPlayer m_player;
         
-        Game* m_game;
         bool m_showWireframe;
         Stopwatch m_stopwatch;
 
         WorldRenderer m_worldRenderer;
         BlockRenderer m_blockRenderers[BlockRegistry::BlockStateCount()];
 
-        static ClientGame* s_clientGame;
+        static LocalGame* s_LocalGame;
     };
 }

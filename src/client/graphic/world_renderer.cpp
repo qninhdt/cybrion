@@ -1,5 +1,10 @@
 #include "world/world.hpp"
-#include "client/application.hpp"
+#include "client/resource/block_loader.hpp"
+#include "client/resource/shader_manager.hpp"
+#include "client/graphic/world_renderer.hpp"
+#include "client/local_game.hpp"
+#include "client/graphic/entity_renderer.hpp"
+#include "world/entity/entity.hpp"
 
 namespace cybrion
 {
@@ -9,35 +14,46 @@ namespace cybrion
         m_registry(GetRegistry()),
         m_world(world)
     {
-        m_registry
-            .on_construct<ChunkData>()
-            .connect<&WorldRenderer::onChunkCreated>(*this);
-
-        m_opaqueCubeShader = Application::Get()
-            .getShaderManager()
-            .getShader<OpaqueCubeShader>("opaque_cube");
+        m_opaqueCubeShader = ShaderManager::Get().getShader<OpaqueCubeShader>("opaque_cube");
     }
 
     void WorldRenderer::render(f32 deltaTime)
     {
-        ClientGame::Get().getBlockLoader().bindTextureArray();
+        BlockLoader::Get().bindTextureArray();
         m_opaqueCubeShader.use();
 
-        for (auto&& [entity, renderer] : m_registry.view<ChunkRenderer>().each())
+        for (auto&& [Object, renderer] : m_registry.view<ChunkRenderer>().each())
         {
             auto& opaqueMesh = renderer.opaqueMesh;
             m_opaqueCubeShader.setUniform<"MVP">(
-                ClientGame::Get().getCamera().getProjectionViewMatrix()
+                LocalGame::Get().getCamera().getProjectionViewMatrix()
                 * opaqueMesh.getModelMatrix()
             );
             opaqueMesh.drawTriangles();
         }
     }
 
-    void WorldRenderer::onChunkCreated(entt::registry&, entt::entity entity)
+    void WorldRenderer::setupChunk(Object chunk)
     {
-        Entity chunk(entity);
         m_buildMeshQueue.push(chunk);
+
+        auto& data = chunk.get<ChunkData>();
+        for (u32 i = 0; i < 6; ++i)
+        {
+            if (data.neighbors[i].valid())
+            {
+                /// NOTE: lock ?
+                if (data.neighbors[i].tryGet<ChunkRenderer>() != nullptr)
+                {
+                    m_rebuildMeshQueue.push(data.neighbors[i]);
+                }
+            }
+        }
+    }
+
+    void WorldRenderer::setupEntity(Object entity)
+    {
+        auto& renderer = entity.assign<EntityRenderer>();
     }
 
     void WorldRenderer::buildChunkMeshes(f32 maxDuration)
@@ -45,14 +61,14 @@ namespace cybrion
         m_stopwatch.reset();
         while (!m_buildMeshQueue.empty() && maxDuration > m_stopwatch.getDeltaTime())
         {
-            Entity chunk = m_buildMeshQueue.front();
+            Object chunk = m_buildMeshQueue.front();
             m_buildMeshQueue.pop();
 
             buildChunkMesh(chunk);
         }
     }
 
-    void WorldRenderer::buildChunkMesh(Entity& chunk)
+    void WorldRenderer::buildChunkMesh(Object& chunk)
     {
         Stopwatch stopwatch;
         stopwatch.reset();
@@ -64,7 +80,7 @@ namespace cybrion
 
         u32 opaqueSize = 0;
         bool culling[6] = { 0 };
-        vec3 align = vec3(0.5f, 0.5f, 0.5f) - vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+        vec3 align = vec3(0.5f, 0.5f, 0.5f) - vec3(CHUNK_SIZE / 2, CHUNK_SIZE / 2, CHUNK_SIZE / 2);
 
         for (u32 x = 0; x < CHUNK_SIZE; ++x)
         {
@@ -75,7 +91,7 @@ namespace cybrion
                     uvec3 pos{ x, y, z };
                     Block& block = data.getBlock(pos);
                     BlockDisplay display = block.getDisplay();
-                    auto& cubeRenderer = ClientGame::Get().getBlockRenderer(block.getId());
+                    auto& cubeRenderer = LocalGame::Get().getBlockRenderer(block.getId());
 
                     // dont render transparent blocks like air
                     if (display == BlockDisplay::TRANSPARENT)
@@ -116,10 +132,10 @@ namespace cybrion
         opaqueMesh.setVertices(s_opaqueVertices, opaqueSize);
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
         CYBRION_CLIENT_TRACE("Built chunk mesh   : {}", stopwatch.getDeltaTime());
-        m_rebuildMeshQueue.push(chunk);
+        //m_rebuildMeshQueue.push(chunk);
     }
 
-    void WorldRenderer::rebuildChunkMesh(Entity& chunk)
+    void WorldRenderer::rebuildChunkMesh(Object& chunk)
     {
         Stopwatch stopwatch;
         stopwatch.reset();
@@ -131,10 +147,10 @@ namespace cybrion
 
         u32 opaqueSize = 0;
         bool culling[6] = { 0 };
-
+        vec3 align = vec3(0.5f, 0.5f, 0.5f) - vec3(CHUNK_SIZE/2, CHUNK_SIZE/2, CHUNK_SIZE/2);
         for (auto& [pos, block] : visibleBlocks)
         {
-            auto& cubeRenderer = ClientGame::Get().getBlockRenderer(block->getId());
+            auto& cubeRenderer = LocalGame::Get().getBlockRenderer(block->getId());
 
             for (auto& [dir, face] : BlockRenderer::CubeDirections)
             {
@@ -147,7 +163,7 @@ namespace cybrion
                 culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
             }
 
-            cubeRenderer.generateCubeMesh(culling, vec3(pos), s_opaqueVertices, opaqueSize);
+            cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, s_opaqueVertices, opaqueSize);
         }
 
         opaqueMesh.setVertices(s_opaqueVertices, opaqueSize);
@@ -161,10 +177,34 @@ namespace cybrion
 
         while (!m_rebuildMeshQueue.empty() && maxDuration > m_stopwatch.getDeltaTime())
         {
-            Entity chunk = m_rebuildMeshQueue.front();
+            Object chunk = m_rebuildMeshQueue.front();
             m_rebuildMeshQueue.pop();
 
             rebuildChunkMesh(chunk);
+        }
+    }
+
+    void WorldRenderer::updateEntityTransforms(f32 lerpFactor)
+    {
+        auto view = m_registry.view<EntityData, EntityRenderer>();
+
+        for (auto&& [_, data, renderer] : view.each())
+        {
+            renderer.mesh.setPosition(
+                util::Lerp(
+                    data.oldTransform.getPosition(),
+                    data.transform.getPosition(), lerpFactor
+                )
+            );
+
+            renderer.mesh.setRotation(
+                util::LerpRotaion(
+                    data.oldTransform.getRotation(),
+                    data.transform.getRotation(), lerpFactor
+                 )
+            );
+
+            renderer.mesh.updateModelMatrix();
         }
     }
 

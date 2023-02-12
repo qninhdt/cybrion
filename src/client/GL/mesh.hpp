@@ -1,6 +1,6 @@
 #pragma once
 
-#include "client/transform.hpp"
+#include "core/transform.hpp"
 
 namespace cybrion::GL
 {

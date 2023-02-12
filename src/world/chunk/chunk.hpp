@@ -15,7 +15,7 @@ namespace cybrion
 
         ivec3 position;
         
-        Entity neighbors[6];
+        Object neighbors[6];
 
         Block& getBlock(const uvec3& pos) const;
         void setBlock(const uvec3& pos, const Block& block);
