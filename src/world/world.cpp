@@ -133,8 +133,9 @@ namespace cybrion
     void World::placeBlock(const ivec3& pos, BlockFace face, Block& block)
     {
         ivec3 ppos = pos + Block::GetDirectionFromFace(face);
-        auto [chunk, _] = setBlock(ppos, block);
-        Game::Get().onPlaceBlock(chunk, ppos, block, face);
+        Block& placedBlock = block.getPlacedBlock(pos, face);
+        auto [chunk, _] = setBlock(ppos, placedBlock);
+        Game::Get().onPlaceBlock(chunk, ppos, placedBlock, face);
     }
 
     void World::breakBlock(const ivec3& pos)

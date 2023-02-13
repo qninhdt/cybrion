@@ -16,6 +16,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <limits>
 
 // third-party libraries
 #include <spdlog/spdlog.h>

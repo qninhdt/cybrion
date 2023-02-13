@@ -51,15 +51,21 @@ namespace cybrion
 
         if (m_input.rightClick)
         {
-            if (m_isSelecting)
+            if (m_isSelecting && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
+            {
                 Game::Get().getWorld().placeBlock(m_selectingPos, m_selectingFace, BlockRegistry::Get().getBlock(BlockType::LOG));
+                m_blockInteractStopwatch.reset();
+            }
             m_input.rightClick = false;
         }
 
         if (m_input.leftClick)
         {
-            if (m_isSelecting)
+            if (m_isSelecting && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
+            {
                 Game::Get().getWorld().breakBlock(m_selectingPos);
+                m_blockInteractStopwatch.reset();
+            }
             m_input.leftClick = false;
         }
 

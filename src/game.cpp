@@ -50,7 +50,7 @@ namespace cybrion
 
     void Game::loadPlayer(Player& player)
     {
-        Object playerEntity = m_world.spawnEntity({ 0, 0, 0 });
+        Object playerEntity = m_world.spawnEntity({ 16, 20, 16 });
         player.setEntity(playerEntity);
 
         m_player = &player;

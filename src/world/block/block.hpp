@@ -93,6 +93,8 @@ namespace cybrion
 
         virtual string toString() const = 0;
 
+        virtual Block& getPlacedBlock(const ivec3& pos, BlockFace face);
+
     protected:
         virtual bool checkQuery(const umap<string, string>& query) const = 0;
 

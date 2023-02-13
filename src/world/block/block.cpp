@@ -1,8 +1,12 @@
 #include "world/block/block.hpp"
-#include "game.hpp"
 
 namespace cybrion
 {
+    Block& Block::getPlacedBlock(const ivec3& pos, BlockFace face)
+    {
+        return *this;
+    }
+
     BlockFace Block::GetFaceFromDirection(const ivec3& dir)
     {
         if (dir.z == 1)

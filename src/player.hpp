@@ -3,9 +3,12 @@
 #include "core/object.hpp"
 #include "world/block/block.hpp"
 #include "world/entity/entity.hpp"
+#include "core/stopwatch.hpp"
 
 namespace cybrion
 {
+    static constexpr i32 PLAYER_BLOCK_INTERACT_DELAY = 200;
+
     struct PlayerInput
     {
         bool isMoving = false;
@@ -38,5 +41,6 @@ namespace cybrion
         ivec3 m_selectingPos;
         BlockFace m_selectingFace;
         PlayerInput m_input;
+        Stopwatch m_blockInteractStopwatch;
     };
 }

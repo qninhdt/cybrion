@@ -5,7 +5,7 @@
 #include "client/resource/block_loader.hpp"
 #include "client/graphic/block_renderer.hpp"
 #include "client/key_code.hpp"
-#include "client/stopwatch.hpp"
+#include "core/stopwatch.hpp"
 #include "client/graphic/world_renderer.hpp"
 #include "client/local_player.hpp"
 

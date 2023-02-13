@@ -1,4 +1,5 @@
 #include "client/application.hpp"
+#include "physic/aabb.hpp"
 
 using namespace cybrion;
 
@@ -48,7 +49,7 @@ int main()
     RegisterEnum(LogAxis::Y, "y");
     RegisterEnum(LogAxis::Z, "z");
 
-    Log::Init();
+    /*Log::Init();
 
     Application app;
 
@@ -58,7 +59,16 @@ int main()
         return EXIT_FAILURE;
 
     app.load();
-    app.run();
+    app.run();*/
+    AABB a({ 0.5, 0.5, 0 }, { 2, 2, 2 });
+    AABB b({ 1.0, 0.5, 5 }, { 1, 1, 1 });
+
+    vec3 v = { 0, 1, 5 };
+    //v *= 2;
+    auto [delta, normal] = AABB::SweptAABB(a, b, v);
+
+    std::cout << delta << '\n';
+    std::cout << normal.x << ' ' << normal.y << ' ' << normal.z << '\n';
 
     return EXIT_SUCCESS;
 }

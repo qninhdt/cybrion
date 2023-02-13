@@ -4,7 +4,7 @@
 #include "client/graphic/block_renderer.hpp"
 #include "client/GL/mesh.hpp"
 #include "client/GL/shader.hpp"
-#include "client/stopwatch.hpp"
+#include "core/stopwatch.hpp"
 #include "client/graphic/chunk_renderer.hpp"
 
 namespace cybrion
