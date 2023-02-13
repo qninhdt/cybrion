@@ -8,8 +8,6 @@
 
 namespace cybrion
 {
-    CubeVertex WorldRenderer::s_opaqueVertices[400000];
-
     WorldRenderer::WorldRenderer(World& world):
         m_registry(GetRegistry()),
         m_world(world)
@@ -45,7 +43,7 @@ namespace cybrion
                 /// NOTE: lock ?
                 if (data.neighbors[i].tryGet<ChunkRenderer>() != nullptr)
                 {
-                    m_rebuildMeshQueue.push(data.neighbors[i]);
+                    queueRebuild(data.neighbors[i]);
                 }
             }
         }
@@ -64,123 +62,40 @@ namespace cybrion
             Object chunk = m_buildMeshQueue.front();
             m_buildMeshQueue.pop();
 
-            buildChunkMesh(chunk);
+            auto& data = chunk.get<ChunkData>();
+            auto& renderer = chunk.tryGet<ChunkRenderer>()
+                ? chunk.get<ChunkRenderer>()
+                : chunk.assign<ChunkRenderer>();
+
+            renderer.buildChunkMesh(data);
         }
-    }
-
-    void WorldRenderer::buildChunkMesh(Object& chunk)
-    {
-        Stopwatch stopwatch;
-        stopwatch.reset();
-
-        auto& [opaqueMesh, visibleBlocks, isDirty] = chunk.assign<ChunkRenderer>();
-        auto& data = chunk.get<ChunkData>();
-
-        auto neighbors = getNeighborChunkData(data);
-
-        u32 opaqueSize = 0;
-        bool culling[6] = { 0 };
-        vec3 align = vec3(0.5f, 0.5f, 0.5f) - vec3(CHUNK_SIZE / 2, CHUNK_SIZE / 2, CHUNK_SIZE / 2);
-
-        for (u32 x = 0; x < CHUNK_SIZE; ++x)
-        {
-            for (u32 y = 0; y < CHUNK_SIZE; ++y)
-            {
-                for (u32 z = 0; z < CHUNK_SIZE; ++z)
-                {
-                    uvec3 pos{ x, y, z };
-                    Block& block = data.getBlock(pos);
-                    BlockDisplay display = block.getDisplay();
-                    auto& cubeRenderer = LocalGame::Get().getBlockRenderer(block.getId());
-
-                    // dont render transparent blocks like air
-                    if (display == BlockDisplay::TRANSPARENT)
-                        continue;
-
-                    bool visible = false;
-
-                    // blocks that are not visible now because their neighbors are not loaded
-                    // but may be visible when their neighbors are loaded
-                    bool maybeVisible = false; 
-
-                    for (auto& [dir, face] : BlockRenderer::CubeDirections)
-                    {
-                        Block* neighbor = nullptr;
-                        ivec3 npos = ivec3(pos) + dir;
-
-                        if (!getBlockIfIsOutside(npos, &neighbor, neighbors))
-                            neighbor = &data.getBlock(uvec3(npos));
-
-                        // cull this face when neighbor block is opaque
-                        culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
-                        visible |= !culling[u32(face)];
-                        maybeVisible |= !neighbor;
-                    }
-
-                    if (visible)
-                        cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, s_opaqueVertices, opaqueSize);
-
-                    if (visible || maybeVisible)
-                        visibleBlocks[pos] = &block;
-                }
-            }
-        }
-
-        opaqueMesh.setPosition(data.getWorldPosition());
-        opaqueMesh.updateModelMatrix();
-
-        opaqueMesh.setVertices(s_opaqueVertices, opaqueSize);
-        opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
-        CYBRION_CLIENT_TRACE("Built chunk mesh   : {}", stopwatch.getDeltaTime());
-        //m_rebuildMeshQueue.push(chunk);
-    }
-
-    void WorldRenderer::rebuildChunkMesh(Object& chunk)
-    {
-        Stopwatch stopwatch;
-        stopwatch.reset();
-
-        auto& [opaqueMesh, visibleBlocks, isDirty] = chunk.get<ChunkRenderer>();
-        auto& data = chunk.get<ChunkData>();
-
-        auto neighbors = getNeighborChunkData(data);
-
-        u32 opaqueSize = 0;
-        bool culling[6] = { 0 };
-        vec3 align = vec3(0.5f, 0.5f, 0.5f) - vec3(CHUNK_SIZE/2, CHUNK_SIZE/2, CHUNK_SIZE/2);
-        for (auto& [pos, block] : visibleBlocks)
-        {
-            auto& cubeRenderer = LocalGame::Get().getBlockRenderer(block->getId());
-
-            for (auto& [dir, face] : BlockRenderer::CubeDirections)
-            {
-                Block* neighbor = nullptr;
-                ivec3 npos = ivec3(pos) + dir;
-
-                if (!getBlockIfIsOutside(npos, &neighbor, neighbors))
-                    neighbor = &data.getBlock(uvec3(npos));
-
-                culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
-            }
-
-            cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, s_opaqueVertices, opaqueSize);
-        }
-
-        opaqueMesh.setVertices(s_opaqueVertices, opaqueSize);
-        opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
-        CYBRION_CLIENT_TRACE("Rebuilt chunk mesh : {}", stopwatch.getDeltaTime());
     }
 
     void WorldRenderer::rebuildChunkMeshes(f32 maxDuration)
     {
-        m_stopwatch.reset();
-
-        while (!m_rebuildMeshQueue.empty() && maxDuration > m_stopwatch.getDeltaTime())
+        for (auto& chunk: m_rebuildMeshSet)
         {
-            Object chunk = m_rebuildMeshQueue.front();
-            m_rebuildMeshQueue.pop();
+            auto& data = chunk.get<ChunkData>();
+            auto& renderer = chunk.get<ChunkRenderer>();
 
-            rebuildChunkMesh(chunk);
+            renderer.rebuildChunkMesh(data);
+        }
+
+        m_rebuildMeshSet.clear();
+    }
+
+    void WorldRenderer::queueRebuild(Object chunk)
+    {
+        m_rebuildMeshSet.insert(chunk);
+    }
+
+    void WorldRenderer::onBlockChanged(const ivec3& pos)
+    {
+        updateBlockVisiblity(pos);
+
+        for (auto& [dir, face] : ChunkData::Directions)
+        {
+            updateBlockVisiblity(pos + dir);
         }
     }
 
@@ -208,48 +123,44 @@ namespace cybrion
         }
     }
 
-    std::array<ChunkData*, 6> WorldRenderer::getNeighborChunkData(ChunkData& data)
+    void WorldRenderer::updateBlockVisiblity(const ivec3& pos)
     {
-        std::array<ChunkData*, 6> result;
-        
-        for (u32 i = 0; i < 6; ++i)
-            result[i] = data.neighbors[i].valid() ? &data.neighbors[i].get<ChunkData>() : nullptr;
-        
-        return result;
-    }
+        ivec3 chunkPos = World::GetChunkPos(pos);
+        uvec3 localPos = World::GetLocalPos(pos);
 
-    bool WorldRenderer::getBlockIfIsOutside(const ivec3& pos, Block** block, std::array<ChunkData*, 6>& neighbors)
-    {
-        if (pos.x < 0) {
-            if (neighbors[3]) *block = &neighbors[3]->getBlock({ 31, pos.y, pos.z });
-            return true;
-        } else if (pos.y < 0) { 
-            if (neighbors[4]) *block = &neighbors[4]->getBlock({ pos.x, 31, pos.z });
-            return true;
-        } else if (pos.z < 0) {
-            if (neighbors[5]) *block = &neighbors[5]->getBlock({ pos.x, pos.y, 31 });
-            return true;
-        } else if (pos.x >= CHUNK_SIZE) {
-            if (neighbors[0]) *block = &neighbors[0]->getBlock({ 0, pos.y, pos.z });
-            return true;
-        } else if (pos.y >= CHUNK_SIZE) {
-            if (neighbors[1]) *block = &neighbors[1]->getBlock({ pos.x, 0, pos.z });
-            return true;
-        } else if (pos.z >= CHUNK_SIZE) {
-            if (neighbors[2]) *block = &neighbors[2]->getBlock({ pos.x, pos.y, 0 });
-            return true;
+        Object* chunk = m_world.tryGetChunk(chunkPos);
+
+        if (!chunk) return;
+
+        queueRebuild(*chunk);
+
+        auto& data = chunk->get<ChunkData>();
+        auto& renderer = chunk->get<ChunkRenderer>();
+        Block& block = data.getBlock(localPos);
+
+        if (block.getDisplay() == BlockDisplay::TRANSPARENT)
+        {
+            renderer.visibleBlocks.erase(localPos);
+            return;
         }
-        return false;
-    }
 
-    ChunkRenderer::ChunkRenderer():
-        opaqueMesh(true),
-        isDirty(false)
-    {
-        opaqueMesh.setAttributes({
-            { GL::Type::VEC3 },
-            { GL::Type::VEC2 },
-            { GL::Type::UINT }
-        });
+        if (block.getDisplay() != BlockDisplay::OPAQUE)
+        {
+            renderer.visibleBlocks[localPos] = &block;
+            return;
+        }
+
+        for (auto [dir, face] : ChunkData::Directions)
+        {
+            Block* nBlock = m_world.tryGetBlock(ivec3(pos) + dir);
+
+            if (nBlock && nBlock->getDisplay() != BlockDisplay::OPAQUE)
+            {
+                renderer.visibleBlocks[localPos] = &block;
+                return;
+            }
+        }
+
+        renderer.visibleBlocks.erase(localPos);
     }
 }

@@ -21,4 +21,8 @@ namespace cybrion::util
 
     f32 LerpAngle(f32 a, f32 b, f32 t);
     vec3 LerpRotaion(vec3 a, vec3 b, f32 t);
+
+    int32_t SignNum(float num);
+
+    float IntBound(float s, float ds);
 }

@@ -43,7 +43,29 @@ namespace cybrion
             return GetRegistry().try_get<Component>(m_handle);
         }
 
+        entt::entity getId() const
+        {
+            return m_handle;
+        }
+
+        bool operator == (const Object& other) const
+        {
+            return m_handle == other.m_handle;
+        }
+
     private:
         entt::entity m_handle;
+    };
+}
+
+namespace std
+{
+    template <>
+    struct hash<cybrion::Object>
+    {
+        size_t operator () (const cybrion::Object& object) const
+        {
+            return (size_t) object.getId();
+        }
     };
 }

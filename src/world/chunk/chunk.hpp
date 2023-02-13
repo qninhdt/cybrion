@@ -24,5 +24,10 @@ namespace cybrion
         static u32 PosToIndex(const uvec3& pos);
 
         static array<tuple<ivec3, BlockFace>, 6> Directions;
+
+        /*~ChunkData()
+        {
+            std::cout << "here we go again\n";
+        }*/
     };
 }

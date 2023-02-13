@@ -25,6 +25,9 @@ namespace cybrion
         virtual void onChunkLoaded(Object chunk) = 0;
         virtual void onChunkUnloaded(Object chunk) = 0;
         virtual void onEntitySpawned(Object entity) = 0;
+        virtual void onBlockChanged(Object chunk, const ivec3& pos, Block& to, Block& from) = 0;
+        virtual void onBreakBlock(Object chunk, const ivec3& pos, Block& block) = 0;
+        virtual void onPlaceBlock(Object chunk, const ivec3& pos, Block& block, BlockFace face) = 0;
 
         static Game& Get();
 

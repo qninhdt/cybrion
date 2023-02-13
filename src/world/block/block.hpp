@@ -89,6 +89,7 @@ namespace cybrion
 
         static BlockFace GetFaceFromDirection(const ivec3& dir);
         static BlockFace GetOppositeFace(const BlockFace& face);
+        static ivec3 GetDirectionFromFace(const BlockFace& face);
 
         virtual string toString() const = 0;
 
@@ -164,7 +165,12 @@ namespace cybrion
 
         string toString() const override
         {
-            return block::state_holder<S...>::to_string();
+            string state = block::state_holder<S...>::to_string();
+
+            if (state.empty())
+                return "[" + EnumToString(getType()) + "]";
+
+            return "[" + EnumToString(getType()) + ":" + state + "]";
         }
 
         template <const_string name>

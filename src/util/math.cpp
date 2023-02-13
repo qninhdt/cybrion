@@ -29,4 +29,12 @@ namespace cybrion::util
             LerpAngle(a.z, b.z, t)
         };
     }
+
+    int32_t SignNum(float num) {
+        return num > 0 ? 1 : num < 0 ? -1 : 0;
+    }
+
+    float IntBound(float s, float ds) {
+        return (ds > 0 ? ceil(s) - s : s - floor(s)) / abs(ds);
+    }
 }

@@ -92,12 +92,12 @@ namespace cybrion
             string to_string() const
             {
                 if constexpr (sizeof...(S) == 0)
-                    return "[]";
+                    return "";
                 else
                 {
                     string str = ((S::name.to_string() + "=" + ((S&)*this).to_string() + ',') + ...);
                     str.erase(str.end() - 1);
-                    return "[" + str + "]";
+                    return str;
                 }
             }
 

@@ -4,8 +4,9 @@
 
 namespace cybrion
 {
-    struct EntityRenderer
+    class EntityRenderer
     {
+    public:
         GL::Mesh mesh;
     };
 }

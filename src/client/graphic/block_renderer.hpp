@@ -26,6 +26,7 @@ namespace cybrion
         void generateCubeTexture();
     
         static array<tuple<ivec3, BlockFace>, 6> CubeDirections;
+        static array<array<vec3, 4>, 6> CubeVertices;
 
     private:
 
@@ -44,7 +45,6 @@ namespace cybrion
             }
         }
 
-        static array<array<vec3, 4>, 6> CubeVertices;
         static CubeTexture DefaultCubeTexture;
 
         Block* m_block = nullptr;

@@ -7,8 +7,8 @@ namespace cybrion
     Application* Application::s_application = nullptr;
 
     Application::Application() :
-        m_width(1600),
-        m_height(1200),
+        m_width(1500),
+        m_height(800),
         m_mousePos(0, 0),
         m_lastMousePos(0, 0),
         m_title("Cybrion v1.0"),
@@ -82,7 +82,7 @@ namespace cybrion
         GL::Mesh::GenerateGlobalIBO();
 
         // load debug screen
-        m_debugScreen.load();
+        m_hud.load();
 
         CYBRION_CLIENT_TRACE("Start loading resources ({})", getResourcePath(""));
         m_shaderManager.loadShaders();
@@ -91,6 +91,7 @@ namespace cybrion
     void Application::run()
     {
         Stopwatch stopwatch;
+        Stopwatch fpsStopwatch;
 
         startGame();
 
@@ -99,6 +100,8 @@ namespace cybrion
         // main loop
         f32 deltaTime = 0;
         stopwatch.reset();
+        fpsStopwatch.reset();
+
         while (!isClosed())
         {
             // input
@@ -106,6 +109,16 @@ namespace cybrion
             glfwPollEvents();
 
             Camera& camera = LocalGame::Get().getCamera();
+
+            if (isRightMouseDown())
+            {
+                input.rightClick = true;
+            }
+
+            if (isLeftMouseDown())
+            {
+                input.leftClick = true;
+            }
 
             bool right = isKeyPressed(KeyCode::D);
             bool forward = isKeyPressed(KeyCode::W);
@@ -144,7 +157,12 @@ namespace cybrion
             // tick
             // --------------------------------------------
             m_frameProfiler.tick();
-            deltaTime = m_frameProfiler.getDeltaTime();
+
+            if (fpsStopwatch.getDeltaTime() >= 250)
+            {
+                deltaTime = m_frameProfiler.getDeltaTime();
+                fpsStopwatch.reduceDeltaTime(250);
+            }
 
             // render
             // --------------------------------------------
@@ -155,8 +173,9 @@ namespace cybrion
             if (m_game)
                 m_game->render(lerpFactor);
 
-            m_debugScreen.render(deltaTime);
+            m_hud.render(deltaTime);
 
+          
             // update render
             glfwSwapBuffers(m_window);
         }
@@ -299,6 +318,16 @@ namespace cybrion
     bool Application::isKeyPressed(KeyCode key) const
     {
         return glfwGetKey(m_window, (i32)key) == GLFW_PRESS;
+    }
+
+    bool Application::isRightMouseDown() const
+    {
+        return glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+    }
+
+    bool Application::isLeftMouseDown() const
+    {
+        return glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     }
 
     void Application::toggleCursor()

@@ -10,5 +10,8 @@ namespace cybrion
         Transform transform;
 
         EntityData(const vec3& posistion);
+
+        ivec3 getChunkPosition() const;
+        vec3 getChunkWorldPosition() const;
     };
 }

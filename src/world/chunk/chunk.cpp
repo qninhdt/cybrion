@@ -29,7 +29,11 @@ namespace cybrion
 
     vec3 ChunkData::getWorldPosition() const
     {
-        return { position.x * CHUNK_SIZE, position.y * CHUNK_SIZE, position.z * CHUNK_SIZE };
+        return {
+            position.x * CHUNK_SIZE + CHUNK_SIZE/2,
+            position.y * CHUNK_SIZE + CHUNK_SIZE/2,
+            position.z * CHUNK_SIZE + CHUNK_SIZE/2 
+        };
     }
     
     u32 ChunkData::PosToIndex(const uvec3& pos)

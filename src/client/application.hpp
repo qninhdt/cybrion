@@ -3,7 +3,7 @@
 #include "client/key_code.hpp"
 #include "client/frame_profiler.hpp"
 #include "client/resource/shader_manager.hpp"
-#include "client/debug_screen.hpp"
+#include "client/hud.hpp"
 #include "client/local_game.hpp"
 
 namespace cybrion
@@ -30,6 +30,8 @@ namespace cybrion
         bool isClosed() const;
         bool isPlayingGame() const;
         bool isKeyPressed(KeyCode key) const;
+        bool isRightMouseDown() const;
+        bool isLeftMouseDown() const;
 
         void toggleCursor();
         void enableCursor();
@@ -62,7 +64,7 @@ namespace cybrion
         string m_rootPath;
 
         FrameProfiler m_frameProfiler;
-        DebugScreen m_debugScreen;
+        HUD m_hud;
         ShaderManager m_shaderManager;
 
         // game

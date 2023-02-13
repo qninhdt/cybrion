@@ -1,3 +1,5 @@
 shader_list:
+  - name: basic
+    reload: true
   - name: opaque_cube
     reload: true

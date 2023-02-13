@@ -2,6 +2,7 @@
 
 #include "client/application.hpp"
 #include "client/GL/mesh.hpp"
+#include "client/graphic/basic_mesh_generator.hpp"
 
 namespace cybrion
 {
@@ -22,6 +23,11 @@ namespace cybrion
 
         loadPlayer(m_player);
         m_camera.setTarget(m_player.getEntity());
+
+        m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
+
+        BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, CHUNK_SIZE, { 1, 0, 0 });
+        BasicMeshGenerator::LineCubeMesh(m_selectingBlockMesh, 1.005f, { 1, 1, 1 });
     }
 
     void LocalGame::tick()
@@ -37,8 +43,50 @@ namespace cybrion
 
         m_worldRenderer.buildChunkMeshes(1); // allow build meshes in 1 second
         m_worldRenderer.rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
-
+        
         m_worldRenderer.render(lerpFactor);
+
+        renderChunkBorder();
+        renderSelecingBlock();
+    }
+
+    void LocalGame::renderChunkBorder()
+    {
+        m_chunkBorderMesh.setPosition(
+            m_player.getEntity().get<EntityData>().getChunkWorldPosition()
+        );
+
+        m_chunkBorderMesh.updateModelMatrix();
+
+        m_basicShader.use();
+        m_basicShader.setUniform<"MVP">(
+            m_camera.getProjectionViewMatrix() *
+            m_chunkBorderMesh.getModelMatrix()
+        );
+
+        m_chunkBorderMesh.drawLines();
+    }
+
+    void LocalGame::renderSelecingBlock()
+    {
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(2.0);
+
+        if (m_player.isSelectingBlock())
+        {
+            ivec3 pos = m_player.getSelectingPosition();
+
+            m_selectingBlockMesh.setPosition({ pos.x + 0.5f, pos.y + 0.5f, pos.z + 0.5f });
+            m_selectingBlockMesh.updateModelMatrix();
+
+            m_basicShader.use();
+            m_basicShader.setUniform<"MVP">(
+                m_camera.getProjectionViewMatrix() *
+                m_selectingBlockMesh.getModelMatrix()
+            );
+
+            m_selectingBlockMesh.drawLines();
+        }
     }
 
     void LocalGame::onChunkLoaded(Object chunk)
@@ -53,6 +101,21 @@ namespace cybrion
     void LocalGame::onEntitySpawned(Object entity)
     {
         m_worldRenderer.setupEntity(entity);
+    }
+
+    void LocalGame::onBlockChanged(Object chunk, const ivec3& pos, Block& to, Block& from)
+    {
+        m_worldRenderer.onBlockChanged(pos);
+    }
+
+    void LocalGame::onPlaceBlock(Object chunk, const ivec3& pos, Block& block, BlockFace face)
+    {
+        CYBRION_GAME_TRACE("Player places block {} at ({}, {}, {})", block.toString(), pos.x, pos.y, pos.z);
+    }
+
+    void LocalGame::onBreakBlock(Object chunk, const ivec3& pos, Block& block)
+    {
+        CYBRION_GAME_TRACE("Player breaks block {}", block.toString());
     }
 
     Camera& LocalGame::getCamera()
@@ -73,6 +136,16 @@ namespace cybrion
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    void LocalGame::toggleChunkBorder()
+    {
+        m_showChunkBoder = !m_showChunkBoder;
+    }
+
+    bool LocalGame::showChunkBorder() const
+    {
+        return m_showChunkBoder;
     }
 
     Player& LocalGame::getPlayer()
@@ -128,7 +201,7 @@ namespace cybrion
         if (!Application::Get().isCursorEnable())
         {
             auto& input = m_player.getInput();
-            input.deltaRotation += vec3(-delta.y, -delta.x, 0) * Application::Get().getDeltaTime() * 1.0f;
+            input.deltaRotation += vec3(-delta.y, -delta.x, 0);
             
         }
     }

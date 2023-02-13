@@ -5,6 +5,8 @@ namespace cybrion::GL
     GLuint Mesh::s_globalIBO = 0;
 
     Mesh::Mesh(bool useGlobalIBO):
+        m_vao(0),
+        m_vbo(0),
         m_ibo(0),
         m_drawCount(0),
         m_maxBufferSize(0),
@@ -17,7 +19,7 @@ namespace cybrion::GL
         glGenBuffers(1, &m_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
-        if (!useGlobalIBO)
+        if (!m_useGlobalIBO)
         {
             glGenBuffers(1, &m_ibo);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
@@ -25,6 +27,26 @@ namespace cybrion::GL
         else
         {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_globalIBO);
+        }
+    }
+
+    Mesh::Mesh(Mesh&& other) noexcept : Mesh(other) // like copy constructor
+    {
+        other.m_vao = 0;
+        other.m_ibo = 0;
+        other.m_vbo = 0;
+    }
+
+    Mesh::~Mesh()
+    {
+        if (m_vao)
+        {
+            glDeleteBuffers(1, &m_vbo);
+
+            if (!m_useGlobalIBO)
+                glDeleteBuffers(1, &m_ibo);
+
+            glDeleteVertexArrays(1, &m_vao);
         }
     }
 
@@ -63,6 +85,7 @@ namespace cybrion::GL
     void Mesh::setAttributes(std::initializer_list<MeshAttribute> attributes)
     {
         glBindVertexArray(m_vao);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
         u32 index = 0;
         u32 offset = 0;
@@ -104,10 +127,10 @@ namespace cybrion::GL
 
     void Mesh::setIndices(u32* indices, u32 count)
     {
-        glBindVertexArray(m_vao);
-
         if (m_useGlobalIBO)
             return;
+
+        glBindVertexArray(m_vao);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
         if (m_maxIndicesCount < count)
@@ -175,16 +198,6 @@ namespace cybrion::GL
         default:
             return 0;
         }
-    }
-
-    Mesh::~Mesh()
-    {
-        glDeleteBuffers(1, &m_vbo);
-
-        if (!m_useGlobalIBO)
-            glDeleteBuffers(1, &m_ibo);
-
-        glDeleteVertexArrays(1, &m_vao);
     }
 
     void Mesh::GenerateGlobalIBO()
