@@ -54,6 +54,8 @@ namespace cybrion
 
     private:
 
+        friend class HUD;
+
         void createBlockRenderers();
 
         Camera m_camera;
@@ -61,6 +63,7 @@ namespace cybrion
         
         bool m_showWireframe;
         bool m_showChunkBoder;
+        bool m_showEntityBorder;
         Stopwatch m_stopwatch;
 
         BasicShader m_basicShader;

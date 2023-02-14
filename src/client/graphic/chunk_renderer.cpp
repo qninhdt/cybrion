@@ -12,7 +12,9 @@ namespace cybrion
         opaqueMesh.setAttributes({
             { GL::Type::VEC3 },
             { GL::Type::VEC2 },
-            { GL::Type::UINT }
+            { GL::Type::UINT },
+            { GL::Type::UINT },
+            { GL::Type::UINT },
         });
     }
 
@@ -82,13 +84,17 @@ namespace cybrion
                     // but may be visible when their neighbors are loaded
                     bool maybeVisible = false;
 
+                    Block* blocks[3][3][3] = { nullptr };
+
+                    for (i32 x0 = -1; x0 <= 1; ++x0)
+                        for (i32 y0 = -1; y0 <= 1; ++y0)
+                            for (i32 z0 = -1; z0 <= 1; ++z0)
+                                if (!getBlockIfIsOutside({x + x0,y + y0,z + z0 }, &blocks[x0+1][y0+1][z0+1], neighbors))
+                                    blocks[x0+1][y0+1][z0+1] = &data.getBlock({ x + x0,y + y0,z + z0 });
+
                     for (auto& [dir, face] : BlockRenderer::CubeDirections)
                     {
-                        Block* neighbor = nullptr;
-                        ivec3 npos = ivec3(pos) + dir;
-
-                        if (!getBlockIfIsOutside(npos, &neighbor, neighbors))
-                            neighbor = &data.getBlock(uvec3(npos));
+                        Block* neighbor = blocks[dir.x + 1][dir.y + 1][dir.z + 1];
 
                         // cull this face when neighbor block is opaque
                         culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
@@ -97,7 +103,9 @@ namespace cybrion
                     }
 
                     if (visible)
-                        cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, opaqueVertices, opaqueSize);
+                    {
+                        cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, blocks, opaqueVertices, opaqueSize);
+                    }
 
                     if (visible || maybeVisible)
                         visibleBlocks[pos] = &block;
@@ -124,18 +132,23 @@ namespace cybrion
         {
             auto& cubeRenderer = LocalGame::Get().getBlockRenderer(block->getId());
 
+            Block* blocks[3][3][3] = { nullptr };
+
+            u32 x = pos.x, y = pos.y, z = pos.z;
+            for (i32 x0 = -1; x0 <= 1; ++x0)
+                for (i32 y0 = -1; y0 <= 1; ++y0)
+                    for (i32 z0 = -1; z0 <= 1; ++z0)
+                        if (!getBlockIfIsOutside({ x + x0,y + y0,z + z0 }, &blocks[x0 + 1][y0 + 1][z0 + 1], neighbors))
+                            blocks[x0 + 1][y0 + 1][z0 + 1] = &data.getBlock({ x + x0,y + y0,z + z0 });
+
             for (auto& [dir, face] : BlockRenderer::CubeDirections)
             {
-                Block* neighbor = nullptr;
-                ivec3 npos = ivec3(pos) + dir;
-
-                if (!getBlockIfIsOutside(npos, &neighbor, neighbors))
-                    neighbor = &data.getBlock(uvec3(npos));
+                Block* neighbor = blocks[dir.x + 1][dir.y + 1][dir.z + 1];
 
                 culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
             }
 
-            cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, opaqueVertices, opaqueSize);
+            cubeRenderer.generateCubeMesh(culling, vec3(pos) + align, blocks, opaqueVertices, opaqueSize);
         }
 
         opaqueMesh.setVertices(opaqueVertices, opaqueSize);

@@ -11,16 +11,21 @@ namespace cybrion
 {
     WorldRenderer::WorldRenderer(World& world):
         m_registry(GetRegistry()),
-        m_world(world)
+        m_world(world),
+        m_enableAO(true),
+        m_enableDiffuse(true)
     {
         m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
         m_opaqueCubeShader = ShaderManager::Get().getShader<OpaqueCubeShader>("opaque_cube");
     }
 
-    void WorldRenderer::render(f32 deltaTime)
+    void WorldRenderer::render(f32 deltaTime, bool showEntityBorder)
     {
         BlockLoader::Get().bindTextureArray();
         m_opaqueCubeShader.use();
+
+        m_opaqueCubeShader.setUniform<"enable_diffuse">((u32)m_enableDiffuse);
+        m_opaqueCubeShader.setUniform<"enable_ao">((u32)m_enableAO);
 
         for (auto&& [_, renderer] : m_registry.view<ChunkRenderer>().each())
         {
@@ -32,15 +37,18 @@ namespace cybrion
             opaqueMesh.drawTriangles();
         }
 
-        m_basicShader.use();
-        for (auto&& [_, renderer] : m_registry.view<EntityRenderer>().each())
+        if (showEntityBorder)
         {
-            auto& aabbMesh = renderer.aabbMesh;
-            m_basicShader.setUniform<"MVP">(
-                LocalGame::Get().getCamera().getProjectionViewMatrix()
-                * aabbMesh.getModelMatrix()
-            );
-            aabbMesh.drawLines();
+            m_basicShader.use();
+            for (auto&& [_, renderer] : m_registry.view<EntityRenderer>().each())
+            {
+                auto& aabbMesh = renderer.aabbMesh;
+                m_basicShader.setUniform<"MVP">(
+                    LocalGame::Get().getCamera().getProjectionViewMatrix()
+                    * aabbMesh.getModelMatrix()
+                    );
+                aabbMesh.drawLines();
+            }
         }
     }
 

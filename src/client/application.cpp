@@ -110,14 +110,17 @@ namespace cybrion
 
             Camera& camera = LocalGame::Get().getCamera();
 
-            if (isRightMouseDown())
+            if (!m_enableCursor)
             {
-                input.rightClick = true;
-            }
+                if (isRightMouseDown())
+                {
+                    input.rightClick = true;
+                }
 
-            if (isLeftMouseDown())
-            {
-                input.leftClick = true;
+                if (isLeftMouseDown())
+                {
+                    input.leftClick = true;
+                }
             }
 
             bool right = isKeyPressed(KeyCode::D);

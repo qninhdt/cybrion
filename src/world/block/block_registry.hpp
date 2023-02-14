@@ -5,6 +5,7 @@
 #include "world/block/nature/soil_block.hpp"
 #include "world/block/nature/air_block.hpp"
 #include "world/block/nature/log_block.hpp"
+#include "world/block/nature/sand_block.hpp"
 
 namespace cybrion
 {
@@ -15,7 +16,8 @@ namespace cybrion
     class BlockRegistry : public BaseBlockRegistry<
         AirBlock,
         SoilBlock,
-        LogBlock
+        LogBlock,
+        SandBlock
     >
     {
     public:

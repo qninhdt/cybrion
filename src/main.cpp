@@ -9,6 +9,7 @@ int main()
     RegisterEnum(BlockType::AIR  , "air");
     RegisterEnum(BlockType::SOIL , "soil");
     RegisterEnum(BlockType::LOG  , "log");
+    RegisterEnum(BlockType::SAND , "sand");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");

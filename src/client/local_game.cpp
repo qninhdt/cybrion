@@ -11,6 +11,8 @@ namespace cybrion
     LocalGame::LocalGame():
         m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.2f, 1200.0f),
         m_showWireframe(false),
+        m_showEntityBorder(false),
+        m_showChunkBoder(false),
         m_worldRenderer(getWorld())
     {
         s_LocalGame = this;
@@ -44,9 +46,11 @@ namespace cybrion
         m_worldRenderer.buildChunkMeshes(1); // allow build meshes in 1 second
         m_worldRenderer.rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
         
-        m_worldRenderer.render(lerpFactor);
+        m_worldRenderer.render(lerpFactor, m_showEntityBorder);
 
-        renderChunkBorder();
+        if (m_showChunkBoder)
+            renderChunkBorder();
+        
         renderSelecingBlock();
     }
 

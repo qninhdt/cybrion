@@ -9,6 +9,8 @@ namespace cybrion
         vec3 position;
         vec2 uv;
         u32 textureId;
+        u32 face;
+        u32 ao;
     };
     
     struct CubeVertexTexture
@@ -22,7 +24,7 @@ namespace cybrion
         using CubeTexture = array<array<CubeVertexTexture, 4>, 6>;
     public:
 
-        void generateCubeMesh(bool culling[6], const vec3& position, CubeVertex* result, u32& index);
+        void generateCubeMesh(bool culling[6], const vec3& position, Block* (&neighbors)[3][3][3], CubeVertex* result, u32& index);
         void generateCubeTexture();
     
         static array<tuple<ivec3, BlockFace>, 6> CubeDirections;

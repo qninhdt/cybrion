@@ -7,6 +7,7 @@ namespace cybrion
         AIR,
         SOIL,
         LOG,
+        SAND,
         ENUM_SIZE
     };
 

@@ -9,7 +9,7 @@
 
 namespace cybrion
 {
-    using OpaqueCubeShader = GL::Shader<"MVP">;
+    using OpaqueCubeShader = GL::Shader<"MVP", "enable_diffuse", "enable_ao">;
     using BasicShader = GL::Shader<"MVP">;
 
     class WorldRenderer
@@ -18,7 +18,7 @@ namespace cybrion
 
         WorldRenderer(World& world);
 
-        void render(f32 deltaTime);
+        void render(f32 deltaTime, bool showEntityBorder);
 
         void setupChunk(Object chunk);
         void setupEntity(Object entity);
@@ -34,6 +34,8 @@ namespace cybrion
 
     private:
 
+        friend class HUD;
+
         World& m_world;
         queue<Object> m_buildMeshQueue;
         uset<Object> m_rebuildMeshSet;
@@ -41,6 +43,9 @@ namespace cybrion
 
         BasicShader m_basicShader;
         OpaqueCubeShader m_opaqueCubeShader;
+
+        bool m_enableAO;
+        bool m_enableDiffuse;
 
         entt::registry& m_registry;
     };

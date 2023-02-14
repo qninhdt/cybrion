@@ -48,6 +48,8 @@ namespace cybrion::GL
                 glUniform4f(location, value.x, value.y, value.z, value.w);
             else if constexpr (std::is_same_v<T, mat4>)
                 glUniformMatrix4fv(location, 1, false, &value[0][0]);
+            else if constexpr (std::is_same_v<T, u32>)
+                glUniform1ui(location, value);
             else
                 CYBRION_STATIC_ERROR("ngu, sai type r!");
         }

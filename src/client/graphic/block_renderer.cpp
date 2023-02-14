@@ -102,19 +102,66 @@ namespace cybrion
         }},
     } };
 
-    void BlockRenderer::generateCubeMesh(bool culling[6], const vec3& position, CubeVertex* result, u32& index)
+
+    array<array<ivec3, 8>, 6> faceAdjBlocks = { {
+        {{ {1,-1,0}, {1,-1,1}, { 1,0,1}, {1,1,1}, {1,1,0},{1,1,-1},{1,0,-1},{1,-1,-1} }},
+        {{ {1,1,0},{1,1,1},{0,1,1},{-1,1,1},{-1,1,0},{-1,1,-1},{0,1,-1},{1,1,-1} }},
+        {{ {0,-1,1}, {-1,-1,1},{-1,0,1},{-1,1,1},{0,1,1},{1,1,1},{1,0,1},{1,-1,1}}},
+        {{ {-1,-1,0}, {-1,-1,-1},{-1,0,-1},{-1,1,-1},{-1,1,0},{-1,1,1},{-1,0,1},{-1,-1,1} }},
+        {{ {-1,-1,0},{-1,-1,1},{0,-1,1},{1,-1,1},{1,-1,0},{1,-1,-1},{0,-1,-1},{-1,-1,-1} }},
+        {{ {0,-1,-1}, {1,-1,-1},{1,0,-1},{1,1,-1},{0,1,-1},{-1,1,-1},{-1,0,-1},{-1,-1,-1} }}
+    } };
+
+    void BlockRenderer::generateCubeMesh(bool culling[6], const vec3& position, Block* (&neighbors)[3][3][3], CubeVertex* result, u32& index)
     {
         for (u32 i = 0; i < 6; ++i)
         {
             if (culling[i]) continue;
 
+            auto& adjs = faceAdjBlocks[i];
+
+            CubeVertex* v[4];
             for (u32 j = 0; j < 4; ++j)
             {
-                result[index++] = {
+                ivec3 p1 = adjs[(j * 2 + 0) % 8];
+                ivec3 p2 = adjs[(j * 2 + 1) % 8];
+                ivec3 p3 = adjs[(j * 2 + 2) % 8];
+
+                Block* b1 = neighbors[p1.x + 1][p1.y + 1][p1.z + 1];
+                Block* b2 = neighbors[p2.x + 1][p2.y + 1][p2.z + 1];
+                Block* b3 = neighbors[p3.x + 1][p3.y + 1][p3.z + 1];
+
+                bool o1 = b1 && b1->getDisplay() == BlockDisplay::OPAQUE;
+                bool o2 = b2 && b2->getDisplay() == BlockDisplay::OPAQUE;
+                bool o3 = b3 && b3->getDisplay() == BlockDisplay::OPAQUE;
+
+                u32 ao;
+
+                if (o1 && o3)
+                    ao = 0;
+                else
+                    ao = 3 - (o1 + o2 + o3);
+
+                result[index] = {
                     CubeVertices[i][j] + position,
                     m_cubeTexture[i][j].uv,
-                    m_cubeTexture[i][j].textureId
+                    m_cubeTexture[i][j].textureId,
+                    i,
+                    ao
                 };
+
+                v[j] = &result[index];
+                
+                index += 1;
+            }
+
+            if (v[0]->ao + v[2]->ao > v[1]->ao + v[3]->ao)
+            {
+                cycle4(*v[0], *v[1], *v[2], *v[3], 2);
+            }
+            else
+            {
+                cycle4(*v[0], *v[1], *v[2], *v[3], 1);
             }
         }
     }

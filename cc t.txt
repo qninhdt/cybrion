@@ -41,7 +41,6 @@ namespace cybrion
  
         LogBlock& log = (LogBlock&)Game::Get().getBlockRegistry().getBlock(BlockType::LOG);
         SoilBlock& dirt = (SoilBlock&)Game::Get().getBlockRegistry().getBlock(BlockType::SOIL);
-        SandBlock& sand = (SandBlock&)Game::Get().getBlockRegistry().getBlock(BlockType::SAND);
 
         for (u32 x = 0; x < CHUNK_SIZE; ++x)
         {
@@ -55,7 +54,6 @@ namespace cybrion
                         data.setBlock({ x, y, z }, dirt);
                     else
                         data.setBlock({ x, y, z }, log.set<"axis">((x + y + z) % 3));
-                    //data.setBlock({ x, y, z }, sand);
                 }
             }
         }
@@ -154,17 +152,60 @@ namespace cybrion
 
         for (auto&& [entity, data] : view.each())
         {
-            vec3 ppos = data.getWorldAABB().getPosition();
-            vec3 pos = ppos + data.velocity;
+            SweptAABBResult result{ 1, { 0, 0, 0 } };
 
-            while (true)
+            vec3 pos = data.getWorldAABB().getPosition();
+            //vec3 pos = ppos;
+            vec3 v = data.velocity;
+
+            //while (true)
             {
-                SweptAABBResult result{ 1, { 0, 0, 0 } };
+                ivec3 min = glm::floor(pos) - 2.0f;
+                ivec3 max = glm::floor(pos) + 2.0f;
 
-                ivec3 min = glm::floor(ppos) - 2.0f;
-                ivec3 max = glm::floor(ppos) + 2.0f;
+                //CYBRION_GAME_TRACE("Check from ({}, {}, {}) to ({}, {}, {})", min.x, min.y, min.z, max.x, max.y, max.z);
+                for (i32 x = min.x; x <= max.x; ++x)
+                    for (i32 y = min.y; y <= max.y; ++y)
+                        for (i32 z = min.z; z <= max.z; ++z)
+                        {
+                            Block* block = tryGetBlock({ x, y, z });
+                            if (!block || block->getType() == BlockType::AIR) continue;
 
-                vec3 v = pos - ppos;
+                            auto current = AABB::SweptAABB({ pos, { 1, 1, 1 } },
+                                { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {1,1,1} }, v);
+
+                            if (current.delta < result.delta)
+                                result = current;
+                        }
+
+                pos += (v * result.delta) + 0.001f * result.normal;
+              /*  if (result.delta == 1.0f) break;
+
+                if (1.0f - abs(glm::dot(glm::normalize(v), result.normal) < 0.0001f))
+                    break;*/
+                f32 NdotN = glm::dot(result.normal, result.normal);
+                if (NdotN != 0)
+                {
+                    //ppos = pos;
+
+                    f32 VdotN = glm::dot(result.normal, v);
+                    vec3 slide = (1 - result.delta) * v
+                        - (1 - result.delta) * (VdotN / NdotN) * result.normal;
+                    //std::cout << result.delta << ' ' << slide.x << ' ' << slide.y << ' ' << slide.z << '\n';
+
+                    //pos += slide;
+                    v = slide;
+                }
+                else
+                {
+                    v = { 0,0,0 };
+                }
+            }
+
+            {
+                ivec3 min = glm::floor(pos) - 2.0f;
+                ivec3 max = glm::floor(pos) + 2.0f;
+                SweptAABBResult result{ 1, {0,0,0} };
 
                 for (i32 x = min.x; x <= max.x; ++x)
                     for (i32 y = min.y; y <= max.y; ++y)
@@ -173,25 +214,16 @@ namespace cybrion
                             Block* block = tryGetBlock({ x, y, z });
                             if (!block || block->getType() == BlockType::AIR) continue;
 
-                            auto current = AABB::SweptAABB({ ppos, { 0.8f, 0.8f, 0.8f } },
+                            auto current = AABB::SweptAABB({ pos, { 1, 1, 1 } },
                                 { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {1,1,1} }, v);
-
+                            if (v.z == 0 && v.x != 0) std::cout << current.delta << '\n';
                             if (current.delta < result.delta)
                                 result = current;
                         }
 
-                pos = ppos + (v * result.delta) + 0.000001f * result.normal;
+                //std::cout << " " << v.x << ' ' << v.y << ' ' << v.z << ' ' << result.normal.x << ' ' << result.normal.y << ' ' << result.normal.z << '\n';
 
-                if (result.delta == 1.0f) break;
-
-                f32 NdotN = glm::dot(result.normal, result.normal);
-                if (NdotN != 0)
-                {
-                    ppos = pos;
-
-                    f32 VdotN = glm::dot(result.normal, v);
-                    pos += (1 - result.delta) * v - (1 - result.delta) * (VdotN / NdotN) * result.normal;
-                }
+                pos +=  (v * result.delta);
             }
 
             data.transform.setPosition(pos);

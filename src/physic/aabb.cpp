@@ -78,7 +78,7 @@ namespace cybrion
 
         if (v.y == 0)
         {
-            if (aMin.y < bMax.y && bMin.y < aMax.y)
+            if (aMin.y <= bMax.y && bMin.y <= aMax.y)
             {
                 yEntry = -std::numeric_limits<f32>::infinity();
                 yExit = std::numeric_limits<f32>::infinity();
@@ -135,7 +135,7 @@ namespace cybrion
         }
 
         f32 entry = std::max({ xEntry, yEntry, zEntry });
-        f32 exit = std::max({ xExit, yExit, zExit });
+        f32 exit = std::min({ xExit, yExit, zExit });
 
         if (entry < 0 || entry > 1 || entry > exit) return result;
 
