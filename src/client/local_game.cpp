@@ -52,8 +52,8 @@ namespace cybrion
 
     void LocalGame::renderChunkBorder()
     {
-        m_chunkBorderMesh.setPosition(
-            m_player.getEntity().get<EntityData>().getChunkWorldPosition()
+        m_chunkBorderMesh.setPosition({ 16, 16, 16 }
+            //m_player.getEntity().get<EntityData>().getChunkWorldPosition()
         );
 
         m_chunkBorderMesh.updateModelMatrix();

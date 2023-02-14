@@ -49,7 +49,7 @@ int main()
     RegisterEnum(LogAxis::Y, "y");
     RegisterEnum(LogAxis::Z, "z");
 
-    /*Log::Init();
+    Log::Init();
 
     Application app;
 
@@ -59,16 +59,7 @@ int main()
         return EXIT_FAILURE;
 
     app.load();
-    app.run();*/
-    AABB a({ 0.5, 0.5, 0 }, { 2, 2, 2 });
-    AABB b({ 1.0, 0.5, 5 }, { 1, 1, 1 });
-
-    vec3 v = { 0, 1, 5 };
-    //v *= 2;
-    auto [delta, normal] = AABB::SweptAABB(a, b, v);
-
-    std::cout << delta << '\n';
-    std::cout << normal.x << ' ' << normal.y << ' ' << normal.z << '\n';
+    app.run();
 
     return EXIT_SUCCESS;
 }

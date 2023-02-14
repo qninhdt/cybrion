@@ -10,6 +10,7 @@
 namespace cybrion
 {
     using OpaqueCubeShader = GL::Shader<"MVP">;
+    using BasicShader = GL::Shader<"MVP">;
 
     class WorldRenderer
     {
@@ -38,6 +39,7 @@ namespace cybrion
         uset<Object> m_rebuildMeshSet;
         Stopwatch m_stopwatch;
 
+        BasicShader m_basicShader;
         OpaqueCubeShader m_opaqueCubeShader;
 
         entt::registry& m_registry;

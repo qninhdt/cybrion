@@ -86,6 +86,8 @@ namespace cybrion
         {
             data.oldTransform = data.transform;
         }
+
+        updateEntityTransforms();
     }
 
     Block& World::getBlock(const ivec3& pos)
@@ -142,6 +144,31 @@ namespace cybrion
     {
         auto [chunk, block] = setBlock(pos, BlockRegistry::Get().getBlock(BlockType::AIR));
         Game::Get().onBreakBlock(chunk, pos, block);
+    }
+
+    void World::updateEntityTransforms()
+    {
+        auto view = m_registry.view<EntityData>();
+
+        for (auto&& [entity, data] : view.each())
+        {
+            AABB box = { { 16, 16, 16 }, { 32, 32, 32 } };
+            auto [delta, normal] = AABB::SweptAABB(data.getWorldAABB(), box, data.velocity);
+
+            data.transform.move(data.velocity * delta);
+
+            if (delta < 1.0f)
+            {
+                f32 angle = glm::dot(glm::normalize(data.velocity), normal);
+                
+                if (1.0f - abs(angle) < std::numeric_limits<f32>::epsilon()) continue;
+
+                // slide
+                vec3 slideDir = - glm::normalize(glm::cross(glm::cross(data.velocity, normal), normal));
+                vec3 slideVec = slideDir * glm::dot(slideDir, data.velocity) * (1 - delta);
+                data.transform.move(slideVec);
+            }
+        }
     }
 
     ivec3 World::GetChunkPos(const ivec3& pos)

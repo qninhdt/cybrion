@@ -14,6 +14,7 @@ namespace cybrion
     {
     public:
 
+        AABB();
         AABB(const vec3& position, const vec3& size);
 
         vec3 getMin() const;
@@ -21,7 +22,7 @@ namespace cybrion
         vec3 getPosition() const;
         vec3 getSize() const;
 
-        static SweptAABBResult SweptAABB(const AABB& a, const AABB& b, const ivec3& v);
+        static SweptAABBResult SweptAABB(const AABB& a, const AABB& b, const vec3& v);
 
     private:
         vec3 m_position;

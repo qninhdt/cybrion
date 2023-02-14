@@ -7,6 +7,7 @@ namespace cybrion
     {
         transform.setPosition(posistion);
         oldTransform = transform;
+        velocity = { 0, 0, 0 };
     }
 
     ivec3 EntityData::getChunkPosition() const
@@ -28,5 +29,13 @@ namespace cybrion
             chunkPos.y* CHUNK_SIZE + CHUNK_SIZE / 2,
             chunkPos.z* CHUNK_SIZE + CHUNK_SIZE / 2,
         };
+    }
+    AABB EntityData::getWorldAABB() const
+    {
+        return { aabb.getPosition() + transform.getPosition(), aabb.getSize() };
+    }
+    AABB EntityData::getOldWorldAABB() const
+    {
+        return { aabb.getPosition() + oldTransform.getPosition(), aabb.getSize() };
     }
 }

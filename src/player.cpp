@@ -31,7 +31,7 @@ namespace cybrion
 
             if (m_input.isMoving)
             {
-                data.transform.move(m_input.moveDirection * 1.0f);
+                data.velocity = m_input.moveDirection;
             }
             
             vec3 rotation = data.transform.getRotation() + m_input.deltaRotation * 0.003f;
@@ -48,6 +48,9 @@ namespace cybrion
 
             m_input.deltaRotation = { 0, 0, 0 }; // reset
         }
+
+        if (!m_input.isMoving)
+            playerData.velocity = { 0, 0, 0 };
 
         if (m_input.rightClick)
         {

@@ -5,6 +5,7 @@
 #include "client/local_game.hpp"
 #include "client/graphic/entity_renderer.hpp"
 #include "world/entity/entity.hpp"
+#include "client/graphic/basic_mesh_generator.hpp"
 
 namespace cybrion
 {
@@ -12,6 +13,7 @@ namespace cybrion
         m_registry(GetRegistry()),
         m_world(world)
     {
+        m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
         m_opaqueCubeShader = ShaderManager::Get().getShader<OpaqueCubeShader>("opaque_cube");
     }
 
@@ -20,7 +22,7 @@ namespace cybrion
         BlockLoader::Get().bindTextureArray();
         m_opaqueCubeShader.use();
 
-        for (auto&& [Object, renderer] : m_registry.view<ChunkRenderer>().each())
+        for (auto&& [_, renderer] : m_registry.view<ChunkRenderer>().each())
         {
             auto& opaqueMesh = renderer.opaqueMesh;
             m_opaqueCubeShader.setUniform<"MVP">(
@@ -28,6 +30,17 @@ namespace cybrion
                 * opaqueMesh.getModelMatrix()
             );
             opaqueMesh.drawTriangles();
+        }
+
+        m_basicShader.use();
+        for (auto&& [_, renderer] : m_registry.view<EntityRenderer>().each())
+        {
+            auto& aabbMesh = renderer.aabbMesh;
+            m_basicShader.setUniform<"MVP">(
+                LocalGame::Get().getCamera().getProjectionViewMatrix()
+                * aabbMesh.getModelMatrix()
+            );
+            aabbMesh.drawLines();
         }
     }
 
@@ -52,6 +65,7 @@ namespace cybrion
     void WorldRenderer::setupEntity(Object entity)
     {
         auto& renderer = entity.assign<EntityRenderer>();
+        BasicMeshGenerator::LineCubeMesh(renderer.aabbMesh, 1, { 0, 0, 1 });
     }
 
     void WorldRenderer::buildChunkMeshes(f32 maxDuration)
@@ -111,6 +125,14 @@ namespace cybrion
                     data.transform.getPosition(), lerpFactor
                 )
             );
+
+            renderer.aabbMesh.setPosition(
+                util::Lerp(
+                    data.getOldWorldAABB().getPosition(),
+                    data.getWorldAABB().getPosition(), lerpFactor
+                )
+            );
+            renderer.aabbMesh.updateModelMatrix();
 
             renderer.mesh.setRotation(
                 util::LerpRotaion(

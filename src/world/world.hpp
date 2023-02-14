@@ -23,6 +23,8 @@ namespace cybrion
         void placeBlock(const ivec3& pos, BlockFace face, Block& block);
         void breakBlock(const ivec3& pos);
 
+        void updateEntityTransforms();
+
         static ivec3 GetChunkPos(const ivec3& pos);
         static uvec3 GetLocalPos(const ivec3& pos);
 

@@ -8,5 +8,6 @@ namespace cybrion
     {
     public:
         GL::Mesh mesh;
+        GL::Mesh aabbMesh;
     };
 }
