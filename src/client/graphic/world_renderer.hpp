@@ -6,6 +6,7 @@
 #include "client/GL/shader.hpp"
 #include "core/stopwatch.hpp"
 #include "client/graphic/chunk_renderer.hpp"
+#include "client/graphic/entity_renderer.hpp"
 
 namespace cybrion
 {
@@ -18,18 +19,21 @@ namespace cybrion
 
         WorldRenderer(World& world);
 
-        void render(f32 deltaTime, bool showEntityBorder);
+        void render(f32 delta, bool showEntityBorder);
 
-        void setupChunk(Object chunk);
-        void setupEntity(Object entity);
+        void addChunk(const ref<Chunk>& chunk);
+        void addEntity(const ref<Entity>& entity);
 
         void buildChunkMeshes(f32 maxDuration);
         void rebuildChunkMeshes(f32 maxDuration);
 
-        void queueRebuild(Object chunk);
-        void onBlockChanged(const ivec3& pos);
+        ref<EntityRenderer> getEntityRenderer(const ref<Entity>& entity) const;
+        ref<ChunkRenderer> getChunkRenderer(const ref<Chunk>& chunk) const;
 
-        void updateEntityTransforms(f32 lerpFactor);
+        void prepareRebuild(const ref<ChunkRenderer>& renderer);
+        void updateBlock(const BlockModifyResult& result);
+
+        void updateEntityRenderers(f32 delta);
         void updateBlockVisiblity(const ivec3& pos);
 
     private:
@@ -37,8 +41,13 @@ namespace cybrion
         friend class HUD;
 
         World& m_world;
-        queue<Object> m_buildMeshQueue;
-        uset<Object> m_rebuildMeshSet;
+
+        queue<ref<ChunkRenderer>> m_buildChunkQueue;
+        vector<ref<ChunkRenderer>> m_rebuildChunkList;
+
+        umap<u32, ref<ChunkRenderer>> m_chunkRenderers;
+        umap<u32, ref<EntityRenderer>> m_entityRenderers;
+
         Stopwatch m_stopwatch;
 
         BasicShader m_basicShader;
@@ -46,7 +55,5 @@ namespace cybrion
 
         bool m_enableAO;
         bool m_enableDiffuse;
-
-        entt::registry& m_registry;
     };
 }

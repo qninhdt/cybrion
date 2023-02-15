@@ -2,79 +2,79 @@
 
 namespace cybrion
 {   
-    namespace detail
+    BasicTransform::BasicTransform() : BasicTransform({ 0, 0, 0 }, { 0, 0, 0 })
     {
-        Transform0::Transform0(const vec3& position, const vec3& rotation):
-            m_position(position),
-            m_rotation(rotation)
-        {
-        }
+    }
 
-        const vec3& Transform0::getPosition() const
-        {
-            return m_position;
-        }
+    BasicTransform::BasicTransform(const vec3& pos, const vec3& rot):
+        m_pos(pos),
+        m_rot(rot)
+    {
+    }
 
-        void Transform0::setPosition(const vec3& position)
-        {
-            m_position = position;
-        }
+    const vec3& BasicTransform::getPos() const
+    {
+        return m_pos;
+    }
 
-        void Transform0::move(const vec3& delta)
-        {
-            m_position += delta;
-        }
+    void BasicTransform::setPos(const vec3& pos)
+    {
+        m_pos = pos;
+    }
 
-        const vec3& Transform0::getRotation() const
-        {
-            return m_rotation;
-        }
+    void BasicTransform::move(const vec3& delta)
+    {
+        m_pos += delta;
+    }
 
-        void Transform0::setRotation(const vec3& rotation)
-        {
-            m_rotation = rotation;
+    const vec3& BasicTransform::getRot() const
+    {
+        return m_rot;
+    }
 
-            // rotation in range [0, 2pi)
+    void BasicTransform::setRot(const vec3& rot)
+    {
+        m_rot = rot;
 
-            if (rotation.x < 0) m_rotation.x += two_pi;
-            if (rotation.y < 0) m_rotation.y += two_pi;
-            if (rotation.z < 0) m_rotation.z += two_pi;
+        // m_rot in range [0, 2pi)
 
-            if (rotation.x >= two_pi) m_rotation.x -= two_pi;
-            if (rotation.y >= two_pi) m_rotation.y -= two_pi;
-            if (rotation.z >= two_pi) m_rotation.z -= two_pi;
-        }
+        if (m_rot.x < 0) m_rot.x += two_pi;
+        if (m_rot.y < 0) m_rot.y += two_pi;
+        if (m_rot.z < 0) m_rot.z += two_pi;
 
-        void Transform0::rotate(const vec3& delta)
-        {
-            setRotation(m_rotation + delta);
-        }
+        if (m_rot.x >= two_pi) m_rot.x -= two_pi;
+        if (m_rot.y >= two_pi) m_rot.y -= two_pi;
+        if (m_rot.z >= two_pi) m_rot.z -= two_pi;
+    }
 
-        vec3 Transform0::getDirection() const
-        {
-            return {
-                sin(m_rotation.y) * cos(m_rotation.x),
-                sin(m_rotation.x),
-                cos(m_rotation.y) * cos(m_rotation.x),
-            };
-        }
+    void BasicTransform::rotate(const vec3& delta)
+    {
+        setRot(m_rot + delta);
+    }
 
-        void Transform0::setDirection(const vec3& direction)
-        {
-            m_rotation.x = asin(direction.y);
-            m_rotation.y = atan2(direction.x, direction.z);
-        }
+    vec3 BasicTransform::getDir() const
+    {
+        return {
+            sin(m_rot.y) * cos(m_rot.x),
+            sin(m_rot.x),
+            cos(m_rot.y) * cos(m_rot.x),
+        };
+    }
 
+    void BasicTransform::setDir(const vec3& dir)
+    {
+        m_rot.x = asin(dir.y);
+        m_rot.y = atan2(dir.x, dir.z);
     }
 
     Transform::Transform(): Transform({ 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1 })
     {
     }
 
-    Transform::Transform(const vec3& position, const vec3& rotation, const vec3& scale) :
-        Transform0(position, rotation),
+    Transform::Transform(const vec3& pos, const vec3& m_rot, const vec3& scale) :
+        BasicTransform(pos, m_rot),
         m_scale(scale),
-        m_modelMatrix(1.0f)
+        m_modelMat(1.0f)
     {
     }
 
@@ -88,16 +88,16 @@ namespace cybrion
         m_scale = scale;
     }
 
-    void Transform::updateModelMatrix()
+    void Transform::updateModelMat()
     {
-        m_modelMatrix = mat4(1.0f);
-        m_modelMatrix = glm::translate(m_modelMatrix, m_position);
-        m_modelMatrix = m_modelMatrix * glm::eulerAngleXYZ(m_rotation.x, m_rotation.y, m_rotation.z);
-        m_modelMatrix = glm::scale(m_modelMatrix, m_scale);
+        m_modelMat = mat4(1.0f);
+        m_modelMat = glm::translate(m_modelMat, m_pos);
+        m_modelMat = m_modelMat * glm::eulerAngleXYZ(m_rot.x, m_rot.y, m_rot.z);
+        m_modelMat = glm::scale(m_modelMat, m_scale);
     }
 
-    const mat4& Transform::getModelMatrix() const
+    const mat4& Transform::getModelMat() const
     {
-        return m_modelMatrix;
+        return m_modelMat;
     }
 }

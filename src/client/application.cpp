@@ -139,7 +139,7 @@ namespace cybrion
                 );
 
                 input.isMoving = true;
-                input.moveDirection = dir;
+                input.moveDir = dir;
             }
             else
             {
@@ -198,6 +198,7 @@ namespace cybrion
     {
         m_game = new LocalGame();
         m_game->load();
+        std::cout << Blocks::COBBLESTONE.getDisplayName() << '\n';
 
         m_playingGame = true;
     }

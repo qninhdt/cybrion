@@ -15,17 +15,17 @@ namespace cybrion
     public:
 
         AABB();
-        AABB(const vec3& position, const vec3& size);
+        AABB(const vec3& pos, const vec3& size);
 
         vec3 getMin() const;
         vec3 getMax() const;
-        vec3 getPosition() const;
+        vec3 getPos() const;
         vec3 getSize() const;
 
         static SweptAABBResult SweptAABB(const AABB& a, const AABB& b, const vec3& v);
 
     private:
-        vec3 m_position;
+        vec3 m_pos;
         vec3 m_size;
     };
 }

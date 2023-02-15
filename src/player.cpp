@@ -5,58 +5,55 @@
 
 namespace cybrion
 {
-    Player::Player():
-        m_isSelecting(false)
+    Player::Player() :
+        m_targetBlock(nullptr)
     {
     }
 
-    Object Player::getEntity() const
+    ref<Entity> Player::getEntity() const
     {
         return m_entity;
     }
 
-    void Player::setEntity(Object entity)
+    void Player::setEntity(const ref<Entity>& entity)
     {
         m_entity = entity;
     }
 
     void Player::tick()
     {
-        auto& playerData = m_entity.get<EntityData>();
-
         // controller
-        if (m_input.isMoving || glm::length(m_input.deltaRotation) > 0.001f)
+        if (m_input.isMoving || glm::length(m_input.deltaRot) > 0.001f)
         {
-            auto& data = m_entity.get<EntityData>();
-
             if (m_input.isMoving)
             {
-                data.velocity = m_input.moveDirection;
+                m_entity->setVelocity(m_input.moveDir);
             }
             
-            vec3 rotation = data.transform.getRotation() + m_input.deltaRotation * 0.003f;
+            vec3 rot = m_entity->getRot() + m_input.deltaRot * 0.003f;
 
-            if (rotation.x > pi / 2 - 0.001f && rotation.x < pi * 3 / 2 + 0.001f)
+            f32 eps = 0.001f;
+            if (rot.x > pi / 2 - eps && rot.x < pi * 3 / 2 + eps)
             {
-                if (rotation.x - pi / 2 - 0.001f < pi * 3 / 2 + 0.001f - rotation.x)
-                    rotation.x = pi / 2 - 0.001f;
+                if (rot.x - pi / 2 - eps < pi * 3 / 2 + eps - rot.x)
+                    rot.x = pi / 2 - eps;
                 else
-                    rotation.x = pi * 3 / 2 + 0.001f;
+                    rot.x = pi * 3 / 2 + eps;
             }
 
-            data.transform.setRotation(rotation);
+            m_entity->setRot(rot);
 
-            m_input.deltaRotation = { 0, 0, 0 }; // reset
+            m_input.deltaRot = { 0, 0, 0 }; // reset
         }
 
         if (!m_input.isMoving)
-            playerData.velocity = { 0, 0, 0 };
+            m_entity->setVelocity({ 0, 0, 0 });
 
         if (m_input.rightClick)
         {
-            if (m_isSelecting && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
+            if (m_targetBlock && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
             {
-                Game::Get().getWorld().placeBlock(m_selectingPos, m_selectingFace, BlockRegistry::Get().getBlock(BlockType::LOG));
+                Game::Get().getWorld().placeBlock(m_targetPos, m_targetFace, Blocks::COBBLESTONE);
                 m_blockInteractStopwatch.reset();
             }
             m_input.rightClick = false;
@@ -64,9 +61,9 @@ namespace cybrion
 
         if (m_input.leftClick)
         {
-            if (m_isSelecting && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
+            if (m_targetBlock && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
             {
-                Game::Get().getWorld().breakBlock(m_selectingPos);
+                Game::Get().getWorld().breakBlock(m_targetPos);
                 m_blockInteractStopwatch.reset();
             }
             m_input.leftClick = false;
@@ -74,8 +71,8 @@ namespace cybrion
 
         // selecting block
         VoxelRay::Cast(
-            playerData.transform.getPosition(),
-            playerData.transform.getDirection(),
+            m_entity->getPos(),
+            m_entity->getDir(),
             0,
             [&](const ivec3& blockPos, const ivec3& normal)
             {
@@ -83,43 +80,35 @@ namespace cybrion
 
                 // stop when block is not loaded
                 if (!block) {
-                    m_isSelecting = false;
+                    m_targetBlock = nullptr;
                     return true;
                 }
                 
                 if (block->getDisplay() == BlockDisplay::TRANSPARENT)
                     return false;
 
-                m_selectingFace = Block::GetFaceFromDirection(normal);
-                m_selectingPos = blockPos;
-                m_isSelecting = true;
+                m_targetFace = Block::GetFaceFromDirection(normal);
+                m_targetPos = blockPos;
+                m_targetBlock = block;
 
                 return true;
             }
         );
     }
 
-    Block* Player::getSelectingBlock() const
+    Block* Player::getTargetBlock() const
     {
-        if (!m_isSelecting)
-            return nullptr;
-
-        return Game::Get().getWorld().tryGetBlock(m_selectingPos);
+        return m_targetBlock;
     }
 
-    BlockFace Player::getSelectingFace() const
+    BlockFace Player::getTargetFace() const
     {
-        return m_selectingFace;
+        return m_targetFace;
     }
 
-    ivec3 Player::getSelectingPosition() const
+    ivec3 Player::getTargetPos() const
     {
-        return m_selectingPos;
-    }
-
-    bool Player::isSelectingBlock() const
-    {
-        return m_isSelecting;
+        return m_targetPos;
     }
 
     PlayerInput& Player::getInput()

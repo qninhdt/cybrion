@@ -15,31 +15,23 @@ namespace cybrion
         void load();
         void tick();
 
-        BlockRegistry& getBlockRegistry();
-        BlockLoader& getBlockLoader();
-
         World& getWorld();
+        Player& getPlayer();
 
-        void loadPlayer(Player& player);
-
-        virtual void onChunkLoaded(Object chunk) = 0;
-        virtual void onChunkUnloaded(Object chunk) = 0;
-        virtual void onEntitySpawned(Object entity) = 0;
-        virtual void onBlockChanged(Object chunk, const ivec3& pos, Block& to, Block& from) = 0;
-        virtual void onBreakBlock(Object chunk, const ivec3& pos, Block& block) = 0;
-        virtual void onPlaceBlock(Object chunk, const ivec3& pos, Block& block, BlockFace face) = 0;
+        virtual void onChunkLoaded(const ref<Chunk>& chunk) = 0;
+        virtual void onChunkUnloaded(const ref<Chunk>& chunk) = 0;
+        virtual void onEntitySpawned(const ref<Entity>& entity) = 0;
+        virtual void onBlockChanged(const BlockModifyResult& result) = 0;
+        virtual void onBreakBlock(const BlockModifyResult& result) = 0;
+        virtual void onPlaceBlock(const BlockModifyResult& result) = 0;
 
         static Game& Get();
 
-    private:
+    protected:
         static Game* s_game;
 
         BlockLoader m_blockLoader;
-        BlockRegistry m_blockRegistry;
         World m_world;
-
-        Player* m_player;
+        Player m_player;
     };
 }
-
-#include "world/block/block_state.inl"

@@ -7,7 +7,6 @@
 #include "client/key_code.hpp"
 #include "core/stopwatch.hpp"
 #include "client/graphic/world_renderer.hpp"
-#include "client/local_player.hpp"
 
 namespace cybrion
 {
@@ -28,12 +27,12 @@ namespace cybrion
         void renderChunkBorder();
         void renderSelecingBlock();
 
-        void onChunkLoaded(Object chunk) override;
-        void onChunkUnloaded(Object chunk) override;
-        void onEntitySpawned(Object entity) override;
-        void onBlockChanged(Object chunk, const ivec3& pos, Block& to, Block& from) override;
-        void onPlaceBlock(Object chunk, const ivec3& pos, Block& block, BlockFace face) override;
-        void onBreakBlock(Object chunk, const ivec3& pos, Block& block) override;
+        void onChunkLoaded(const ref<Chunk>& chunk) override;
+        void onChunkUnloaded(const ref<Chunk>& chunk) override;
+        void onEntitySpawned(const ref<Entity>& entity) override;
+        void onBlockChanged(const BlockModifyResult& result) override;
+        void onBreakBlock(const BlockModifyResult& result) override;
+        void onPlaceBlock(const BlockModifyResult& result) override;
 
         void onKeyPressed(KeyCode key, bool isRepeated);
         void onKeyReleased(KeyCode key);
@@ -56,10 +55,11 @@ namespace cybrion
 
         friend class HUD;
 
+        static LocalGame* s_LocalGame;
+
         void createBlockRenderers();
 
         Camera m_camera;
-        LocalPlayer m_player;
         
         bool m_showWireframe;
         bool m_showChunkBoder;
@@ -68,11 +68,9 @@ namespace cybrion
 
         BasicShader m_basicShader;
         GL::Mesh m_chunkBorderMesh;
-        GL::Mesh m_selectingBlockMesh;
+        GL::Mesh m_targetBlockMesh;
 
         WorldRenderer m_worldRenderer;
-        BlockRenderer m_blockRenderers[BlockRegistry::BlockStateCount()];
-
-        static LocalGame* s_LocalGame;
+        BlockRenderer m_blockRenderers[Blocks::StateCount()];
     };
 }

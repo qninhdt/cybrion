@@ -6,25 +6,25 @@ namespace cybrion
     {
     }
 
-    AABB::AABB(const vec3& position, const vec3& size) :
-        m_position(position),
+    AABB::AABB(const vec3& pos, const vec3& size) :
+        m_pos(pos),
         m_size(size)
     {
     }
 
     vec3 AABB::getMin() const
     {
-        return m_position - (m_size / 2.0f);
+        return m_pos - (m_size / 2.0f);
     }
 
     vec3 AABB::getMax() const
     {
-        return m_position + (m_size / 2.0f);
+        return m_pos + (m_size / 2.0f);
     }
 
-    vec3 AABB::getPosition() const
+    vec3 AABB::getPos() const
     {
-        return m_position;
+        return m_pos;
     }
 
     vec3 AABB::getSize() const

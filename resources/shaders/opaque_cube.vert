@@ -13,7 +13,7 @@ flat out uint tex_id;
 flat out uint face;
 out float ao;
 
-float ao_list[4] = { 0.55, 0.70, 0.85, 1 };
+float ao_list[4] = { 0, 1.0f/3, 2.0f/3, 1 };
 
 void main() {
     gl_Position = MVP * vec4(position, 1.0f);

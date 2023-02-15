@@ -67,7 +67,7 @@ namespace cybrion
             }
             else if (m_diffValues == m_storage->getMaxValue() + 1)
             {
-                u32 bitExp = util::CeilLog2(util::CeilLog2(m_diffValues)) + 1;
+                u32 bitExp = util::ceilLog2(util::ceilLog2(m_diffValues)) + 1;
                 auto temp = m_storage;
                 m_storage = BitStorage::create<SIZE>(bitExp);
                 m_storage->copyFrom(*temp);

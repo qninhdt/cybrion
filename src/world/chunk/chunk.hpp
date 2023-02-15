@@ -1,33 +1,51 @@
 #pragma once
 
 #include "core/linear_palette.hpp"
-#include "world/block/block_registry.hpp"
+#include "world/block/blocks.hpp"
 
 namespace cybrion
 {
-    static constexpr i32 LOG_2_CHUNK_SIZE = 5;
-    static constexpr i32 CHUNK_SIZE = 1 << LOG_2_CHUNK_SIZE;
-    static constexpr i32 CHUNK_VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
-
-    struct ChunkData
+    class Chunk
     {
-        LinearPalette<BlockRegistry::BlockStateCount(), CHUNK_VOLUME> blocks;
+    public:
+        static constexpr i32 LOG_2_CHUNK_SIZE = 5;
+        static constexpr i32 CHUNK_SIZE = 1 << LOG_2_CHUNK_SIZE;
+        static constexpr i32 CHUNK_VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+        static constexpr vec3 CHUNK_ALIGN = vec3(0.5f, 0.5f, 0.5f) - vec3(CHUNK_SIZE / 2, CHUNK_SIZE / 2, CHUNK_SIZE / 2);
 
-        ivec3 position;
+        using BlockStorage = LinearPalette<Blocks::StateCount(), CHUNK_VOLUME>;
+        using Chunk3x3x3 = array<array<array<ref<Chunk>, 3>, 3>, 3>;
+
+        Chunk();
+
+        Block& getBlock(const ivec3& pos) const;
+        Block* tryGetBlock(const ivec3& pos) const;
+        tuple<Block*, ref<Chunk>> tryGetBlockMaybeOutside(const ivec3& pos) const;
+        ref<Chunk> getNeighbor(i32 dx, i32 dy, i32 dz) const;
+        void setBlock(const ivec3& pos, Block& block);
+        vec3 getPos() const;
+        ivec3 getChunkPos() const;
+        Block::Block3x3x3 getBlockAndNeighbors(const ivec3& pos);
+
+        void eachNeighbors(std::function<void(ref<Chunk>&)> callback);
+        void eachBlocks(std::function<void(Block&, const ivec3&)> callback);
+        void eachBlockAndNeighbors(const ivec3& pos, std::function<void(Block*, ref<Chunk>&, const ivec3& dir)> callback);
+
+        u32 getId() const;
+
+        static i32 posToIndex(const ivec3& pos);
+        static ivec3 posToLocalPos(const ivec3& pos);
+        static ivec3 posToChunkPos(const ivec3& pos);
+
+    private:
+
+        static std::atomic<u32> s_idN;
+
+        BlockStorage m_blocks;
+        Chunk3x3x3 m_neighbors;
+        vec3 m_pos;
+        ivec3 m_chunkPos;
         
-        Object neighbors[6];
-
-        Block& getBlock(const uvec3& pos) const;
-        void setBlock(const uvec3& pos, const Block& block);
-        vec3 getWorldPosition() const;
-
-        static u32 PosToIndex(const uvec3& pos);
-
-        static array<tuple<ivec3, BlockFace>, 6> Directions;
-
-        /*~ChunkData()
-        {
-            std::cout << "here we go again\n";
-        }*/
+        u32 m_id;
     };
 }

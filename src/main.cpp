@@ -1,5 +1,10 @@
 #include "client/application.hpp"
-#include "physic/aabb.hpp"
+
+//#include "client/resource/block_loader.hpp"
+//#include "core/enum.hpp"
+//#include "world/block/nature/soil_block.hpp"
+//#include "world/block/nature/rock_block.hpp"
+//#include "world/block/nature/log_block.hpp"
 
 using namespace cybrion;
 
@@ -10,12 +15,17 @@ int main()
     RegisterEnum(BlockType::SOIL , "soil");
     RegisterEnum(BlockType::LOG  , "log");
     RegisterEnum(BlockType::SAND , "sand");
+    RegisterEnum(BlockType::ROCK , "rock");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");
     RegisterEnum(SoilType::BASALT , "basalt");
     RegisterEnum(SoilType::CLAY   , "clay");
     RegisterEnum(SoilType::GRASS  , "grass");
+
+    // rock type
+    RegisterEnum(RockType::GRAVEL, "gravel");
+    RegisterEnum(RockType::COBBLESTONE, "cobblestone");
 
     // block shape
     RegisterEnum(BlockShape::CUBE   , "cube");
@@ -60,6 +70,7 @@ int main()
         return EXIT_FAILURE;
 
     app.load();
+
     app.run();
 
     return EXIT_SUCCESS;

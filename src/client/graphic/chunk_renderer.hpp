@@ -7,15 +7,21 @@ namespace cybrion
 {
     struct ChunkRenderer
     {
+        ChunkRenderer(const ref<Chunk>& chunk);
+
+        ref<Chunk> m_chunk;
         GL::Mesh opaqueMesh;
         umap<uvec3, Block*> visibleBlocks;
 
+        bool inBuildQueue;
+        bool inRebuildList;
+
         ChunkRenderer();
 
-        void buildChunkMesh(ChunkData& data);
-        void rebuildChunkMesh(ChunkData& data);
+        void buildChunkMesh();
+        void rebuildChunkMesh();
 
-        void updateBlockVisiblity(ChunkData& data, const uvec3& pos, Block& block) const;
-        void onBlockChanged(ChunkData& data, const uvec3& pos, Block& to, Block& from);
+        void updateBlockVisiblity(const uvec3& pos, Block& block) const;
+        void updateBlock(const uvec3& pos, Block& to, Block& from);
     };
 }

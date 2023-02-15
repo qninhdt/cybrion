@@ -61,15 +61,15 @@ namespace cybrion
         );
         ImGui::Text("FPS: %.0f", 1.0f/deltaTime);
 
-        vec3 position = camera.getPosition();
-        ImGui::Text("Position: %.2f %.2f %.2f", position.x, position.y, position.z);
+        vec3 pos = camera.getPos();
+        ImGui::Text("Pos: %.2f %.2f %.2f", pos.x, pos.y, pos.z);
 
-        Block* block = game.getPlayer().getSelectingBlock();
+        Block* block = game.getPlayer().getTargetBlock();
 
         if (block)
         {
-            vec3 position = game.getPlayer().getSelectingPosition();
-            ImGui::Text("Selecting: %.0f %.0f %.0f", position.x, position.y, position.z);
+            vec3 pos = game.getPlayer().getTargetPos();
+            ImGui::Text("Target: %.0f %.0f %.0f", pos.x, pos.y, pos.z);
             ImGui::Text("Block: %s", block ? block->getDisplayName().c_str() : "None");
             ImGui::Text("%s", block->toString().c_str());
         }

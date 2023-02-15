@@ -52,7 +52,7 @@ namespace cybrion
 
     void BlockLoader::loadTextures()
     {
-        string folderPath = Application::Get().getResourcePath("textures/blocks/");
+        string folderPath = "D:/github/cybrion/resources/textures/blocks/";
 
         // count number of block textures
         u32 layerCount = 0;
@@ -139,11 +139,10 @@ namespace cybrion
 
                 vector<Block*> blocks;
 
-                Game::Get().getBlockRegistry().queryBlocks(type, stateMap, blocks);
+                Blocks::Get().queryBlocks(type, stateMap, blocks);
 
                 // handle value
                 YAML::Node value = it.second;
-                BlockLoader& loader = Game::Get().getBlockLoader();
                 for (auto it0 : value)
                 {
                     string key = it0.first.as<string>();
@@ -159,7 +158,7 @@ namespace cybrion
 
                     if (key == "all")
                     {
-                        u32 id = loader.getTextureId(value);
+                        u32 id = getTextureId(value);
                         OVERRIDE(m_topTexture    , id);
                         OVERRIDE(m_bottomTexture , id);
                         OVERRIDE(m_northTexture  , id);
@@ -170,7 +169,7 @@ namespace cybrion
 
                     if (key == "side")
                     {
-                        u32 id = loader.getTextureId(value);
+                        u32 id = getTextureId(value);
                         OVERRIDE(m_northTexture , id);
                         OVERRIDE(m_southTexture , id);
                         OVERRIDE(m_eastTexture  , id);
@@ -179,13 +178,13 @@ namespace cybrion
 
                     if (key == "top")
                     {
-                        u32 id = loader.getTextureId(value);
+                        u32 id = getTextureId(value);
                         OVERRIDE(m_topTexture  , id);
                     }
 
                     if (key == "bottom")
                     {
-                        u32 id = loader.getTextureId(value);
+                        u32 id = getTextureId(value);
                         OVERRIDE(m_bottomTexture, id);
                     }
                 }

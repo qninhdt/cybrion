@@ -112,7 +112,7 @@ namespace cybrion
         {{ {0,-1,-1}, {1,-1,-1},{1,0,-1},{1,1,-1},{0,1,-1},{-1,1,-1},{-1,0,-1},{-1,-1,-1} }}
     } };
 
-    void BlockRenderer::generateCubeMesh(bool culling[6], const vec3& position, Block* (&neighbors)[3][3][3], CubeVertex* result, u32& index)
+    void BlockRenderer::generateCubeMesh(bool culling[6], const vec3& position, const Block::Block3x3x3& blocks, CubeVertex* result, u32& index)
     {
         for (u32 i = 0; i < 6; ++i)
         {
@@ -127,9 +127,9 @@ namespace cybrion
                 ivec3 p2 = adjs[(j * 2 + 1) % 8];
                 ivec3 p3 = adjs[(j * 2 + 2) % 8];
 
-                Block* b1 = neighbors[p1.x + 1][p1.y + 1][p1.z + 1];
-                Block* b2 = neighbors[p2.x + 1][p2.y + 1][p2.z + 1];
-                Block* b3 = neighbors[p3.x + 1][p3.y + 1][p3.z + 1];
+                Block* b1 = blocks[p1.x + 1][p1.y + 1][p1.z + 1];
+                Block* b2 = blocks[p2.x + 1][p2.y + 1][p2.z + 1];
+                Block* b3 = blocks[p3.x + 1][p3.y + 1][p3.z + 1];
 
                 bool o1 = b1 && b1->getDisplay() == BlockDisplay::OPAQUE;
                 bool o2 = b2 && b2->getDisplay() == BlockDisplay::OPAQUE;

@@ -6,41 +6,28 @@ namespace cybrion
 {
     Game* Game::s_game = nullptr;
 
-    Game::Game():
-        m_player(nullptr)
+    Game::Game()
     {
         s_game = this;
     }
 
     void Game::load()
     {
-        // register blocks
-        m_blockRegistry.load();
-
         // load block configs
         m_blockLoader.load();
 
         // precompute some block properties
-        m_blockRegistry.computeRotation();
+        Blocks::Get().computeRotation();
 
         m_world.loadChunk({ 0, 0, 0 });
+
+        m_player.setEntity(m_world.spawnEntity({ 0, 0, 0 }));
     }
 
     void Game::tick()
     {
         m_world.tick();
-        //if (m_player)
-            m_player->tick();
-    }
-
-    BlockRegistry& Game::getBlockRegistry()
-    {
-        return m_blockRegistry;
-    }
-
-    BlockLoader& Game::getBlockLoader()
-    {
-        return m_blockLoader;
+        m_player.tick();
     }
 
     World& Game::getWorld()
@@ -48,16 +35,9 @@ namespace cybrion
         return m_world;
     }
 
-    void Game::loadPlayer(Player& player)
+    Player& Game::getPlayer()
     {
-        Object playerEntity = m_world.spawnEntity({ 12, 13, 12 });
-        auto& data = playerEntity.get<EntityData>();
-
-        data.aabb = { { 0, 0, 0 }, { 1, 1, 1 } };
-
-        player.setEntity(playerEntity);
-
-        m_player = &player;
+        return m_player;
     }
 
     Game& Game::Get()

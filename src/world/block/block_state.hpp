@@ -14,7 +14,7 @@ namespace cybrion
             using type = T;
             static constexpr const_string name = pname;
             static constexpr u32 num_values = pnum_values;
-            static constexpr u32 num_bits = util::CeilLog2(num_values);
+            static constexpr u32 num_bits = util::ceilLog2(num_values);
             static constexpr u32 name_length = name.length();
 
             T value = (T)0;

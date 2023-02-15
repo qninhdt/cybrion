@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/object.hpp"
 #include "world/block/block.hpp"
 #include "world/entity/entity.hpp"
 #include "core/stopwatch.hpp"
@@ -14,8 +13,8 @@ namespace cybrion
         bool isMoving = false;
         bool rightClick = false;
         bool leftClick = false;
-        vec3 moveDirection = { 0, 0, 0 };
-        vec3 deltaRotation = { 0, 0, 0 };
+        vec3 moveDir = { 0, 0, 0 };
+        vec3 deltaRot = { 0, 0, 0 };
     };
 
     class Player
@@ -23,23 +22,24 @@ namespace cybrion
     public:
 
         Player();
-        Object getEntity() const;
-        void setEntity(Object entity);
+        ref<Entity> getEntity() const;
+        void setEntity(const ref<Entity>& entity);
 
         void tick();
 
-        Block* getSelectingBlock() const;
-        BlockFace getSelectingFace() const;
-        ivec3 getSelectingPosition() const;
-        bool isSelectingBlock() const;
+        Block* getTargetBlock() const;
+        BlockFace getTargetFace() const;
+        ivec3 getTargetPos() const;
 
         PlayerInput& getInput();
 
     private:
-        Object m_entity;
-        bool m_isSelecting;
-        ivec3 m_selectingPos;
-        BlockFace m_selectingFace;
+        ref<Entity> m_entity;
+
+        ivec3 m_targetPos;
+        Block* m_targetBlock;
+        BlockFace m_targetFace;
+
         PlayerInput m_input;
         Stopwatch m_blockInteractStopwatch;
     };

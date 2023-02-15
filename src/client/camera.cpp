@@ -5,7 +5,6 @@
 namespace cybrion
 {
     Camera::Camera(f32 aspect, f32 fov, f32 near, f32 far) :
-        detail::Transform0({ 0, 0, 0 }, { 0, 0, 0 }),
         m_aspect(aspect),
         m_fov(fov),
         m_near(near),
@@ -13,36 +12,34 @@ namespace cybrion
         m_zoom(1),
         m_up(YAxis)
     {
-        updateViewMatrix();
-        updateProjectionMatrix();
+        updateViewMat();
+        updateProjMat();
     }
 
-    void Camera::tick()
+    void Camera::tick(f32 delta)
     {
-        if (m_target.valid())
+        if (m_target)
         {
-            auto& mesh = m_target.get<EntityRenderer>().mesh;
+            setPos(m_target->lerpPos(delta));
+            setRot(m_target->lerpRot(delta));
 
-            setPosition(mesh.getPosition());
-            setRotation(mesh.getRotation());
-
-            updateViewMatrix();
+            updateViewMat();
         }
     }
 
-    const mat4& Camera::getViewMatrix() const
+    const mat4& Camera::getViewMat() const
     {
-        return m_viewMatrix;
+        return m_viewMat;
     }
 
-    const mat4& Camera::getProjectionMatrix() const
+    const mat4& Camera::getProjMat() const
     {
-        return m_projectionMatrix;
+        return m_projMat;
     }
 
-    const mat4& Camera::getProjectionViewMatrix() const
+    const mat4& Camera::getProjViewMat() const
     {
-        return m_projectionViewMatrix;
+        return m_projViewMat;
     }
 
     vec3 Camera::getUp() const
@@ -65,29 +62,29 @@ namespace cybrion
         m_aspect = aspect;
     }
 
-    void Camera::setTarget(Object target)
+    void Camera::setTarget(const ref<Entity>& target)
     {
         m_target = target;
     }
 
-    void Camera::updateViewMatrix()
+    void Camera::updateViewMat()
     {
-        vec3 direction = getDirection();
-        m_viewMatrix = glm::rotate(mat4(1.0f), m_rotation.z, direction)
-            * glm::lookAt(m_position, m_position + direction, m_up);
-        m_right = glm::normalize(glm::cross(direction, m_up));
+        vec3 dir = getDir();
+        m_viewMat = glm::rotate(mat4(1.0f), m_rot.z, dir)
+            * glm::lookAt(m_pos, m_pos + dir, m_up);
+        m_right = glm::normalize(glm::cross(dir, m_up));
         m_forward = glm::normalize(glm::cross(m_up, m_right));
-        updateProjectionViewMatrix();
+        updateProjViewMat();
     }
 
-    void Camera::updateProjectionMatrix()
+    void Camera::updateProjMat()
     {
-        m_projectionMatrix = glm::perspective(m_fov, m_aspect, m_near, m_far);
-        updateProjectionViewMatrix();
+        m_projMat = glm::perspective(m_fov, m_aspect, m_near, m_far);
+        updateProjViewMat();
     }
 
-    void Camera::updateProjectionViewMatrix()
+    void Camera::updateProjViewMat()
     {
-        m_projectionViewMatrix = m_projectionMatrix * m_viewMatrix;
+        m_projViewMat = m_projMat * m_viewMat;
     }
 }

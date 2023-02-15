@@ -10,7 +10,6 @@
 namespace cybrion
 {
     WorldRenderer::WorldRenderer(World& world):
-        m_registry(GetRegistry()),
         m_world(world),
         m_enableAO(true),
         m_enableDiffuse(true)
@@ -19,20 +18,22 @@ namespace cybrion
         m_opaqueCubeShader = ShaderManager::Get().getShader<OpaqueCubeShader>("opaque_cube");
     }
 
-    void WorldRenderer::render(f32 deltaTime, bool showEntityBorder)
+    void WorldRenderer::render(f32 delta, bool showEntityBorder)
     {
+        updateEntityRenderers(delta);
+
         BlockLoader::Get().bindTextureArray();
         m_opaqueCubeShader.use();
 
         m_opaqueCubeShader.setUniform<"enable_diffuse">((u32)m_enableDiffuse);
         m_opaqueCubeShader.setUniform<"enable_ao">((u32)m_enableAO);
 
-        for (auto&& [_, renderer] : m_registry.view<ChunkRenderer>().each())
+        for (auto& [_, renderer]: m_chunkRenderers)
         {
-            auto& opaqueMesh = renderer.opaqueMesh;
+            auto& opaqueMesh = renderer->opaqueMesh;
             m_opaqueCubeShader.setUniform<"MVP">(
-                LocalGame::Get().getCamera().getProjectionViewMatrix()
-                * opaqueMesh.getModelMatrix()
+                LocalGame::Get().getCamera().getProjViewMat()
+                * opaqueMesh.getModelMat()
             );
             opaqueMesh.drawTriangles();
         }
@@ -40,157 +41,127 @@ namespace cybrion
         if (showEntityBorder)
         {
             m_basicShader.use();
-            for (auto&& [_, renderer] : m_registry.view<EntityRenderer>().each())
+            for (auto& [_, renderer]: m_entityRenderers)
             {
-                auto& aabbMesh = renderer.aabbMesh;
+                auto& aabbMesh = renderer->aabbMesh;
                 m_basicShader.setUniform<"MVP">(
-                    LocalGame::Get().getCamera().getProjectionViewMatrix()
-                    * aabbMesh.getModelMatrix()
-                    );
+                    LocalGame::Get().getCamera().getProjViewMat()
+                    * aabbMesh.getModelMat()
+                );
                 aabbMesh.drawLines();
             }
         }
     }
 
-    void WorldRenderer::setupChunk(Object chunk)
+    void WorldRenderer::addChunk(const ref<Chunk>& chunk)
     {
-        m_buildMeshQueue.push(chunk);
+        auto renderer = std::make_shared<ChunkRenderer>(chunk);
 
-        auto& data = chunk.get<ChunkData>();
-        for (u32 i = 0; i < 6; ++i)
-        {
-            if (data.neighbors[i].valid())
+        renderer->inBuildQueue = true;
+        m_buildChunkQueue.push(renderer);
+
+        chunk->eachNeighbors([&](ref<Chunk>& neighbor) {
+            if (neighbor)
             {
-                /// NOTE: lock ?
-                if (data.neighbors[i].tryGet<ChunkRenderer>() != nullptr)
-                {
-                    queueRebuild(data.neighbors[i]);
-                }
+                auto neighborRenderer = getChunkRenderer(neighbor);
+                prepareRebuild(neighborRenderer);
             }
-        }
+        });
     }
 
-    void WorldRenderer::setupEntity(Object entity)
+    void WorldRenderer::addEntity(const ref<Entity>& entity)
     {
-        auto& renderer = entity.assign<EntityRenderer>();
-        BasicMeshGenerator::LineCubeMesh(renderer.aabbMesh, 1, { 0, 0, 1 });
+        auto renderer = std::make_shared<EntityRenderer>(entity);
+        m_entityRenderers[entity->getId()] = renderer;
     }
 
     void WorldRenderer::buildChunkMeshes(f32 maxDuration)
     {
         m_stopwatch.reset();
-        while (!m_buildMeshQueue.empty() && maxDuration > m_stopwatch.getDeltaTime())
+        while (!m_buildChunkQueue.empty() && maxDuration > m_stopwatch.getDeltaTime())
         {
-            Object chunk = m_buildMeshQueue.front();
-            m_buildMeshQueue.pop();
+            auto renderer = m_buildChunkQueue.front();
+            m_buildChunkQueue.pop();
 
-            auto& data = chunk.get<ChunkData>();
-            auto& renderer = chunk.tryGet<ChunkRenderer>()
-                ? chunk.get<ChunkRenderer>()
-                : chunk.assign<ChunkRenderer>();
-
-            renderer.buildChunkMesh(data);
+            renderer->buildChunkMesh();
+            renderer->inBuildQueue = false;
         }
     }
 
     void WorldRenderer::rebuildChunkMeshes(f32 maxDuration)
     {
-        for (auto& chunk: m_rebuildMeshSet)
+        for (auto& renderer: m_rebuildChunkList)
         {
-            auto& data = chunk.get<ChunkData>();
-            auto& renderer = chunk.get<ChunkRenderer>();
-
-            renderer.rebuildChunkMesh(data);
+            renderer->rebuildChunkMesh();
+            renderer->inRebuildList = false;
         }
 
-        m_rebuildMeshSet.clear();
+        m_rebuildChunkList.clear();
     }
 
-    void WorldRenderer::queueRebuild(Object chunk)
+    ref<ChunkRenderer> WorldRenderer::getChunkRenderer(const ref<Chunk>& chunk) const
     {
-        m_rebuildMeshSet.insert(chunk);
+        auto it = m_chunkRenderers.find(chunk->getId());
+        return it == m_chunkRenderers.end() ? nullptr : it->second;
     }
 
-    void WorldRenderer::onBlockChanged(const ivec3& pos)
+    ref<EntityRenderer> WorldRenderer::getEntityRenderer(const ref<Entity>& entity) const
     {
-        updateBlockVisiblity(pos);
+        auto it = m_entityRenderers.find(entity->getId());
+        return it == m_entityRenderers.end() ? nullptr : it->second;
+    }
 
-        for (auto& [dir, face] : ChunkData::Directions)
+    void WorldRenderer::prepareRebuild(const ref<ChunkRenderer>& renderer)
+    {
+        if (!renderer->inBuildQueue && !renderer->inRebuildList)
         {
-            updateBlockVisiblity(pos + dir);
-        }
-    }
-
-    void WorldRenderer::updateEntityTransforms(f32 lerpFactor)
-    {
-        auto view = m_registry.view<EntityData, EntityRenderer>();
-
-        for (auto&& [_, data, renderer] : view.each())
-        {
-            renderer.mesh.setPosition(
-                util::Lerp(
-                    data.oldTransform.getPosition(),
-                    data.transform.getPosition(), lerpFactor
-                )
-            );
-
-            renderer.aabbMesh.setPosition(
-                util::Lerp(
-                    data.getOldWorldAABB().getPosition(),
-                    data.getWorldAABB().getPosition(), lerpFactor
-                )
-            );
-            renderer.aabbMesh.updateModelMatrix();
-
-            renderer.mesh.setRotation(
-                util::LerpRotaion(
-                    data.oldTransform.getRotation(),
-                    data.transform.getRotation(), lerpFactor
-                 )
-            );
-
-            renderer.mesh.updateModelMatrix();
+            m_rebuildChunkList.push_back(renderer);
+            renderer->inRebuildList = true;
         }
     }
 
-    void WorldRenderer::updateBlockVisiblity(const ivec3& pos)
+    void WorldRenderer::updateBlock(const BlockModifyResult& result)
     {
-        ivec3 chunkPos = World::GetChunkPos(pos);
-        uvec3 localPos = World::GetLocalPos(pos);
-
-        Object* chunk = m_world.tryGetChunk(chunkPos);
-
-        if (!chunk) return;
-
-        queueRebuild(*chunk);
-
-        auto& data = chunk->get<ChunkData>();
-        auto& renderer = chunk->get<ChunkRenderer>();
-        Block& block = data.getBlock(localPos);
-
-        if (block.getDisplay() == BlockDisplay::TRANSPARENT)
+        result.chunk->eachBlockAndNeighbors(result.pos, [&](Block* block, ref<Chunk>& chunk, const ivec3& dir) 
         {
-            renderer.visibleBlocks.erase(localPos);
-            return;
-        }
+            auto renderer = getChunkRenderer(chunk);
+            ivec3 pos = result.pos + dir;
+            ivec3 localPos = Chunk::posToChunkPos(pos);
 
-        if (block.getDisplay() != BlockDisplay::OPAQUE)
-        {
-            renderer.visibleBlocks[localPos] = &block;
-            return;
-        }
+            prepareRebuild(renderer);
 
-        for (auto [dir, face] : ChunkData::Directions)
-        {
-            Block* nBlock = m_world.tryGetBlock(ivec3(pos) + dir);
+            if (!block) return;
 
-            if (nBlock && nBlock->getDisplay() != BlockDisplay::OPAQUE)
+            if (block->getDisplay() == BlockDisplay::TRANSPARENT)
             {
-                renderer.visibleBlocks[localPos] = &block;
+                renderer->visibleBlocks.erase(localPos);
                 return;
             }
-        }
 
-        renderer.visibleBlocks.erase(localPos);
+            if (block->getDisplay() != BlockDisplay::OPAQUE)
+            {
+                renderer->visibleBlocks[localPos] = block;
+                return;
+            }
+
+            for (auto [dir, face] : Block::Directions)
+            {
+                Block* nBlock = m_world.tryGetBlock(pos);
+
+                if (nBlock && nBlock->getDisplay() != BlockDisplay::OPAQUE)
+                {
+                    renderer->visibleBlocks[localPos] = block;
+                    return;
+                }
+            }
+
+            renderer->visibleBlocks.erase(localPos);
+        });
+    }
+
+    void WorldRenderer::updateEntityRenderers(f32 delta)
+    {
+        for (auto& [_, renderer ]: m_entityRenderers)
+            renderer->tick(delta);
     }
 }

@@ -23,13 +23,12 @@ namespace cybrion
         Game::load();
         createBlockRenderers();
 
-        loadPlayer(m_player);
-        m_camera.setTarget(m_player.getEntity());
+        m_camera.setTarget(getPlayer().getEntity());
 
         m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
 
-        BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, CHUNK_SIZE, { 1, 0, 0 });
-        BasicMeshGenerator::LineCubeMesh(m_selectingBlockMesh, 1.005f, { 1, 1, 1 });
+        BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, { 1, 0, 0 });
+        BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.005f, { 1, 1, 1 });
     }
 
     void LocalGame::tick()
@@ -37,16 +36,15 @@ namespace cybrion
         Game::tick();
     }
 
-    void LocalGame::render(f32 lerpFactor)
+    void LocalGame::render(f32 delta)
     {
-
-        m_worldRenderer.updateEntityTransforms(lerpFactor);
-        m_camera.tick();
+        m_worldRenderer.updateEntityRenderers(delta);
+        m_camera.tick(delta);
 
         m_worldRenderer.buildChunkMeshes(1); // allow build meshes in 1 second
         m_worldRenderer.rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
         
-        m_worldRenderer.render(lerpFactor, m_showEntityBorder);
+        m_worldRenderer.render(delta, m_showEntityBorder);
 
         if (m_showChunkBoder)
             renderChunkBorder();
@@ -56,16 +54,16 @@ namespace cybrion
 
     void LocalGame::renderChunkBorder()
     {
-        m_chunkBorderMesh.setPosition({ 16, 16, 16 }
-            //m_player.getEntity().get<EntityData>().getChunkWorldPosition()
+        m_chunkBorderMesh.setPos({ 16, 16, 16 }
+            //m_player.getEntity().get<EntityData>().getChunkWorldPos()
         );
 
-        m_chunkBorderMesh.updateModelMatrix();
+        m_chunkBorderMesh.updateModelMat();
 
         m_basicShader.use();
         m_basicShader.setUniform<"MVP">(
-            m_camera.getProjectionViewMatrix() *
-            m_chunkBorderMesh.getModelMatrix()
+            m_camera.getProjViewMat() *
+            m_chunkBorderMesh.getModelMat()
         );
 
         m_chunkBorderMesh.drawLines();
@@ -76,50 +74,50 @@ namespace cybrion
         glEnable(GL_LINE_SMOOTH);
         glLineWidth(2.0);
 
-        if (m_player.isSelectingBlock())
+        if (m_player.getTargetBlock() != nullptr)
         {
-            ivec3 pos = m_player.getSelectingPosition();
+            ivec3 pos = m_player.getTargetPos();
 
-            m_selectingBlockMesh.setPosition({ pos.x + 0.5f, pos.y + 0.5f, pos.z + 0.5f });
-            m_selectingBlockMesh.updateModelMatrix();
+            m_targetBlockMesh.setPos({ pos.x + 0.5f, pos.y + 0.5f, pos.z + 0.5f });
+            m_targetBlockMesh.updateModelMat();
 
             m_basicShader.use();
             m_basicShader.setUniform<"MVP">(
-                m_camera.getProjectionViewMatrix() *
-                m_selectingBlockMesh.getModelMatrix()
+                m_camera.getProjViewMat() *
+                m_targetBlockMesh.getModelMat()
             );
 
-            m_selectingBlockMesh.drawLines();
+            m_targetBlockMesh.drawLines();
         }
     }
 
-    void LocalGame::onChunkLoaded(Object chunk)
+    void LocalGame::onChunkLoaded(const ref<Chunk>& chunk)
     {
-        m_worldRenderer.setupChunk(chunk);
+        m_worldRenderer.addChunk(chunk);
     }
 
-    void LocalGame::onChunkUnloaded(Object chunk)
+    void LocalGame::onChunkUnloaded(const ref<Chunk>& chunk)
     {
     }
 
-    void LocalGame::onEntitySpawned(Object entity)
+    void LocalGame::onEntitySpawned(const ref<Entity>& entity)
     {
-        m_worldRenderer.setupEntity(entity);
+        m_worldRenderer.addEntity(entity);
     }
 
-    void LocalGame::onBlockChanged(Object chunk, const ivec3& pos, Block& to, Block& from)
+    void LocalGame::onBlockChanged(const BlockModifyResult& result)
     {
-        m_worldRenderer.onBlockChanged(pos);
+        m_worldRenderer.updateBlock(result);
     }
 
-    void LocalGame::onPlaceBlock(Object chunk, const ivec3& pos, Block& block, BlockFace face)
+    void LocalGame::onPlaceBlock(const BlockModifyResult& result)
     {
-        CYBRION_GAME_TRACE("Player places block {} at ({}, {}, {})", block.toString(), pos.x, pos.y, pos.z);
+        CYBRION_GAME_TRACE("Player places block {} at ({}, {}, {})", result.block.toString(), result.pos.x, result.pos.y, result.pos.z);
     }
 
-    void LocalGame::onBreakBlock(Object chunk, const ivec3& pos, Block& block)
+    void LocalGame::onBreakBlock(const BlockModifyResult& result)
     {
-        CYBRION_GAME_TRACE("Player breaks block {}", block.toString());
+        CYBRION_GAME_TRACE("Player breaks block {}", result.block.toString());
     }
 
     Camera& LocalGame::getCamera()
@@ -164,11 +162,6 @@ namespace cybrion
         {
             switch (key)
             {
-
-            case KeyCode::B:
-                m_worldRenderer.rebuildChunkMeshes(1);
-                break;
-
             case KeyCode::N:
                 getWorld().loadChunk({ n++, 0, 0 });
                 break;
@@ -178,19 +171,9 @@ namespace cybrion
                 Application::Get().toggleCursor();
                 break;
 
-                // close window
+            // close window
             case KeyCode::ESCAPE:
                 Application::Get().close();
-                break;
-
-                // reload shaders
-            case KeyCode::R:
-                ShaderManager::Get().reloadShaders();
-                break;
-
-                // toggle wireframe
-            case KeyCode::F2:
-                LocalGame::Get().toggleWireframe();
                 break;
             }
         }
@@ -205,8 +188,7 @@ namespace cybrion
         if (!Application::Get().isCursorEnable())
         {
             auto& input = m_player.getInput();
-            input.deltaRotation += vec3(-delta.y, -delta.x, 0);
-            
+            input.deltaRot += vec3(-delta.y, -delta.x, 0);
         }
     }
 
@@ -215,7 +197,7 @@ namespace cybrion
         if (width == 0 || height == 0) return;
 
         m_camera.setAspect(width * 1.0f / height);
-        m_camera.updateProjectionMatrix();
+        m_camera.updateProjMat();
     }
 
     LocalGame& LocalGame::Get()
@@ -225,9 +207,9 @@ namespace cybrion
 
     void LocalGame::createBlockRenderers()
     {
-        for (u32 i = 0; i < BlockRegistry::BlockStateCount(); ++i)
+        for (u32 i = 0; i < Blocks::StateCount(); ++i)
         {
-            Block& block = BlockRegistry::Get().getBlock(i);
+            Block& block = Blocks::Get().getBlock(i);
             m_blockRenderers[block.getId()].m_block = &block;
             m_blockRenderers[block.getId()].generateCubeTexture();
         }

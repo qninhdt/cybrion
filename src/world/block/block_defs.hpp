@@ -8,6 +8,7 @@ namespace cybrion
         SOIL,
         LOG,
         SAND,
+        ROCK,
         ENUM_SIZE
     };
 

@@ -2,32 +2,29 @@
 
 namespace cybrion
 {
-    namespace detail
+    class BasicTransform
     {
-        class Transform0
-        {
-        public:
+    public:
+        BasicTransform();
+        BasicTransform(const vec3& pos, const vec3& rot);
 
-            Transform0(const vec3& position, const vec3& rotation);
+        const vec3& getPos() const;
+        void setPos(const vec3& pos);
+        void move(const vec3& delta);
 
-            const vec3& getPosition() const;
-            void setPosition(const vec3& position);
-            void move(const vec3& delta);
+        const vec3& getRot() const;
+        void setRot(const vec3& rot);
+        void rotate(const vec3& delta);
 
-            const vec3& getRotation() const;
-            void setRotation(const vec3& rotation);
-            void rotate(const vec3& delta);
+        vec3 getDir() const;
+        void setDir(const vec3& dir);
 
-            vec3 getDirection() const;
-            void setDirection(const vec3& direction);
+    protected:
+        vec3 m_pos;
+        vec3 m_rot;
+    };
 
-        protected:
-            vec3 m_position;
-            vec3 m_rotation;
-        };
-    }
-
-    class Transform : public detail::Transform0
+    class Transform : public BasicTransform
     {
     public:
         Transform();
@@ -36,11 +33,11 @@ namespace cybrion
         const vec3& getScale() const;
         void setScale(const vec3& scale);
 
-        void updateModelMatrix();
-        const mat4& getModelMatrix() const;
+        void updateModelMat();
+        const mat4& getModelMat() const;
 
     private:
         vec3 m_scale;
-        mat4 m_modelMatrix;
+        mat4 m_modelMat;
     };
 }

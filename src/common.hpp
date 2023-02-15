@@ -24,6 +24,18 @@
 #endif
 #endif
 
+#ifdef CYBRION_DEBUG
+#define CYBRION_ASSERT(b, m) \
+    do { \
+        if (!(b)) { \
+            CYBRION_ERROR("Assert failed: {}", m); \
+            CYBRION_DEBUGBREAK(); \
+        } \
+    } while(0);
+#else
+#define CYBRION_ASSERT(b, m)
+#endif
+
 #define CYBRION_STATIC_ERROR(message) static_assert(cybrion::detail::always_false<T> && message);
 
 #ifdef CYBRION_DEBUG
@@ -91,6 +103,9 @@ namespace cybrion
 
     template <typename V>
     using queue = std::queue<V>;
+
+    template <typename T>
+    using ref = std::shared_ptr<T>;
 
     constexpr f32 pi = 3.14159265358979323846;
     constexpr f32 two_pi = pi * 2;

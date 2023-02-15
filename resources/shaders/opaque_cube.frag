@@ -13,8 +13,9 @@ float diffuse[6] = { 0.9f, 1.0f, 0.9f, 0.9f, 0.8f, 0.9f };
 
 void main() {
 	float factor = 1;
-	
-	if (enable_ao == 1) factor *= ao;
+	float ao_ = 1-(ao-1)*(ao-1)/2;
+
+	if (enable_ao == 1) factor *= ao_;
 	if (enable_diffuse == 1) factor *= diffuse[face];
 	
     gl_FragColor = factor * texture(texures, vec3(uv, tex_id));

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "core/transform.hpp"
-#include "core/object.hpp"
+#include "world/entity/entity.hpp"
 
 namespace cybrion
 {
-    class Camera : public detail::Transform0
+    class Camera : public BasicTransform
     {
     public:
         static constexpr vec3 XAxis = { 1, 0, 0 };
@@ -14,11 +14,11 @@ namespace cybrion
 
         Camera(f32 aspect, f32 fov, f32 near, f32 far);
 
-        void tick();
+        void tick(f32 delta);
 
-        const mat4& getViewMatrix() const;
-        const mat4& getProjectionMatrix() const;
-        const mat4& getProjectionViewMatrix() const;
+        const mat4& getViewMat() const;
+        const mat4& getProjMat() const;
+        const mat4& getProjViewMat() const;
 
         vec3 getUp() const;
         vec3 getRight() const;
@@ -26,15 +26,15 @@ namespace cybrion
 
         void setAspect(f32 aspect);
 
-        void setTarget(Object target);
+        void setTarget(const ref<Entity>& target);
 
-        void updateViewMatrix();
-        void updateProjectionMatrix();
+        void updateViewMat();
+        void updateProjMat();
 
     private:
-        void updateProjectionViewMatrix();
+        void updateProjViewMat();
 
-        Object m_target;
+        ref<Entity> m_target;
 
         f32 m_aspect;
         f32 m_fov;
@@ -45,8 +45,8 @@ namespace cybrion
         vec3 m_forward;
         vec3 m_right;
         vec3 m_up;
-        mat4 m_viewMatrix;
-        mat4 m_projectionMatrix;
-        mat4 m_projectionViewMatrix;
+        mat4 m_viewMat;
+        mat4 m_projMat;
+        mat4 m_projViewMat;
     };
 }

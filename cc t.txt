@@ -39,8 +39,8 @@ namespace cybrion
             }
         }
  
-        LogBlock& log = (LogBlock&)Game::Get().getBlockRegistry().getBlock(BlockType::LOG);
-        SoilBlock& dirt = (SoilBlock&)Game::Get().getBlockRegistry().getBlock(BlockType::SOIL);
+        LogBlock& log = (LogBlock&)Game::Get().getBlocks().getBlock(BlockType::LOG);
+        SoilBlock& dirt = (SoilBlock&)Game::Get().getBlocks().getBlock(BlockType::SOIL);
 
         for (u32 x = 0; x < CHUNK_SIZE; ++x)
         {
@@ -142,7 +142,7 @@ namespace cybrion
 
     void World::breakBlock(const ivec3& pos)
     {
-        auto [chunk, block] = setBlock(pos, BlockRegistry::Get().getBlock(BlockType::AIR));
+        auto [chunk, block] = setBlock(pos, Blocks::Get().getBlock(BlockType::AIR));
         Game::Get().onBreakBlock(chunk, pos, block);
     }
 

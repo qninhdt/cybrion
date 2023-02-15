@@ -13,13 +13,13 @@ namespace cybrion
         f32 dy = direction.y;
         f32 dz = direction.z;
 
-        i32 stepX = util::SignNum(dx);
-        i32 stepY = util::SignNum(dy);
-        i32 stepZ = util::SignNum(dz);
+        i32 stepX = util::signNum(dx);
+        i32 stepY = util::signNum(dy);
+        i32 stepZ = util::signNum(dz);
 
-        f32 tMaxX = util::IntBound(position.x, dx);
-        f32 tMaxY = util::IntBound(position.y, dy);
-        f32 tMaxZ = util::IntBound(position.z, dz);
+        f32 tMaxX = util::intBound(position.x, dx);
+        f32 tMaxY = util::intBound(position.y, dy);
+        f32 tMaxZ = util::intBound(position.z, dz);
 
         f32 tDeltaX = stepX / dx;
         f32 tDeltaY = stepY / dy;

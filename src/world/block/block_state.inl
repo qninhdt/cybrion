@@ -5,6 +5,6 @@ namespace cybrion
     B& TBlock<B, type, S...>::set(const auto& value)
     {
         u32 newId = getId() + block::state_holder<S...>::template set<name>(value);
-        return (B&) Game::Get().getBlockRegistry().getBlock(newId);
+        return (B&) Blocks::Get().getBlock(newId);
     }
 }
