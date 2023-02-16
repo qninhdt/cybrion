@@ -29,6 +29,13 @@ namespace cybrion
 
         BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, { 1, 0, 0 });
         BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.005f, { 1, 1, 1 });
+
+        for (i32 x = -8; x < 8; ++x)
+            for (i32 y = -8; y < 8; ++y)
+                    m_world.loadChunk({ x, 0, y });
+
+        m_player.setEntity(m_world.spawnEntity({ 16, 16, 16 }));
+        m_camera.setTarget(m_player.getEntity());
     }
 
     void LocalGame::tick()
@@ -38,12 +45,8 @@ namespace cybrion
 
     void LocalGame::render(f32 delta)
     {
-        m_worldRenderer.updateEntityRenderers(delta);
         m_camera.tick(delta);
 
-        m_worldRenderer.buildChunkMeshes(1); // allow build meshes in 1 second
-        m_worldRenderer.rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
-        
         m_worldRenderer.render(delta, m_showEntityBorder);
 
         if (m_showChunkBoder)
@@ -162,10 +165,6 @@ namespace cybrion
         {
             switch (key)
             {
-            case KeyCode::N:
-                getWorld().loadChunk({ n++, 0, 0 });
-                break;
-
             // toggle cursor
             case KeyCode::F1:
                 Application::Get().toggleCursor();

@@ -19,9 +19,6 @@ namespace cybrion
         // precompute some block properties
         Blocks::Get().computeRotation();
 
-        m_world.loadChunk({ 0, 0, 0 });
-
-        m_player.setEntity(m_world.spawnEntity({ 0, 0, 0 }));
     }
 
     void Game::tick()

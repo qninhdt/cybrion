@@ -22,6 +22,9 @@ namespace cybrion
     {
         updateEntityRenderers(delta);
 
+        buildChunkMeshes(0.05f); // allow build meshes in 1 second
+        rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
+
         BlockLoader::Get().bindTextureArray();
         m_opaqueCubeShader.use();
 
@@ -57,10 +60,12 @@ namespace cybrion
     {
         auto renderer = std::make_shared<ChunkRenderer>(chunk);
 
+        m_chunkRenderers[chunk->getId()] = renderer;
+
         renderer->inBuildQueue = true;
         m_buildChunkQueue.push(renderer);
 
-        chunk->eachNeighbors([&](ref<Chunk>& neighbor) {
+        chunk->eachNeighbors([&](ref<Chunk>& neighbor, const ivec3&) {
             if (neighbor)
             {
                 auto neighborRenderer = getChunkRenderer(neighbor);
@@ -122,15 +127,15 @@ namespace cybrion
 
     void WorldRenderer::updateBlock(const BlockModifyResult& result)
     {
-        result.chunk->eachBlockAndNeighbors(result.pos, [&](Block* block, ref<Chunk>& chunk, const ivec3& dir) 
+        result.chunk->eachBlockAndNeighbors(Chunk::posToLocalPos(result.pos), [&](Block* block, ref<Chunk>& chunk, const ivec3& dir) 
         {
+            if (!block) return;
+
             auto renderer = getChunkRenderer(chunk);
             ivec3 pos = result.pos + dir;
-            ivec3 localPos = Chunk::posToChunkPos(pos);
+            ivec3 localPos = Chunk::posToLocalPos(pos);
 
             prepareRebuild(renderer);
-
-            if (!block) return;
 
             if (block->getDisplay() == BlockDisplay::TRANSPARENT)
             {
@@ -146,7 +151,7 @@ namespace cybrion
 
             for (auto [dir, face] : Block::Directions)
             {
-                Block* nBlock = m_world.tryGetBlock(pos);
+                Block* nBlock = m_world.tryGetBlock(pos + dir);
 
                 if (nBlock && nBlock->getDisplay() != BlockDisplay::OPAQUE)
                 {

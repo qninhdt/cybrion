@@ -6,26 +6,33 @@ namespace cybrion
     World::World()
     {}
 
-    //Object World::spawnEntity(const vec3& pos)
-    //{
-    //    Object entity(m_registry.create());
-    //    auto& data = entity.assign<EntityData>(pos);
-
-    //    Game::Get().onEntitySpawned(entity);
-
-    //    return entity;
-    //}
-
     ref<Entity> World::spawnEntity(const vec3& pos)
     {
         auto entity = std::make_shared<Entity>(pos);
         m_entities.push_back(entity);
+
+        Game::Get().onEntitySpawned(entity);
+
         return entity;
     }
 
     ref<Chunk> World::loadChunk(const ivec3& pos)
     {
-        auto chunk = m_chunkMap[pos] = m_generator.generateChunkAt(pos);
+        auto chunk = m_generator.generateChunkAt(pos);
+
+        chunk->eachNeighbors([&](ref<Chunk>&, const ivec3& dir) {
+            ref<Chunk> neighbor = getChunk(pos + dir);
+            chunk->setNeighbor(dir, neighbor);
+
+            if (neighbor)
+                neighbor->setNeighbor(-dir, chunk);
+        });
+
+        chunk->setNeighbor({ 0, 0, 0 }, chunk);
+
+        m_chunkMap[pos] = chunk;
+
+        Game::Get().onChunkLoaded(chunk);
         return chunk;
     }
 
@@ -43,6 +50,8 @@ namespace cybrion
 
         for (auto& entity : m_entities)
             entity->tick();
+
+        updateEntityTransforms();
     }
 
     Block& World::getBlock(const ivec3& pos)
@@ -60,7 +69,7 @@ namespace cybrion
         auto it = m_chunkMap.find(chunkPos);
         if (it == m_chunkMap.end()) return nullptr;
 
-        return it->second->tryGetBlock(pos);
+        return it->second->tryGetBlock(localPos);
     }
 
     BlockModifyResult World::setBlock(const ivec3& pos, Block& block)
@@ -104,12 +113,12 @@ namespace cybrion
 
     void World::updateEntityTransforms()
     {
-        /*auto view = m_registry.view<EntityData>();
-
-        for (auto&& [entity, data] : view.each())
+        for (auto& entity : m_entities)
         {
-            vec3 ppos = data.getWorldAABB().getPosition();
-            vec3 pos = ppos + data.velocity;
+            AABB bb = entity->getBB();
+            vec3 size = bb.getSize();
+            vec3 ppos = bb.getPos();
+            vec3 pos = ppos + entity->getVelocity();
 
             while (true)
             {
@@ -127,7 +136,7 @@ namespace cybrion
                             Block* block = tryGetBlock({ x, y, z });
                             if (!block || block->getType() == BlockType::AIR) continue;
 
-                            auto current = AABB::SweptAABB({ ppos, { 0.8f, 0.8f, 0.8f } },
+                            auto current = AABB::SweptAABB({ ppos, size },
                                 { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {1,1,1} }, v);
 
                             if (current.delta < result.delta)
@@ -148,7 +157,8 @@ namespace cybrion
                 }
             }
 
-            data.transform.setPosition(pos);
-        }*/
+            /// FIXME: should be setAABBposition()
+            entity->setPos(pos);
+        }
     }
 }

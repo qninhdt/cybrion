@@ -34,7 +34,6 @@ namespace cybrion
         void updateBlock(const BlockModifyResult& result);
 
         void updateEntityRenderers(f32 delta);
-        void updateBlockVisiblity(const ivec3& pos);
 
     private:
 

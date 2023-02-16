@@ -5,16 +5,20 @@
 
 namespace cybrion
 {
-    EntityRenderer::EntityRenderer(const ref<Entity>& entity)
+    EntityRenderer::EntityRenderer(const ref<Entity>& entity):
+        m_entity(entity)
     {
-        aabbMesh.setScale(entity->getBB().getSize());
         BasicMeshGenerator::LineCubeMesh(aabbMesh, 1, { 0, 0, 1 });
+        aabbMesh.setScale(entity->getBB().getSize());
     }
 
     void EntityRenderer::tick(f32 delta)
     {
-        aabbMesh.setPos(m_entity->lerpPos(delta));
-        aabbMesh.setRot(m_entity->lerpRot(delta));
+        aabbMesh.setPos(util::lerp(
+            m_entity->getOldBB().getPos(),
+            m_entity->getBB().getPos(),
+            delta
+        ));
         aabbMesh.updateModelMat();
     }
 }

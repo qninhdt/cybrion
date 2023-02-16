@@ -15,7 +15,6 @@ namespace cybrion
 
         ref<Entity> m_entity;
 
-        GL::Mesh mesh;
         GL::Mesh aabbMesh;
     };
 }

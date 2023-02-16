@@ -8,13 +8,9 @@ namespace cybrion
 
     ChunkRenderer::ChunkRenderer(const ref<Chunk>& chunk):
         m_chunk(chunk),
+        opaqueMesh(true),
         inBuildQueue(false),
         inRebuildList(false)
-    {
-    }
-
-    ChunkRenderer::ChunkRenderer() :
-        opaqueMesh(true)
     {
         opaqueMesh.setAttributes({
             { GL::Type::VEC3 }, // pos
@@ -22,11 +18,14 @@ namespace cybrion
             { GL::Type::UINT }, // texId
             { GL::Type::UINT }, // face
             { GL::Type::UINT }, // ao
-            });
+        });
     }
     
     void ChunkRenderer::buildChunkMesh()
     {
+        Stopwatch stopwatch;
+        stopwatch.reset();
+
         u32 opaqueSize = 0;
         bool culling[6] = { 0 };
 
@@ -49,7 +48,7 @@ namespace cybrion
             for (auto& [dir, face] : BlockRenderer::CubeDirections)
             {
                 Block* neighbor = blocks[dir.x + 1][dir.y + 1][dir.z + 1];
-
+                
                 // cull this face when neighbor block is opaque
                 culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
                 visible |= !culling[u32(face)];
@@ -68,10 +67,15 @@ namespace cybrion
 
         opaqueMesh.setVertices(opaqueVertices, opaqueSize);
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
+
+        CYBRION_CLIENT_TRACE("Build chunk mesh in: {}", stopwatch.getDeltaTime());
     }
 
     void ChunkRenderer::rebuildChunkMesh()
     {
+        Stopwatch stopwatch;
+        stopwatch.reset();
+
         u32 opaqueSize = 0;
         bool culling[6] = { 0 };
 
@@ -91,5 +95,7 @@ namespace cybrion
 
         opaqueMesh.setVertices(opaqueVertices, opaqueSize);
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
+
+        CYBRION_CLIENT_TRACE("Rebuild chunk mesh in: {}", stopwatch.getDeltaTime());
     }
 }

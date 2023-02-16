@@ -6,13 +6,15 @@ namespace cybrion
 {
     std::atomic<u32> Entity::s_idN = 0;
 
-    Entity::Entity(): m_id(s_idN++)
+    Entity::Entity(): Entity({ 0, 0, 0 })
     {
     }
 
-    Entity::Entity(const vec3& pos)
+    Entity::Entity(const vec3& pos): m_velocity(0), m_id(s_idN++)
     {
         m_pos = pos;
+        m_posO = m_pos;
+        m_rotO = m_rot;
     }
 
     u32 Entity::getId() const

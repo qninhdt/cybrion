@@ -2,7 +2,7 @@
 
 namespace cybrion
 {
-    AABB::AABB() : AABB({ 0, 0, 0 }, { 0, 0, 0 })
+    AABB::AABB() : AABB({ 0, 0, 0 }, { 1, 1, 1 })
     {
     }
 

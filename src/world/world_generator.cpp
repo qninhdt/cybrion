@@ -5,7 +5,7 @@ namespace cybrion
 {
     ref<Chunk> WorldGenerator::generateChunkAt(const ivec3& pos)
     {
-        auto chunk = std::make_shared<Chunk>();
+        auto chunk = std::make_shared<Chunk>(pos);
 
         LogBlock& log   = (LogBlock&) Blocks::Get().getBlock(BlockType::LOG);
         SoilBlock& dirt = (SoilBlock&)Blocks::Get().getBlock(BlockType::SOIL);
