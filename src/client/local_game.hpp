@@ -11,7 +11,7 @@
 namespace cybrion
 {
     constexpr u32 TICKS_PER_SECOND = 20;
-    constexpr f32 GAME_TICK = 1000.0f / TICKS_PER_SECOND;
+    constexpr f32 GAME_TICK = 1000000.0f / TICKS_PER_SECOND;
  
     using BasicShader = GL::Shader<"MVP">;
 

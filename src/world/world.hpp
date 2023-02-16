@@ -36,6 +36,8 @@ namespace cybrion
     private:
         WorldGenerator m_generator;
         umap<ivec3, ref<Chunk>> m_chunkMap;
-        std::vector<ref<Entity>> m_entities;
+        vector<ref<Entity>> m_entities;
+        queue<ref<Chunk>> m_loadChunkResults;
+        std::mutex m_chunkLock;
     };
 }

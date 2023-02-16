@@ -32,7 +32,8 @@ namespace cybrion
 
         for (i32 x = -8; x < 8; ++x)
             for (i32 y = -8; y < 8; ++y)
-                    m_world.loadChunk({ x, 0, y });
+                for (i32 z = -8; z < 8; ++z)
+                    m_world.loadChunk({ x, y, z });
 
         m_player.setEntity(m_world.spawnEntity({ 16, 16, 16 }));
         m_camera.setTarget(m_player.getEntity());
@@ -160,11 +161,14 @@ namespace cybrion
 
     void LocalGame::onKeyPressed(KeyCode key, bool isRepeated)
     {
-        static int n = 1;
+        static int n = 7;
         if (!isRepeated)
         {
             switch (key)
             {
+            case KeyCode::N:
+                getWorld().loadChunk({ n++, 0, 0 });
+                break;
             // toggle cursor
             case KeyCode::F1:
                 Application::Get().toggleCursor();

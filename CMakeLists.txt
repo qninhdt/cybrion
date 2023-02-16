@@ -7,7 +7,7 @@ if (MSVC)
 endif()
 
 add_executable(${PROJECT_NAME}
-    "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/local_game.cpp" "src/util/file.cpp" "src/client/application.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp" "src/core/transform.cpp" "src/client/camera.cpp" "src/client/frame_profiler.cpp" "src/client/hud.cpp" "src/world/chunk/chunk.cpp" "src/util/math.hpp"  "src/world/world.cpp" "src/client/resource/block_loader.cpp" "src/game.cpp" "src/world/block/block.cpp" "src/client/graphic/block_renderer.cpp" "src/client/graphic/world_renderer.cpp" "src/core/stopwatch.cpp" "src/world/block/blocks.cpp" "src/world/entity/entity.cpp" "src/player.cpp" "src/util/math.cpp" "src/client/GL/texture.cpp" "src/voxel_ray.cpp"  "src/client/graphic/basic_mesh_generator.cpp" "src/client/graphic/chunk_renderer.cpp" "src/physic/aabb.cpp" "src/world/world_generator.cpp" "src/client/graphic/entity_renderer.cpp")
+    "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/local_game.cpp" "src/util/file.cpp" "src/client/application.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp" "src/core/transform.cpp" "src/client/camera.cpp" "src/client/frame_profiler.cpp" "src/client/hud.cpp" "src/world/chunk/chunk.cpp" "src/util/math.hpp"  "src/world/world.cpp" "src/client/resource/block_loader.cpp" "src/game.cpp" "src/world/block/block.cpp" "src/client/graphic/block_renderer.cpp" "src/client/graphic/world_renderer.cpp" "src/core/stopwatch.cpp" "src/world/block/blocks.cpp" "src/world/entity/entity.cpp" "src/player.cpp" "src/util/math.cpp" "src/client/GL/texture.cpp" "src/voxel_ray.cpp"  "src/client/graphic/basic_mesh_generator.cpp" "src/client/graphic/chunk_renderer.cpp" "src/physic/aabb.cpp" "src/world/world_generator.cpp" "src/client/graphic/entity_renderer.cpp" "src/core/pool.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 
@@ -51,8 +51,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog spdlog::spdlog_head
 find_package(yaml-cpp CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp)
 
-add_subdirectory(third_party/nanobench)
-target_link_libraries(${PROJECT_NAME} PUBLIC nanobench)
+find_path(BSHOSHANY_THREAD_POOL_INCLUDE_DIRS "BS_thread_pool.hpp")
+target_include_directories(${PROJECT_NAME} PRIVATE ${BSHOSHANY_THREAD_POOL_INCLUDE_DIRS})
 
 if (MSVC)
     target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:/INCREMENTAL>)

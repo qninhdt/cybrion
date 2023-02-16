@@ -12,11 +12,11 @@ namespace cybrion
     u32 Stopwatch::getDeltaTime() const
     {
         auto time = high_resolution_clock::now();
-        return duration_cast<milliseconds>(time - m_lastTime).count();
+        return duration_cast<microseconds>(time - m_lastTime).count();
     }
 
     void Stopwatch::reduceDeltaTime(u32 amount)
     {
-        m_lastTime += milliseconds(amount);
+        m_lastTime += microseconds(amount);
     }
 }

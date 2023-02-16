@@ -58,6 +58,11 @@ namespace cybrion
             return m_storage;
         }
 
+        u32 getBitExp() const
+        {
+            return m_bitExp;
+        }
+
     private:
         u32 addValue(const u32& value)
         {
@@ -69,6 +74,7 @@ namespace cybrion
             {
                 u32 bitExp = util::ceilLog2(util::ceilLog2(m_diffValues)) + 1;
                 auto temp = m_storage;
+                m_bitExp = bitExp;
                 m_storage = BitStorage::create<SIZE>(bitExp);
                 m_storage->copyFrom(*temp);
                 delete temp;
@@ -81,6 +87,7 @@ namespace cybrion
             return m_diffValues;
         }
 
+        u32 m_bitExp;
         u32 m_diffValues;
         u32 m_valueToId[VALUE_SIZE];
         vector<u32> m_idToValue;

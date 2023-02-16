@@ -1,5 +1,6 @@
 #include "world/world.hpp"
 #include "game.hpp"
+#include "core/pool.hpp"
 
 namespace cybrion
 {
@@ -18,22 +19,14 @@ namespace cybrion
 
     ref<Chunk> World::loadChunk(const ivec3& pos)
     {
-        auto chunk = m_generator.generateChunkAt(pos);
-
-        chunk->eachNeighbors([&](ref<Chunk>&, const ivec3& dir) {
-            ref<Chunk> neighbor = getChunk(pos + dir);
-            chunk->setNeighbor(dir, neighbor);
-
-            if (neighbor)
-                neighbor->setNeighbor(-dir, chunk);
+        GetPool().submit([this, pos] {
+            auto chunk = m_generator.generateChunkAt(pos);
+            m_chunkLock.lock();
+            m_loadChunkResults.push(chunk);
+            m_chunkLock.unlock();
         });
 
-        chunk->setNeighbor({ 0, 0, 0 }, chunk);
-
-        m_chunkMap[pos] = chunk;
-
-        Game::Get().onChunkLoaded(chunk);
-        return chunk;
+        return nullptr;
     }
 
     ref<Chunk> World::getChunk(const ivec3& pos)
@@ -45,6 +38,31 @@ namespace cybrion
 
     void World::tick()
     {
+        vector<ref<Chunk>> results;
+
+        m_chunkLock.lock();
+        while (!m_loadChunkResults.empty() && results.size() < 16)
+        {
+            results.push_back(m_loadChunkResults.front());
+            m_loadChunkResults.pop();
+        }
+        m_chunkLock.unlock();
+
+        for (auto& chunk : results)
+        {
+            chunk->eachNeighbors([&](ref<Chunk>&, const ivec3& dir) {
+                ref<Chunk> neighbor = getChunk(chunk->getChunkPos() + dir);
+                chunk->setNeighbor(dir, neighbor);
+
+                if (neighbor)
+                    neighbor->setNeighbor(-dir, chunk);
+            });
+
+            chunk->setNeighbor({ 0, 0, 0 }, chunk);
+            m_chunkMap[chunk->getChunkPos()] = chunk;
+            Game::Get().onChunkLoaded(chunk);
+        }
+
         for (auto& entity : m_entities)
             entity->setOldPosAndRot();
 

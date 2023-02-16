@@ -34,6 +34,7 @@
 #include <yaml-cpp/yaml.h>
 #include <entt/entt.hpp>
 #include <stb_image.h>
+#include <BS_thread_pool.hpp>
 
 // common files
 #include "common.hpp""

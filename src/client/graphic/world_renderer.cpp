@@ -6,6 +6,7 @@
 #include "client/graphic/entity_renderer.hpp"
 #include "world/entity/entity.hpp"
 #include "client/graphic/basic_mesh_generator.hpp"
+#include "core/pool.hpp"
 
 namespace cybrion
 {
@@ -22,17 +23,41 @@ namespace cybrion
     {
         updateEntityRenderers(delta);
 
-        buildChunkMeshes(0.05f); // allow build meshes in 1 second
-        rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
+        //buildChunkMeshes(0.05f); // allow build meshes in 1 second
+        //rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
+
+        vector<ChunkMeshResult> results;
+
+        m_chunkLock.lock();
+        if (!m_chunkMeshResults.empty())
+            std::cout << m_chunkMeshResults.size() << '\n';
+        while (!m_chunkMeshResults.empty() && results.size() < 4)
+        {
+            results.push_back(m_chunkMeshResults.front());
+            m_chunkMeshResults.pop();
+        }
+        m_chunkLock.unlock();
+
+        for (auto& result : results)
+        {  
+            auto renderer = result.renderer;
+            renderer->opaqueMesh.setDrawCount(result.drawCount);
+            renderer->opaqueMesh.setVertices(result.vertices, result.size);
+            
+            renderer->m_hasBuilt = true;
+            renderer->m_queueBuild = false;
+
+            delete[] result.vertices;
+        }
 
         BlockLoader::Get().bindTextureArray();
         m_opaqueCubeShader.use();
 
         m_opaqueCubeShader.setUniform<"enable_diffuse">((u32)m_enableDiffuse);
         m_opaqueCubeShader.setUniform<"enable_ao">((u32)m_enableAO);
-
-        for (auto& [_, renderer]: m_chunkRenderers)
+        for (auto& [id, renderer]: m_chunkRenderers)
         {
+            if (renderer->m_queueBuild || id % 31 != 0) continue;
             auto& opaqueMesh = renderer->opaqueMesh;
             m_opaqueCubeShader.setUniform<"MVP">(
                 LocalGame::Get().getCamera().getProjViewMat()
@@ -62,16 +87,18 @@ namespace cybrion
 
         m_chunkRenderers[chunk->getId()] = renderer;
 
-        renderer->inBuildQueue = true;
-        m_buildChunkQueue.push(renderer);
+        /*renderer->inBuildQueue = true;
+        m_buildChunkQueue.push(renderer);*/
 
-        chunk->eachNeighbors([&](ref<Chunk>& neighbor, const ivec3&) {
+        prepareRebuild(renderer);
+
+ /*       chunk->eachNeighbors([&](ref<Chunk>& neighbor, const ivec3&) {
             if (neighbor)
             {
                 auto neighborRenderer = getChunkRenderer(neighbor);
                 prepareRebuild(neighborRenderer);
             }
-        });
+        });*/
     }
 
     void WorldRenderer::addEntity(const ref<Entity>& entity)
@@ -118,11 +145,20 @@ namespace cybrion
 
     void WorldRenderer::prepareRebuild(const ref<ChunkRenderer>& renderer)
     {
-        if (!renderer->inBuildQueue && !renderer->inRebuildList)
+        /*if (!renderer->inBuildQueue && !renderer->inRebuildList)
         {
             m_rebuildChunkList.push_back(renderer);
             renderer->inRebuildList = true;
-        }
+        }*/
+        /// FIXME: multiple rebuild mesh ?
+        GetPool().submit([this, renderer = renderer] {
+            auto result = renderer->buildChunkMesh();
+            result.renderer = renderer;
+            renderer->m_queueBuild = true;
+            m_chunkLock.lock();
+            m_chunkMeshResults.push(result);
+            m_chunkLock.unlock();
+        });
     }
 
     void WorldRenderer::updateBlock(const BlockModifyResult& result)
@@ -161,7 +197,7 @@ namespace cybrion
             }
 
             renderer->visibleBlocks.erase(localPos);
-        });
+       });
     }
 
     void WorldRenderer::updateEntityRenderers(f32 delta)

@@ -1,16 +1,17 @@
 #include "client/graphic/chunk_renderer.hpp"
-#include "client/graphic/block_renderer.hpp"
 #include "client/local_game.hpp"
 
 namespace cybrion
 {
-    CubeVertex opaqueVertices[400000];
+    std::mutex glLock;
 
     ChunkRenderer::ChunkRenderer(const ref<Chunk>& chunk):
         m_chunk(chunk),
         opaqueMesh(true),
         inBuildQueue(false),
-        inRebuildList(false)
+        inRebuildList(false),
+        m_queueBuild(false),
+        m_hasBuilt(false)
     {
         opaqueMesh.setAttributes({
             { GL::Type::VEC3 }, // pos
@@ -21,33 +22,38 @@ namespace cybrion
         });
     }
     
-    void ChunkRenderer::buildChunkMesh()
+    ChunkMeshResult ChunkRenderer::buildChunkMesh()
     {
+        CubeVertex* opaqueVertices = new CubeVertex[40000];
+
         Stopwatch stopwatch;
         stopwatch.reset();
 
         u32 opaqueSize = 0;
         bool culling[6] = { 0 };
+        Block::Block3x3x3 blocks;
 
         m_chunk->eachBlocks([&](Block& block, const ivec3& pos){
-            BlockDisplay display = block.getDisplay();
-            auto& cubeRenderer = LocalGame::Get().getBlockRenderer(block.getId());
-
             // dont render transparent blocks like air
-            if (display == BlockDisplay::TRANSPARENT)
+            if (block.getDisplay() == BlockDisplay::TRANSPARENT)
                 return;
+
+            auto& cubeRenderer = LocalGame::Get().getBlockRenderer(block.getId());
 
             bool visible = false;
 
-            // blocks that are not visible now because their neighbors are not loaded
-            // but may be visible when their neighbors are loaded
+            // block that is not visible now
+            // but may be visible when its neighbors is loaded
             bool maybeVisible = false;
 
-            auto blocks = m_chunk->getBlockAndNeighbors(pos);
+            // we can use simple block getter when block is not in chunk border
+            bool inBorder = Chunk::isInBorder(pos);
 
             for (auto& [dir, face] : BlockRenderer::CubeDirections)
             {
-                Block* neighbor = blocks[dir.x + 1][dir.y + 1][dir.z + 1];
+               Block* neighbor = inBorder
+                    ? std::get<0>(m_chunk->tryGetBlockMaybeOutside(pos + dir))
+                    : m_chunk->tryGetBlock(pos + dir);
                 
                 // cull this face when neighbor block is opaque
                 culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
@@ -56,46 +62,75 @@ namespace cybrion
             }
 
             if (visible)
-                cubeRenderer.generateCubeMesh(culling, vec3(pos) + Chunk::CHUNK_ALIGN, blocks, opaqueVertices, opaqueSize);
+            {
+                if (inBorder)
+                    m_chunk->getBlockAndNeighborsMaybeOutside(pos, blocks);
+                else
+                    m_chunk->getBlockAndNeighbors(pos, blocks);
 
-            if (visible || maybeVisible)
+                cubeRenderer.generateCubeMesh(culling, vec3(pos) + Chunk::CHUNK_ALIGN, blocks, opaqueVertices, opaqueSize);
+            }
+
+            if (visible || maybeVisible) 
                 visibleBlocks[pos] = &block;
         });
 
         opaqueMesh.setPos(m_chunk->getPos());
         opaqueMesh.updateModelMat();
-
-        opaqueMesh.setVertices(opaqueVertices, opaqueSize);
+        /*opaqueMesh.setPos(m_chunk->getPos());
+        opaqueMesh.updateModelMat();
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
 
-        CYBRION_CLIENT_TRACE("Build chunk mesh in: {}", stopwatch.getDeltaTime());
+        opaqueMesh.setVertices(opaqueVertices, opaqueSize);*/
+
+        //CYBRION_CLIENT_TRACE("Build chunk mesh in: {}", stopwatch.getDeltaTime()/1000.0f);
+
+        //delete[] opaqueVertices;
+        return { opaqueVertices, opaqueSize, opaqueSize / 4 * 6 };
     }
 
     void ChunkRenderer::rebuildChunkMesh()
     {
+        CubeVertex* opaqueVertices = new CubeVertex[40000];
         Stopwatch stopwatch;
         stopwatch.reset();
 
         u32 opaqueSize = 0;
         bool culling[6] = { 0 };
+        Block::Block3x3x3 blocks;
 
         for (auto& [pos, block] : visibleBlocks)
         {
             auto& cubeRenderer = LocalGame::Get().getBlockRenderer(block->getId());
-            auto blocks = m_chunk->getBlockAndNeighbors(pos);
+
+            bool visible = false;
+            bool inBorder = Chunk::isInBorder(pos);
 
             for (auto& [dir, face] : BlockRenderer::CubeDirections)
             {
-                Block* neighbor = blocks[dir.x + 1][dir.y + 1][dir.z + 1];
+                Block* neighbor = inBorder
+                    ? std::get<0>(m_chunk->tryGetBlockMaybeOutside(pos + dir))
+                    : m_chunk->tryGetBlock(pos + dir);
+
                 culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
+                visible |= !culling[u32(face)];
             }
 
-            cubeRenderer.generateCubeMesh(culling, vec3(pos) + Chunk::CHUNK_ALIGN, blocks, opaqueVertices, opaqueSize);
+            if (visible)
+            {
+                if (inBorder)
+                    m_chunk->getBlockAndNeighborsMaybeOutside(pos, blocks);
+                else
+                    m_chunk->getBlockAndNeighbors(pos, blocks);
+
+                cubeRenderer.generateCubeMesh(culling, vec3(pos) + Chunk::CHUNK_ALIGN, blocks, opaqueVertices, opaqueSize);
+            }
         }
 
         opaqueMesh.setVertices(opaqueVertices, opaqueSize);
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
 
-        CYBRION_CLIENT_TRACE("Rebuild chunk mesh in: {}", stopwatch.getDeltaTime());
+        CYBRION_CLIENT_TRACE("Rebuild chunk mesh in: {}", stopwatch.getDeltaTime()/1000.0f);
+        delete[] opaqueVertices;
     }
 }

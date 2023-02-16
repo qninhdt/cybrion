@@ -161,10 +161,10 @@ namespace cybrion
             // --------------------------------------------
             m_frameProfiler.tick();
 
-            if (fpsStopwatch.getDeltaTime() >= 250)
+            if (fpsStopwatch.getDeltaTime() >= 250000)
             {
                 deltaTime = m_frameProfiler.getDeltaTime();
-                fpsStopwatch.reduceDeltaTime(250);
+                fpsStopwatch.reduceDeltaTime(250000);
             }
 
             // render

@@ -25,18 +25,23 @@ namespace cybrion
         void setBlock(const ivec3& pos, Block& block);
         vec3 getPos() const;
         ivec3 getChunkPos() const;
-        Block::Block3x3x3 getBlockAndNeighbors(const ivec3& pos);
+        void getBlockAndNeighbors(const ivec3& pos, Block::Block3x3x3& blocks);
+        void getBlockAndNeighborsMaybeOutside(const ivec3& pos, Block::Block3x3x3& blocks);
         void setNeighbor(const ivec3& dir, const ref<Chunk>& chunk);
 
-        void eachNeighbors(std::function<void(ref<Chunk>&, const ivec3&)> callback);
-        void eachBlocks(std::function<void(Block&, const ivec3&)> callback);
-        void eachBlockAndNeighbors(const ivec3& pos, std::function<void(Block*, ref<Chunk>&, const ivec3& dir)> callback);
+        void eachNeighbors(const std::function<void(ref<Chunk>&, const ivec3&)>& callback);
+        void eachBlocks(const std::function<void(Block&, const ivec3&)>& callback);
+        void eachBlockAndNeighbors(const ivec3& pos, const std::function<void(Block*&, ref<Chunk>&, const ivec3& dir)>& callback);
 
         u32 getId() const;
+
+        u32 getMemorySizeApproximately() const;
 
         static i32 posToIndex(const ivec3& pos);
         static ivec3 posToLocalPos(const ivec3& pos);
         static ivec3 posToChunkPos(const ivec3& pos);
+        static bool isInBorder(const ivec3& pos);
+        static bool isInside(const ivec3& pos);
 
     private:
 

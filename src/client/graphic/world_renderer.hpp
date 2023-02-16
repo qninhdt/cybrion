@@ -54,5 +54,9 @@ namespace cybrion
 
         bool m_enableAO;
         bool m_enableDiffuse;
+
+        std::mutex m_chunkLock;
+
+        queue<ChunkMeshResult> m_chunkMeshResults;
     };
 }

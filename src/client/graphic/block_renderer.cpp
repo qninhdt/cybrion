@@ -156,13 +156,9 @@ namespace cybrion
             }
 
             if (v[0]->ao + v[2]->ao > v[1]->ao + v[3]->ao)
-            {
                 cycle4(*v[0], *v[1], *v[2], *v[3], 2);
-            }
             else
-            {
                 cycle4(*v[0], *v[1], *v[2], *v[3], 1);
-            }
         }
     }
 
