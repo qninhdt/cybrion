@@ -4,4 +4,5 @@
 - [x] Render first chunk
 - [x] Optimize chunk meshing
 - [x] Simple world
-- [ ] Collision detection
+- [x] Collision detection
+- [ ] Thread pool for loading chunk and meshing
