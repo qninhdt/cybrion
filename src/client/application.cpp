@@ -1,5 +1,5 @@
 #include "client/application.hpp"
-
+#include "core/pool.hpp"
 #include "client/GL/mesh.hpp"
 
 namespace cybrion
@@ -470,6 +470,9 @@ namespace cybrion
     Application::~Application()
     {
         CYBRION_CLIENT_TRACE("Wait until game stopped");
+
+        GetPool().pause();
+        GetPool().wait_for_tasks();
 
         if (!m_isClosed)
             closeImmediately();

@@ -30,7 +30,7 @@ namespace cybrion
         BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, { 1, 0, 0 });
         BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.005f, { 1, 1, 1 });
 
-        i32 size = 8;
+        i32 size = 16;
         for (i32 x = -size; x < size; ++x)
             for (i32 y = 0; y < 4; ++y)
                 for (i32 z = -size; z < size; ++z)

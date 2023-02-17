@@ -5,4 +5,5 @@
 - [x] Optimize chunk meshing
 - [x] Simple world
 - [x] Collision detection
-- [ ] Thread pool for loading chunk and meshing
+- [x] Thread pool for loading chunk and meshing
+- [ ] Save system (jbt?)
