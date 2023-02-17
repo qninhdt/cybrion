@@ -24,7 +24,7 @@ namespace cybrion
         using CubeTexture = array<array<CubeVertexTexture, 4>, 6>;
     public:
 
-        void generateCubeMesh(bool culling[6], const vec3& position, const Block::Block3x3x3& blocks, CubeVertex* result, u32& index);
+        void generateCubeMesh(bool culling[6], const vec3& position, const Block::Block3x3x3& blocks, vector<CubeVertex>& result);
         void generateCubeTexture();
     
         static array<tuple<ivec3, BlockFace>, 6> CubeDirections;

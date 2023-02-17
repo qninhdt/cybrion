@@ -25,9 +25,6 @@ namespace cybrion
         void addChunk(const ref<Chunk>& chunk);
         void addEntity(const ref<Entity>& entity);
 
-        void buildChunkMeshes(f32 maxDuration);
-        void rebuildChunkMeshes(f32 maxDuration);
-
         ref<EntityRenderer> getEntityRenderer(const ref<Entity>& entity) const;
         ref<ChunkRenderer> getChunkRenderer(const ref<Chunk>& chunk) const;
 
@@ -56,6 +53,6 @@ namespace cybrion
         bool m_enableAO;
         bool m_enableDiffuse;
 
-        moodycamel::ConcurrentQueue<ChunkMeshResult> m_chunkMeshResults;
+        moodycamel::ConcurrentQueue<ref<ChunkMeshResult>> m_chunkMeshResults;
     };
 }

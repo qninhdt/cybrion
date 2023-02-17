@@ -8,12 +8,18 @@ namespace cybrion
 {
     struct ChunkRenderer;
 
+    enum class ChunkMeshStatus
+    {
+        NONE,
+        QUEUE,
+        RUNNING
+    };
+
     struct ChunkMeshResult
     {
-        CubeVertex* vertices;
-        u32 size;
-        u32 drawCount;
+        vector<CubeVertex> vertices;
         ref<ChunkRenderer> renderer;
+        u32 version;
     };
 
     struct ChunkRenderer
@@ -24,11 +30,12 @@ namespace cybrion
         GL::Mesh opaqueMesh;
         umap<ivec3, Block*> visibleBlocks;
 
-        std::atomic<bool> m_isMeshing0;
-        std::atomic<bool> m_isMeshing1;
+        std::atomic<bool> m_inBuildQueue;
+        std::atomic<u32> m_version;
+
         bool m_hasBuilt;
 
-        ChunkMeshResult buildChunkMesh();
+        ref<ChunkMeshResult> buildChunkMesh();
         void rebuildChunkMesh();
     };
 }

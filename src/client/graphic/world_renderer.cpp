@@ -24,17 +24,18 @@ namespace cybrion
     {
         updateEntityRenderers(delta);
         i32 cnt = 0;
-        ChunkMeshResult result;
-        while (cnt < 4 && m_chunkMeshResults.try_dequeue(result))
+        ref<ChunkMeshResult> result;
+        while ((cnt++) < 8 && m_chunkMeshResults.try_dequeue(result))
         {
-            auto renderer = result.renderer;
-            renderer->opaqueMesh.setDrawCount(result.drawCount);
-            renderer->opaqueMesh.setVertices(result.vertices, result.size);
-            renderer->m_isMeshing1 = false;
-            renderer->m_hasBuilt = true;
+            auto renderer = result->renderer;
 
-            delete[] result.vertices;
-            ++cnt;
+            // allow to install if version is still latest
+            if (renderer->m_version != result->version)
+                continue;
+
+            renderer->opaqueMesh.setVertices(result->vertices.data(), result->vertices.size());
+            renderer->opaqueMesh.setDrawCount(result->vertices.size() / 4 * 6);
+            renderer->m_hasBuilt = true;
         }
 
         BlockLoader::Get().bindTextureArray();
@@ -44,15 +45,15 @@ namespace cybrion
         m_opaqueCubeShader.setUniform<"enable_ao">((u32)m_enableAO);
         for (auto& [id, renderer]: m_chunkRenderers)
         {
-            //if (!renderer->m_hasBuilt) {
-            //    //std::cout << renderer->m_isMeshing0 << ' ' << renderer->m_isMeshing1 << '\n';
-            //    continue;
-            //}
+            if (!renderer->m_hasBuilt || renderer->opaqueMesh.getDrawCount() == 0) {
+                continue;
+            }
             auto& opaqueMesh = renderer->opaqueMesh;
             m_opaqueCubeShader.setUniform<"MVP">(
                 LocalGame::Get().getCamera().getProjViewMat()
                 * opaqueMesh.getModelMat()
             );
+
             opaqueMesh.drawTriangles();
         }
 
@@ -76,6 +77,11 @@ namespace cybrion
         auto renderer = std::make_shared<ChunkRenderer>(chunk);
         m_chunkRenderers[chunk->getId()] = renderer;
         prepareRebuild(renderer);
+
+        chunk->eachNeighbors([this](ref<Chunk>& neighbor, const ivec3&) {
+            if (neighbor)
+                prepareRebuild(getChunkRenderer(neighbor));
+        });
     }
 
     void WorldRenderer::addEntity(const ref<Entity>& entity)
@@ -98,18 +104,27 @@ namespace cybrion
 
     void WorldRenderer::prepareRebuild(const ref<ChunkRenderer>& renderer)
     {
-        if (renderer->m_isMeshing0 || renderer->m_isMeshing1) return;
-        renderer->m_isMeshing0 = true;
+        if (renderer->m_inBuildQueue) {
+            return;
+        }
 
-        GetPool().submit([this, renderer] {
+        renderer->m_inBuildQueue = true;
+        renderer->m_version += 1;
+
+        u32 version = renderer->m_version;
+
+        GetPool().submit([this, renderer, version] {
+            renderer->m_inBuildQueue = false;
+
             auto result = renderer->buildChunkMesh();
-            result.renderer = renderer;
-            
-            renderer->m_isMeshing0 = false;
-            renderer->m_isMeshing1 = true;
+            result->renderer = renderer;
+            result->version = version;
 
-            m_chunkMeshResults.enqueue(result);
+            // allow to install if version is still latest after building
+            if (version == renderer->m_version)
+                m_chunkMeshResults.enqueue(result);
         });
+
     }
 
     void WorldRenderer::updateBlock(const BlockModifyResult& result)

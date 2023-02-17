@@ -8,8 +8,8 @@ namespace cybrion
     ChunkRenderer::ChunkRenderer(const ref<Chunk>& chunk):
         m_chunk(chunk),
         opaqueMesh(true),
-        m_isMeshing0(false),
-        m_isMeshing1(false),
+        m_inBuildQueue(false),
+        m_version(0),
         m_hasBuilt(false)
     {
         opaqueMesh.setAttributes({
@@ -21,14 +21,13 @@ namespace cybrion
         });
     }
     
-    ChunkMeshResult ChunkRenderer::buildChunkMesh()
+    ref<ChunkMeshResult> ChunkRenderer::buildChunkMesh()
     {
-        CubeVertex* opaqueVertices = new CubeVertex[40000];
+        auto result = std::make_shared<ChunkMeshResult>();
         
         Stopwatch stopwatch;
         stopwatch.reset();
 
-        u32 opaqueSize = 0;
         bool culling[6] = { 0 };
         Block::Block3x3x3 blocks;
 
@@ -67,28 +66,19 @@ namespace cybrion
                 else
                     m_chunk->getBlockAndNeighbors(pos, blocks);
 
-                cubeRenderer.generateCubeMesh(culling, vec3(pos) + Chunk::CHUNK_ALIGN, blocks, opaqueVertices, opaqueSize);
+                cubeRenderer.generateCubeMesh(culling, vec3(pos) + Chunk::CHUNK_ALIGN, blocks, result->vertices);
             }
-
-            if (visible || maybeVisible) 
-                visibleBlocks[pos] = &block;
         });
 
         opaqueMesh.setPos(m_chunk->getPos());
         opaqueMesh.updateModelMat();
-        //opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
-
-        //opaqueMesh.setVertices(opaqueVertices, opaqueSize);
-
-        //CYBRION_CLIENT_TRACE("Build chunk mesh in: {}", stopwatch.getDeltaTime()/1000.0f);
-
-        //delete[] opaqueVertices;
-        return { opaqueVertices, opaqueSize, opaqueSize / 4 * 6 };
+        
+        return result;
     }
 
     void ChunkRenderer::rebuildChunkMesh()
     {
-        CubeVertex* opaqueVertices = new CubeVertex[40000];
+      /*  CubeVertex* opaqueVertices = new CubeVertex[40000];
         Stopwatch stopwatch;
         stopwatch.reset();
 
@@ -128,6 +118,6 @@ namespace cybrion
         opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
 
         CYBRION_CLIENT_TRACE("Rebuild chunk mesh in: {}", stopwatch.getDeltaTime()/1000.0f);
-        delete[] opaqueVertices;
+        delete[] opaqueVertices;*/
     }
 }

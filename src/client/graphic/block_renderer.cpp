@@ -112,7 +112,7 @@ namespace cybrion
         {{ {0,-1,-1}, {1,-1,-1},{1,0,-1},{1,1,-1},{0,1,-1},{-1,1,-1},{-1,0,-1},{-1,-1,-1} }}
     } };
 
-    void BlockRenderer::generateCubeMesh(bool culling[6], const vec3& position, const Block::Block3x3x3& blocks, CubeVertex* result, u32& index)
+    void BlockRenderer::generateCubeMesh(bool culling[6], const vec3& position, const Block::Block3x3x3& blocks, vector<CubeVertex>& result)
     {
         for (u32 i = 0; i < 6; ++i)
         {
@@ -121,6 +121,7 @@ namespace cybrion
             auto& adjs = faceAdjBlocks[i];
 
             CubeVertex* v[4];
+            result.reserve(result.size() + 4);
             for (u32 j = 0; j < 4; ++j)
             {
                 ivec3 p1 = adjs[(j * 2 + 0) % 8];
@@ -142,17 +143,15 @@ namespace cybrion
                 else
                     ao = 3 - (o1 + o2 + o3);
 
-                result[index] = {
+                result.push_back({
                     CubeVertices[i][j] + position,
                     m_cubeTexture[i][j].uv,
                     m_cubeTexture[i][j].textureId,
                     i,
                     ao
-                };
+                });
 
-                v[j] = &result[index];
-                
-                index += 1;
+                v[j] = &result[result.size() - 1];
             }
 
             if (v[0]->ao + v[2]->ao > v[1]->ao + v[3]->ao)

@@ -3,26 +3,36 @@
 
 namespace cybrion
 {
+    WorldGenerator::WorldGenerator()
+    {
+        m_noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    }
+
     ref<Chunk> WorldGenerator::generateChunkAt(const ivec3& pos)
     {
         auto chunk = std::make_shared<Chunk>(pos);
+        static int cnt = 0;
+        ++cnt; 
 
-        LogBlock& log   = (LogBlock&) Blocks::Get().getBlock(BlockType::LOG);
-        SoilBlock& dirt = (SoilBlock&)Blocks::Get().getBlock(BlockType::SOIL);
-        SandBlock& sand = (SandBlock&)Blocks::Get().getBlock(BlockType::SAND);
+        Block* blocks[] = {
+            &Blocks::DIRT,
+            &Blocks::COBBLESTONE,
+            &Blocks::OAK_LOG
+        };
 
+        ivec3 chunkPos = pos * Chunk::CHUNK_SIZE;
         for (i32 x = 0; x < Chunk::CHUNK_SIZE; ++x)
         {
             for (i32 z = 0; z < Chunk::CHUNK_SIZE; ++z)
             {
-                int height = sqrt(abs((Chunk::CHUNK_SIZE / 2 - x) * (Chunk::CHUNK_SIZE / 2 - z))) + 2;
+                vec2 worldPos = { chunkPos.x + x, chunkPos.z + z };
+                f32 noise = m_noise.GetNoise(worldPos.x, worldPos.y);
+                i32 height = noise * 20 + 50;
+                i32 localHeight = std::min(std::max(0, height - chunkPos.y), Chunk::CHUNK_SIZE);
 
-                for (i32 y = 0; y < height; ++y)
+                for (i32 y = 0; y < localHeight; ++y)
                 {
-                    if (height > 10)
-                        chunk->setBlock({ x, y, z }, dirt);
-                    else
-                        chunk->setBlock({ x, y, z }, sand);
+                    chunk->setBlock({ x, y, z }, Blocks::COBBLESTONE);
                 }
             }
         }

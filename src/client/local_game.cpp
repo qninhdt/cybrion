@@ -30,12 +30,13 @@ namespace cybrion
         BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, { 1, 0, 0 });
         BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.005f, { 1, 1, 1 });
 
-        for (i32 x = -8; x < 8; ++x)
-            for (i32 y = -8; y < 8; ++y)
-                for (i32 z = -8; z < 8; ++z)
+        i32 size = 8;
+        for (i32 x = -size; x < size; ++x)
+            for (i32 y = 0; y < 4; ++y)
+                for (i32 z = -size; z < size; ++z)
                     m_world.loadChunk({ x, y, z });
-
-        m_player.setEntity(m_world.spawnEntity({ 16, 16, 16 }));
+        
+        m_player.setEntity(m_world.spawnEntity({ 16, 100, 16 }));
         m_camera.setTarget(m_player.getEntity());
     }
 

@@ -36,6 +36,7 @@
 #include <stb_image.h>
 #include <BS_thread_pool.hpp>
 #include <concurrentqueue/concurrentqueue.h>
+#include <FastNoiseLite.h>
 
 // common files
 #include "common.hpp""

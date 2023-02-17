@@ -43,13 +43,13 @@ namespace cybrion::GL
             setVerticesData(vertices, count * sizeof(T));
         }
 
+        u32 getDrawCount() const;
+
         void setIndices(u32* indices, u32 count);
         void setAttributes(std::initializer_list<MeshAttribute> attributes);
         void drawTriangles() const;
         void drawLines() const;
         void setDrawCount(u32 drawCount);
-
-        //~Mesh();
 
         static void GenerateGlobalIBO();
 

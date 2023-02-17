@@ -92,7 +92,6 @@ namespace cybrion::GL
             stride += GetTypeSize(attr.type);
 
         glBindVertexArray(m_vao);
-
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
         for (auto& attr : attributes)
@@ -124,6 +123,11 @@ namespace cybrion::GL
             index += 1;
             offset += size;
         }
+    }
+
+    u32 Mesh::getDrawCount() const
+    {
+        return m_drawCount;
     }
 
     void Mesh::setIndices(u32* indices, u32 count)
