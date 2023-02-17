@@ -8,9 +8,8 @@ namespace cybrion
     ChunkRenderer::ChunkRenderer(const ref<Chunk>& chunk):
         m_chunk(chunk),
         opaqueMesh(true),
-        inBuildQueue(false),
-        inRebuildList(false),
-        m_queueBuild(false),
+        m_isMeshing0(false),
+        m_isMeshing1(false),
         m_hasBuilt(false)
     {
         opaqueMesh.setAttributes({
@@ -25,7 +24,7 @@ namespace cybrion
     ChunkMeshResult ChunkRenderer::buildChunkMesh()
     {
         CubeVertex* opaqueVertices = new CubeVertex[40000];
-
+        
         Stopwatch stopwatch;
         stopwatch.reset();
 
@@ -77,11 +76,9 @@ namespace cybrion
 
         opaqueMesh.setPos(m_chunk->getPos());
         opaqueMesh.updateModelMat();
-        /*opaqueMesh.setPos(m_chunk->getPos());
-        opaqueMesh.updateModelMat();
-        opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
+        //opaqueMesh.setDrawCount(opaqueSize / 4 * 6);
 
-        opaqueMesh.setVertices(opaqueVertices, opaqueSize);*/
+        //opaqueMesh.setVertices(opaqueVertices, opaqueSize);
 
         //CYBRION_CLIENT_TRACE("Build chunk mesh in: {}", stopwatch.getDeltaTime()/1000.0f);
 

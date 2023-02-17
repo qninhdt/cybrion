@@ -24,11 +24,9 @@ namespace cybrion
         GL::Mesh opaqueMesh;
         umap<ivec3, Block*> visibleBlocks;
 
-        bool inBuildQueue;
-        bool inRebuildList;
-
+        std::atomic<bool> m_isMeshing0;
+        std::atomic<bool> m_isMeshing1;
         bool m_hasBuilt;
-        std::atomic<bool> m_queueBuild;
 
         ChunkMeshResult buildChunkMesh();
         void rebuildChunkMesh();

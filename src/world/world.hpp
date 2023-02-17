@@ -34,6 +34,8 @@ namespace cybrion
         void updateEntityTransforms();
 
     private:
+        u32 chunkId = 0;
+
         WorldGenerator m_generator;
         umap<ivec3, ref<Chunk>> m_chunkMap;
         vector<ref<Entity>> m_entities;

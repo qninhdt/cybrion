@@ -7,6 +7,7 @@
 #include "core/stopwatch.hpp"
 #include "client/graphic/chunk_renderer.hpp"
 #include "client/graphic/entity_renderer.hpp"
+#include <readerwriterqueue/readerwriterqueue.h>
 
 namespace cybrion
 {
@@ -55,8 +56,6 @@ namespace cybrion
         bool m_enableAO;
         bool m_enableDiffuse;
 
-        std::mutex m_chunkLock;
-
-        queue<ChunkMeshResult> m_chunkMeshResults;
+        moodycamel::ConcurrentQueue<ChunkMeshResult> m_chunkMeshResults;
     };
 }

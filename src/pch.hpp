@@ -35,6 +35,7 @@
 #include <entt/entt.hpp>
 #include <stb_image.h>
 #include <BS_thread_pool.hpp>
+#include <concurrentqueue/concurrentqueue.h>
 
 // common files
 #include "common.hpp""

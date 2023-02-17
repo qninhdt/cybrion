@@ -84,15 +84,16 @@ namespace cybrion::GL
 
     void Mesh::setAttributes(std::initializer_list<MeshAttribute> attributes)
     {
-        glBindVertexArray(m_vao);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-
         u32 index = 0;
         u32 offset = 0;
         u32 stride = 0;
 
         for (auto& attr : attributes)
             stride += GetTypeSize(attr.type);
+
+        glBindVertexArray(m_vao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
         for (auto& attr : attributes)
         {

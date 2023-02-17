@@ -3,12 +3,11 @@
 
 namespace cybrion
 {
-    std::atomic<u32> Chunk::s_idN = 0;
 
     Chunk::Chunk(const ivec3& chunkPos): 
-        m_id(s_idN++), 
         m_neighbors{nullptr},
-        m_chunkPos(chunkPos)
+        m_chunkPos(chunkPos),
+        m_id(0)
     {
         m_pos = m_chunkPos * Chunk::CHUNK_SIZE + ivec3(Chunk::CHUNK_SIZE / 2, Chunk::CHUNK_SIZE / 2, Chunk::CHUNK_SIZE / 2);
     }

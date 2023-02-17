@@ -13,7 +13,8 @@ namespace cybrion
     WorldRenderer::WorldRenderer(World& world):
         m_world(world),
         m_enableAO(true),
-        m_enableDiffuse(true)
+        m_enableDiffuse(true),
+        m_chunkMeshResults()
     {
         m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
         m_opaqueCubeShader = ShaderManager::Get().getShader<OpaqueCubeShader>("opaque_cube");
@@ -22,32 +23,18 @@ namespace cybrion
     void WorldRenderer::render(f32 delta, bool showEntityBorder)
     {
         updateEntityRenderers(delta);
-
-        //buildChunkMeshes(0.05f); // allow build meshes in 1 second
-        //rebuildChunkMeshes(1); // allow rebuild meshes in 1 second
-
-        vector<ChunkMeshResult> results;
-
-        m_chunkLock.lock();
-        if (!m_chunkMeshResults.empty())
-            std::cout << m_chunkMeshResults.size() << '\n';
-        while (!m_chunkMeshResults.empty() && results.size() < 4)
+        i32 cnt = 0;
+        ChunkMeshResult result;
+        while (cnt < 4 && m_chunkMeshResults.try_dequeue(result))
         {
-            results.push_back(m_chunkMeshResults.front());
-            m_chunkMeshResults.pop();
-        }
-        m_chunkLock.unlock();
-
-        for (auto& result : results)
-        {  
             auto renderer = result.renderer;
             renderer->opaqueMesh.setDrawCount(result.drawCount);
             renderer->opaqueMesh.setVertices(result.vertices, result.size);
-            
+            renderer->m_isMeshing1 = false;
             renderer->m_hasBuilt = true;
-            renderer->m_queueBuild = false;
 
             delete[] result.vertices;
+            ++cnt;
         }
 
         BlockLoader::Get().bindTextureArray();
@@ -57,7 +44,10 @@ namespace cybrion
         m_opaqueCubeShader.setUniform<"enable_ao">((u32)m_enableAO);
         for (auto& [id, renderer]: m_chunkRenderers)
         {
-            if (renderer->m_queueBuild || id % 31 != 0) continue;
+            //if (!renderer->m_hasBuilt) {
+            //    //std::cout << renderer->m_isMeshing0 << ' ' << renderer->m_isMeshing1 << '\n';
+            //    continue;
+            //}
             auto& opaqueMesh = renderer->opaqueMesh;
             m_opaqueCubeShader.setUniform<"MVP">(
                 LocalGame::Get().getCamera().getProjViewMat()
@@ -84,51 +74,14 @@ namespace cybrion
     void WorldRenderer::addChunk(const ref<Chunk>& chunk)
     {
         auto renderer = std::make_shared<ChunkRenderer>(chunk);
-
         m_chunkRenderers[chunk->getId()] = renderer;
-
-        /*renderer->inBuildQueue = true;
-        m_buildChunkQueue.push(renderer);*/
-
         prepareRebuild(renderer);
-
- /*       chunk->eachNeighbors([&](ref<Chunk>& neighbor, const ivec3&) {
-            if (neighbor)
-            {
-                auto neighborRenderer = getChunkRenderer(neighbor);
-                prepareRebuild(neighborRenderer);
-            }
-        });*/
     }
 
     void WorldRenderer::addEntity(const ref<Entity>& entity)
     {
         auto renderer = std::make_shared<EntityRenderer>(entity);
         m_entityRenderers[entity->getId()] = renderer;
-    }
-
-    void WorldRenderer::buildChunkMeshes(f32 maxDuration)
-    {
-        m_stopwatch.reset();
-        while (!m_buildChunkQueue.empty() && maxDuration > m_stopwatch.getDeltaTime())
-        {
-            auto renderer = m_buildChunkQueue.front();
-            m_buildChunkQueue.pop();
-
-            renderer->buildChunkMesh();
-            renderer->inBuildQueue = false;
-        }
-    }
-
-    void WorldRenderer::rebuildChunkMeshes(f32 maxDuration)
-    {
-        for (auto& renderer: m_rebuildChunkList)
-        {
-            renderer->rebuildChunkMesh();
-            renderer->inRebuildList = false;
-        }
-
-        m_rebuildChunkList.clear();
     }
 
     ref<ChunkRenderer> WorldRenderer::getChunkRenderer(const ref<Chunk>& chunk) const
@@ -145,19 +98,17 @@ namespace cybrion
 
     void WorldRenderer::prepareRebuild(const ref<ChunkRenderer>& renderer)
     {
-        /*if (!renderer->inBuildQueue && !renderer->inRebuildList)
-        {
-            m_rebuildChunkList.push_back(renderer);
-            renderer->inRebuildList = true;
-        }*/
-        /// FIXME: multiple rebuild mesh ?
-        GetPool().submit([this, renderer = renderer] {
+        if (renderer->m_isMeshing0 || renderer->m_isMeshing1) return;
+        renderer->m_isMeshing0 = true;
+
+        GetPool().submit([this, renderer] {
             auto result = renderer->buildChunkMesh();
             result.renderer = renderer;
-            renderer->m_queueBuild = true;
-            m_chunkLock.lock();
-            m_chunkMeshResults.push(result);
-            m_chunkLock.unlock();
+            
+            renderer->m_isMeshing0 = false;
+            renderer->m_isMeshing1 = true;
+
+            m_chunkMeshResults.enqueue(result);
         });
     }
 

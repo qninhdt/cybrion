@@ -4,6 +4,7 @@
 
 namespace cybrion
 {
+
     World::World()
     {}
 
@@ -50,6 +51,7 @@ namespace cybrion
 
         for (auto& chunk : results)
         {
+            chunk->m_id = ++chunkId;
             chunk->eachNeighbors([&](ref<Chunk>&, const ivec3& dir) {
                 ref<Chunk> neighbor = getChunk(chunk->getChunkPos() + dir);
                 chunk->setNeighbor(dir, neighbor);
@@ -155,7 +157,7 @@ namespace cybrion
                             if (!block || block->getType() == BlockType::AIR) continue;
 
                             auto current = AABB::SweptAABB({ ppos, size },
-                                { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {1,1,1} }, v);
+                                { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {0.5,0.5,0.5} }, v);
 
                             if (current.delta < result.delta)
                                 result = current;
