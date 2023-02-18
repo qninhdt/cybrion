@@ -17,7 +17,7 @@ namespace cybrion
 
     struct ChunkMeshResult
     {
-        vector<CubeVertex> vertices;
+        vector<u32> vertices;
         ref<ChunkRenderer> renderer;
         u32 version;
     };

@@ -13,11 +13,7 @@ namespace cybrion
         m_hasBuilt(false)
     {
         opaqueMesh.setAttributes({
-            { GL::Type::VEC3 }, // pos
-            { GL::Type::VEC2 }, // uv
-            { GL::Type::UINT }, // texId
-            { GL::Type::UINT }, // face
-            { GL::Type::UINT }, // ao
+            { GL::Type::UINT }, // packed_vertex
         });
     }
     
@@ -66,7 +62,7 @@ namespace cybrion
                 else
                     m_chunk->getBlockAndNeighbors(pos, blocks);
 
-                cubeRenderer.generateCubeMesh(culling, vec3(pos) + Chunk::CHUNK_ALIGN, blocks, result->vertices);
+                cubeRenderer.generateCubeMesh(culling, pos, blocks, result->vertices);
             }
         });
 

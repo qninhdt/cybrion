@@ -24,13 +24,14 @@ namespace cybrion
         using CubeTexture = array<array<CubeVertexTexture, 4>, 6>;
     public:
 
-        void generateCubeMesh(bool culling[6], const vec3& position, const Block::Block3x3x3& blocks, vector<CubeVertex>& result);
+        void generateCubeMesh(bool culling[6], const ivec3& position, const Block::Block3x3x3& blocks, vector<u32>& result);
         void generateCubeTexture();
     
         static array<tuple<ivec3, BlockFace>, 6> CubeDirections;
         static array<array<vec3, 4>, 6> CubeVertices;
 
     private:
+        u32 packCubeVertex(u32 x, u32 y, u32 z, u32 normal, u32 ao, u32 texId);
 
         friend class LocalGame;
 

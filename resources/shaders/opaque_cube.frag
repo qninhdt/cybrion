@@ -1,9 +1,9 @@
 #version 430
 
 in vec2 uv;
-flat in uint tex_id;
-flat in uint face;
 in float ao;
+flat in uint tex_id;
+flat in uint normal;
 
 uniform sampler2DArray texures;
 uniform uint enable_diffuse;
@@ -18,7 +18,7 @@ void main() {
 	float ao_ = 1-(ao-1)*(ao-1)/2;
 
 	if (enable_ao == 1) factor *= ao_;
-	if (enable_diffuse == 1) factor *= diffuse[face];
+	if (enable_diffuse == 1) factor *= diffuse[normal];
 	
     color = factor * texture(texures, vec3(uv, tex_id));
 }

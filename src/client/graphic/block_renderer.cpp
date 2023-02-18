@@ -112,7 +112,7 @@ namespace cybrion
         {{ {0,-1,-1}, {1,-1,-1},{1,0,-1},{1,1,-1},{0,1,-1},{-1,1,-1},{-1,0,-1},{-1,-1,-1} }}
     } };
 
-    void BlockRenderer::generateCubeMesh(bool culling[6], const vec3& position, const Block::Block3x3x3& blocks, vector<CubeVertex>& result)
+    void BlockRenderer::generateCubeMesh(bool culling[6], const ivec3& position, const Block::Block3x3x3& blocks, vector<u32>& result)
     {
         for (u32 i = 0; i < 6; ++i)
         {
@@ -120,7 +120,7 @@ namespace cybrion
 
             auto& adjs = faceAdjBlocks[i];
 
-            CubeVertex* v[4];
+            u32* v[4];
             result.reserve(result.size() + 4);
             for (u32 j = 0; j < 4; ++j)
             {
@@ -143,21 +143,20 @@ namespace cybrion
                 else
                     ao = 3 - (o1 + o2 + o3);
 
-                result.push_back({
-                    CubeVertices[i][j] + position,
-                    m_cubeTexture[i][j].uv,
-                    m_cubeTexture[i][j].textureId,
-                    i,
-                    ao
-                });
+                ivec3 pos = ivec3(CubeVertices[i][j] + vec3(0.5f, 0.5f, 0.5f)) + position;
+                result.push_back(packCubeVertex(
+                    pos.x, pos.y, pos.z,
+                    i, ao,
+                    m_cubeTexture[i][j].textureId
+                ));
 
                 v[j] = &result[result.size() - 1];
             }
 
-            if (v[0]->ao + v[2]->ao > v[1]->ao + v[3]->ao)
+       /*     if (v[0]->ao + v[2]->ao > v[1]->ao + v[3]->ao)
                 cycle4(*v[0], *v[1], *v[2], *v[3], 2);
             else
-                cycle4(*v[0], *v[1], *v[2], *v[3], 1);
+                cycle4(*v[0], *v[1], *v[2], *v[3], 1);*/
         }
     }
 
@@ -203,5 +202,15 @@ namespace cybrion
             if (nz == 2) cycle4(t[0][3].uv, t[0][2].uv, t[0][1].uv, t[0][0].uv, 2);
             if (nz == 3) cycle4(t[1][3].uv, t[1][2].uv, t[1][1].uv, t[1][0].uv, 2);
         }
+    }
+    u32 BlockRenderer::packCubeVertex(u32 x, u32 y, u32 z, u32 normal, u32 ao, u32 texId)
+    {
+        u32 n = texId;
+        n = n << 2 | ao;
+        n = n << 3 | normal;
+        n = n << 6 | z;
+        n = n << 6 | y;
+        n = n << 6 | x;
+        return n;
     }
 }
