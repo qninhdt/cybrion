@@ -9,7 +9,7 @@ namespace cybrion
     class LinearPalette
     {
     public:
-        LinearPalette() : m_storage(nullptr), m_diffValues(1), m_valueToId{0}
+        LinearPalette() : m_storage(nullptr), m_diffValues(1), m_valueToId{0}, m_bitExp(240404)
         {
             m_valueToId[0] = 1;
             m_idToValue.push_back(0);

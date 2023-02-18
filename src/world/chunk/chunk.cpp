@@ -7,7 +7,10 @@ namespace cybrion
     Chunk::Chunk(const ivec3& chunkPos): 
         m_neighbors{nullptr},
         m_chunkPos(chunkPos),
-        m_id(0)
+        m_id(0),
+        m_status(ChunkStatus::NONE),
+        m_ready(false),
+        m_unloaded(false)
     {
         m_pos = m_chunkPos * Chunk::CHUNK_SIZE + ivec3(Chunk::CHUNK_SIZE / 2, Chunk::CHUNK_SIZE / 2, Chunk::CHUNK_SIZE / 2);
     }
@@ -29,7 +32,7 @@ namespace cybrion
     tuple<Block*, ref<Chunk>> Chunk::tryGetBlockMaybeOutside(const ivec3& pos) const
     {
         ivec3 chunkPos = posToChunkPos(pos);
-        auto& neighbor = m_neighbors[chunkPos.x + 1][chunkPos.y + 1][chunkPos.z + 1];
+        auto neighbor = m_neighbors[chunkPos.x + 1][chunkPos.y + 1][chunkPos.z + 1];
 
         if (!neighbor)
             return { nullptr, nullptr };
@@ -86,7 +89,9 @@ namespace cybrion
             for (i32 y = -1; y <= 1; ++y)
                 for (i32 z = -1; z <= 1; ++z)
                     if (!(x == 0 && y == 0 && z == 0))
+                    {
                         callback(m_neighbors[x + 1][y + 1][z + 1], ivec3(x, y, z));
+                    }
     }
 
     void Chunk::eachBlocks(const std::function<void(Block&, const ivec3&)>& callback)
@@ -118,6 +123,26 @@ namespace cybrion
     u32 Chunk::getMemorySizeApproximately() const
     {
         return CHUNK_VOLUME * sizeof(u32) / (32 / (1 << m_blocks.getBitExp()));
+    }
+
+    ChunkStatus Chunk::getStatus() const
+    {
+        return m_status;
+    }
+
+    bool Chunk::isReady() const
+    {
+        return m_ready;
+    }
+
+    bool Chunk::isUnloaded() const
+    {
+        return m_unloaded;
+    }
+
+    Chunk::~Chunk()
+    {
+
     }
 
     i32 Chunk::posToIndex(const ivec3& pos)

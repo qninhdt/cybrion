@@ -5,6 +5,14 @@
 
 namespace cybrion
 {
+    enum class ChunkStatus
+    {
+        NONE,
+        IN_QUEUE,
+        GENERATING,
+        READY
+    };
+
     class Chunk
     {
     public:
@@ -34,8 +42,13 @@ namespace cybrion
         void eachBlockAndNeighbors(const ivec3& pos, const std::function<void(Block*&, ref<Chunk>&, const ivec3& dir)>& callback);
 
         u32 getId() const;
-
         u32 getMemorySizeApproximately() const;
+
+        ChunkStatus getStatus() const;
+        bool isReady() const;
+        bool isUnloaded() const;
+
+        ~Chunk();
 
         static i32 posToIndex(const ivec3& pos);
         static ivec3 posToLocalPos(const ivec3& pos);
@@ -49,6 +62,10 @@ namespace cybrion
         friend class WorldGenerator;
 
         static std::atomic<u32> s_idN;
+
+        std::atomic<ChunkStatus> m_status;
+        std::atomic<bool> m_ready;
+        std::atomic<bool> m_unloaded;
 
         BlockStorage m_blocks;
         Chunk3x3x3 m_neighbors;

@@ -8,9 +8,8 @@ namespace cybrion
         m_noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
     }
 
-    ref<Chunk> WorldGenerator::generateChunkAt(const ivec3& pos)
+    void WorldGenerator::generateChunkAt(const ref<Chunk>& chunk)
     {
-        auto chunk = std::make_shared<Chunk>(pos);
         static int cnt = 0;
         ++cnt; 
 
@@ -20,14 +19,14 @@ namespace cybrion
             &Blocks::OAK_LOG
         };
 
-        ivec3 chunkPos = pos * Chunk::CHUNK_SIZE;
+        ivec3 chunkPos = chunk->getChunkPos() * Chunk::CHUNK_SIZE;
         for (i32 x = 0; x < Chunk::CHUNK_SIZE; ++x)
         {
             for (i32 z = 0; z < Chunk::CHUNK_SIZE; ++z)
             {
                 vec2 worldPos = { chunkPos.x + x, chunkPos.z + z };
                 f32 noise = m_noise.GetNoise(worldPos.x, worldPos.y);
-                i32 height = noise * 20 + 50;
+                i32 height = noise * 200 + 50;
                 i32 localHeight = std::min(std::max(0, height - chunkPos.y), Chunk::CHUNK_SIZE);
 
                 for (i32 y = 0; y < localHeight; ++y)
@@ -36,7 +35,5 @@ namespace cybrion
                 }
             }
         }
-
-        return chunk;
     }
 }

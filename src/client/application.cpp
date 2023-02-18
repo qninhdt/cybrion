@@ -301,7 +301,6 @@ namespace cybrion
     {
         m_game = new LocalGame();
         m_game->load();
-        std::cout << Blocks::COBBLESTONE.getDisplayName() << '\n';
 
         m_playingGame = true;
     }

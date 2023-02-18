@@ -25,9 +25,12 @@ namespace cybrion
         updateEntityRenderers(delta);
         i32 cnt = 0;
         ref<ChunkMeshResult> result;
-        while ((cnt++) < 8 && m_chunkMeshResults.try_dequeue(result))
+        while (cnt < 32 && m_chunkMeshResults.try_dequeue(result))
         {
             auto renderer = result->renderer;
+
+            if (renderer->m_chunk->isUnloaded())
+                continue;
 
             // allow to install if version is still latest
             if (renderer->m_version != result->version)
@@ -36,6 +39,19 @@ namespace cybrion
             renderer->opaqueMesh.setVertices(result->vertices.data(), result->vertices.size());
             renderer->opaqueMesh.setDrawCount(result->vertices.size() / 4 * 6);
             renderer->m_hasBuilt = true;
+
+            ++cnt;
+        }
+
+        {
+            vector<u32> removeList;
+            for (auto& [id, renderer] : m_chunkRenderers)
+            {
+                if (renderer->m_chunk->isUnloaded() && renderer.use_count() == 1)
+                    removeList.push_back(id);
+            }
+            for (auto& id : removeList)
+                m_chunkRenderers.erase(id);
         }
 
         BlockLoader::Get().bindTextureArray();
@@ -74,6 +90,9 @@ namespace cybrion
 
     void WorldRenderer::addChunk(const ref<Chunk>& chunk)
     {
+        if (chunk->isUnloaded())
+            return;
+
         auto renderer = std::make_shared<ChunkRenderer>(chunk);
         m_chunkRenderers[chunk->getId()] = renderer;
         prepareRebuild(renderer);
@@ -82,6 +101,10 @@ namespace cybrion
             if (neighbor)
                 prepareRebuild(getChunkRenderer(neighbor));
         });
+    }
+
+    void WorldRenderer::removeChunk(const ref<Chunk>& chunk)
+    {
     }
 
     void WorldRenderer::addEntity(const ref<Entity>& entity)
@@ -104,9 +127,11 @@ namespace cybrion
 
     void WorldRenderer::prepareRebuild(const ref<ChunkRenderer>& renderer)
     {
-        if (renderer->m_inBuildQueue) {
+        if (renderer->m_chunk->isUnloaded())
             return;
-        }
+
+        if (renderer->m_inBuildQueue)
+            return;
 
         renderer->m_inBuildQueue = true;
         renderer->m_version += 1;
@@ -116,9 +141,15 @@ namespace cybrion
         GetPool().submit([this, renderer, version] {
             renderer->m_inBuildQueue = false;
 
+            if (renderer->m_chunk->isUnloaded())
+                return;
+
             auto result = renderer->buildChunkMesh();
             result->renderer = renderer;
             result->version = version;
+
+            if (renderer->m_chunk->isUnloaded())
+                return;
 
             // allow to install if version is still latest after building
             if (version == renderer->m_version)

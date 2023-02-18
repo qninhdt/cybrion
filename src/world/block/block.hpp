@@ -166,7 +166,6 @@ namespace cybrion
             BaseBlocks()
             {
                 registerImpl<B...>(0);
-                std::cout << 1;
             }
 
             void queryBlocks(BlockType type, const umap<string, string>& query, vector<Block*>& result)

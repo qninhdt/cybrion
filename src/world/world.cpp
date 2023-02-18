@@ -18,16 +18,52 @@ namespace cybrion
         return entity;
     }
 
-    ref<Chunk> World::loadChunk(const ivec3& pos)
+    void World::loadChunk(const ivec3& pos)
     {
-        GetPool().submit([this, pos] {
-            auto chunk = m_generator.generateChunkAt(pos);
+        if (m_chunkMap.find(pos) != m_chunkMap.end())
+            return;
+
+        ref<Chunk> chunk = std::make_shared<Chunk>(pos);
+        m_chunkMap[pos] = chunk;
+
+        GetPool().submit([this, chunk] {
+            if (chunk->isUnloaded())
+                return;
+
+            m_generator.generateChunkAt(chunk);
+
+            if (chunk->isUnloaded())
+                return;
+
             m_chunkLock.lock();
             m_loadChunkResults.push(chunk);
             m_chunkLock.unlock();
         });
+    }
 
-        return nullptr;
+    void World::unloadChunk(const ivec3& pos)
+    {
+        auto it = m_chunkMap.find(pos);
+
+        if (it == m_chunkMap.end())
+            return;
+
+        ref<Chunk> chunk = it->second;
+        chunk->m_unloaded = true;
+
+        Game::Get().onChunkUnloaded(chunk);
+
+        // remove neighbors
+        chunk->eachNeighbors([&](ref<Chunk>& neighbor, const ivec3& dir) {
+            if (neighbor)
+            {
+                neighbor->setNeighbor(-dir, nullptr);
+                chunk->setNeighbor(dir, nullptr);
+            }
+        });
+        chunk->setNeighbor({ 0, 0, 0 }, nullptr);
+
+        m_chunkMap.erase(it);
     }
 
     ref<Chunk> World::getChunk(const ivec3& pos)
@@ -40,12 +76,16 @@ namespace cybrion
     void World::tick()
     {
         vector<ref<Chunk>> results;
-
         m_chunkLock.lock();
-        while (!m_loadChunkResults.empty() && results.size() < 16)
+        while (!m_loadChunkResults.empty())
         {
-            results.push_back(m_loadChunkResults.front());
+            ref<Chunk> chunk = m_loadChunkResults.front();
             m_loadChunkResults.pop();
+
+            if (chunk->isUnloaded())
+                continue;
+
+            results.push_back(chunk);
         }
         m_chunkLock.unlock();
 
@@ -54,14 +94,17 @@ namespace cybrion
             chunk->m_id = ++chunkId;
             chunk->eachNeighbors([&](ref<Chunk>&, const ivec3& dir) {
                 ref<Chunk> neighbor = getChunk(chunk->getChunkPos() + dir);
-                chunk->setNeighbor(dir, neighbor);
 
-                if (neighbor)
+                if (neighbor && neighbor->isReady())
+                {
+                    chunk->setNeighbor(dir, neighbor);
                     neighbor->setNeighbor(-dir, chunk);
+                }
             });
 
             chunk->setNeighbor({ 0, 0, 0 }, chunk);
-            m_chunkMap[chunk->getChunkPos()] = chunk;
+            chunk->m_ready = true;
+
             Game::Get().onChunkLoaded(chunk);
         }
 
@@ -70,8 +113,29 @@ namespace cybrion
 
         for (auto& entity : m_entities)
             entity->tick();
-
+        
         updateEntityTransforms();
+
+        i32 d = 16;
+        ivec3 ppos = Game::Get().getPlayer().getEntity()->getChunkPos();
+
+        for (i32 x = -d; x < d; ++x)
+            for (i32 y = -2; y < 8; ++y)
+                for (i32 z = -d; z < d; ++z)
+                    if (x*x + z*z <= d*d)
+                        loadChunk({ x + ppos.x, y, z + ppos.z });
+
+        vector<ivec3> unloadLists;
+        for (auto& [pos, chunk] : m_chunkMap)
+        {
+            i32 dx = pos.x - ppos.x;
+            i32 dz = pos.z - ppos.z;
+            if (dx * dx + dz * dz > d * d)
+                unloadLists.push_back(pos);
+        }
+
+        for (auto& pos : unloadLists)
+            unloadChunk(pos);
     }
 
     Block& World::getBlock(const ivec3& pos)

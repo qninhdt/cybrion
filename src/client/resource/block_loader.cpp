@@ -87,11 +87,6 @@ namespace cybrion
 
             stbi_image_free(data);
         }
-
-        for (auto& [name, id] : m_textureIdMap)
-        {
-            std::cout << name << " : " << id << '\n';
-        }
     }
 
     bool BlockLoader::loadConfigFile(const string& path)

@@ -9,7 +9,7 @@ namespace cybrion
     public:
         WorldGenerator();
 
-        ref<Chunk> generateChunkAt(const ivec3& pos);
+        void generateChunkAt(const ref<Chunk>& pos);
 
     private:
         FastNoiseLite m_noise;

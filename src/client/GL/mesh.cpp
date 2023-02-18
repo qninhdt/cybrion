@@ -39,15 +39,11 @@ namespace cybrion::GL
 
     Mesh::~Mesh()
     {
-        if (m_vao)
-        {
-            glDeleteBuffers(1, &m_vbo);
+        glDeleteBuffers(1, &m_vbo);
+        if (!m_useGlobalIBO)
+            glDeleteBuffers(1, &m_ibo);
 
-            if (!m_useGlobalIBO)
-                glDeleteBuffers(1, &m_ibo);
-
-            glDeleteVertexArrays(1, &m_vao);
-        }
+        glDeleteVertexArrays(1, &m_vao);
     }
 
     void Mesh::setVerticesData(void* data, u32 size)

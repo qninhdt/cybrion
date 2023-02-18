@@ -23,6 +23,8 @@ namespace cybrion
         void render(f32 delta, bool showEntityBorder);
 
         void addChunk(const ref<Chunk>& chunk);
+        void removeChunk(const ref<Chunk>& chunk);
+
         void addEntity(const ref<Entity>& entity);
 
         ref<EntityRenderer> getEntityRenderer(const ref<Entity>& entity) const;

@@ -27,7 +27,7 @@ namespace cybrion
         {
             if (m_input.isMoving)
             {
-                m_entity->setVelocity(m_input.moveDir);
+                m_entity->setVelocity(m_input.moveDir * 50.0f);
             }
             
             vec3 rot = m_entity->getRot() + m_input.deltaRot * 0.003f;

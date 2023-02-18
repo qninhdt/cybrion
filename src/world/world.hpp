@@ -20,7 +20,8 @@ namespace cybrion
         World();
 
         ref<Entity> spawnEntity(const vec3& pos);
-        ref<Chunk> loadChunk(const ivec3& pos);
+        void loadChunk(const ivec3& pos);
+        void unloadChunk(const ivec3& pos);
         ref<Chunk> getChunk(const ivec3& pos);
 
         void tick();
