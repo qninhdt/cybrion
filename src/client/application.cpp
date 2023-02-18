@@ -249,6 +249,8 @@ namespace cybrion
                 input.isMoving = false;
             }
 
+            input.run = isKeyPressed(KeyCode::LEFT_CONTROL);
+
             // game tick
             // --------------------------------------------
             if (m_game)

@@ -22,7 +22,8 @@ namespace cybrion
         vec3 getPos() const;
         vec3 getSize() const;
 
-        static SweptAABBResult SweptAABB(const AABB& a, const AABB& b, const vec3& v);
+        static SweptAABBResult sweptAABB(const AABB& a, const AABB& b, const vec3& v);
+        static AABB mergeAABB(const AABB& a, const AABB& b);
 
     private:
         vec3 m_pos;

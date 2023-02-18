@@ -32,9 +32,31 @@ namespace cybrion
         return m_size;
     }
 
+    AABB AABB::mergeAABB(const AABB& a, const AABB& b)
+    {
+        vec3 aMin = a.getMin();
+        vec3 aMax = a.getMax();
+        vec3 bMin = b.getMin();
+        vec3 bMax = b.getMax();
+
+        vec3 min = {
+            std::min(aMin.x, bMin.x),
+            std::min(aMin.y, bMin.y),
+            std::min(aMin.z, bMin.z)
+        };
+
+        vec3 max = {
+            std::max(aMax.x, bMax.x),
+            std::max(aMax.y, bMax.y),
+            std::max(aMax.z, bMax.z)
+        };
+
+        return { (min + max) / 2.0f, max - min };
+    }
+
     // copy and modify from gist :3
     // https://gist.github.com/tesselode/e1bcf22f2c47baaedcfc472e78cac55e
-    SweptAABBResult AABB::SweptAABB(const AABB& a, const AABB& b, const vec3& v)
+    SweptAABBResult AABB::sweptAABB(const AABB& a, const AABB& b, const vec3& v)
     {
         vec3 aMin = a.getMin();
         vec3 aMax = a.getMax();

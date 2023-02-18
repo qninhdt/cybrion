@@ -26,9 +26,7 @@ namespace cybrion
         if (m_input.isMoving || glm::length(m_input.deltaRot) > 0.001f)
         {
             if (m_input.isMoving)
-            {
-                m_entity->setVelocity(m_input.moveDir * 50.0f);
-            }
+                m_entity->setVelocity(m_input.moveDir * (m_input.run ? 20.0f : 2.0f));
             
             vec3 rot = m_entity->getRot() + m_input.deltaRot * 0.003f;
 

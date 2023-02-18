@@ -116,7 +116,7 @@ namespace cybrion
         
         updateEntityTransforms();
 
-        i32 d = 16;
+        i32 d = 8;
         ivec3 ppos = Game::Get().getPlayer().getEntity()->getChunkPos();
 
         for (i32 x = -d; x < d; ++x)
@@ -195,6 +195,7 @@ namespace cybrion
         return result;
     }
 
+    /// TODO: optimize AABB
     void World::updateEntityTransforms()
     {
         for (auto& entity : m_entities)
@@ -203,13 +204,14 @@ namespace cybrion
             vec3 size = bb.getSize();
             vec3 ppos = bb.getPos();
             vec3 pos = ppos + entity->getVelocity();
+            AABB bound = AABB::mergeAABB({ ppos, size }, { pos, size });
 
             while (true)
             {
                 SweptAABBResult result{ 1, { 0, 0, 0 } };
 
-                ivec3 min = glm::floor(ppos) - 2.0f;
-                ivec3 max = glm::floor(ppos) + 2.0f;
+                ivec3 min = glm::floor(bound.getMin());
+                ivec3 max = glm::ceil(bound.getMax());
 
                 vec3 v = pos - ppos;
 
@@ -220,14 +222,14 @@ namespace cybrion
                             Block* block = tryGetBlock({ x, y, z });
                             if (!block || block->getType() == BlockType::AIR) continue;
 
-                            auto current = AABB::SweptAABB({ ppos, size },
-                                { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {0.5,0.5,0.5} }, v);
+                            auto current = AABB::sweptAABB({ ppos, size },
+                                { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {0.8,0.8,0.8} }, v);
 
                             if (current.delta < result.delta)
                                 result = current;
                         }
 
-                pos = ppos + (v * result.delta) + 0.000001f * result.normal;
+                pos = ppos + (v * result.delta) + 0.001f * result.normal;
 
                 if (result.delta == 1.0f) break;
 
