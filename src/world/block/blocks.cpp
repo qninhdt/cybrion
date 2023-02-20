@@ -14,7 +14,11 @@ namespace cybrion
     LogBlock& Blocks::OAK_LOG = LOG.set<"type">(WoodType::OAK);
 
     RockBlock& Blocks::ROCK = s_blocks.get<RockBlock>();
+    RockBlock& Blocks::STONE = ROCK.set<"type">(RockType::STONE);
     RockBlock& Blocks::COBBLESTONE = ROCK.set<"type">(RockType::COBBLESTONE);
+
+    BrickBlock& Blocks::BRICK = s_blocks.get<BrickBlock>();
+    BrickBlock& Blocks::STONE_BRICK = BRICK.set<"type">(BrickType::STONE);
 
     Blocks& Blocks::Get()
     {

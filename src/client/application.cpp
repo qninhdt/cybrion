@@ -130,7 +130,7 @@ namespace cybrion
             return false;
         }
 
-        //glfwWindowHint(GLFW_SAMPLES, 4);
+        glfwWindowHint(GLFW_SAMPLES, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -266,10 +266,10 @@ namespace cybrion
             // --------------------------------------------
             m_frameProfiler.tick();
 
-            if (fpsStopwatch.getDeltaTime() >= 250000)
+            if (fpsStopwatch.getDeltaTime() >= 25000)
             {
                 deltaTime = m_frameProfiler.getDeltaTime();
-                fpsStopwatch.reduceDeltaTime(250000);
+                fpsStopwatch.reduceDeltaTime(25000);
             }
 
             // render

@@ -6,6 +6,7 @@ namespace cybrion
 {
     enum class RockType
     {
+        STONE,
         COBBLESTONE,
         GRAVEL,
     };
@@ -13,7 +14,7 @@ namespace cybrion
     class RockBlock : public TBlock<
         RockBlock, 
         BlockType::ROCK,
-        block::state<RockType, "type", 2>
+        block::state<RockType, "type", 3>
     >
     {
 

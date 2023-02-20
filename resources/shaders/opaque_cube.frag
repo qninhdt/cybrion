@@ -11,7 +11,18 @@ uniform uint enable_ao;
 
 out vec4 color;
 
-float diffuse[6] = { 0.9f, 1.0f, 0.9f, 0.9f, 0.8f, 0.9f };
+float diffuse_top = 1.0f;
+float diffuse_side = 0.80f;
+float diffuse_bottom = 0.6f;
+
+float diffuse[6] = { 
+	diffuse_side, 
+	diffuse_top, 
+	diffuse_side, 
+	diffuse_side, 
+	diffuse_bottom, 
+	diffuse_side 
+};
 
 void main() {
 	float factor = 1;

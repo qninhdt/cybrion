@@ -6,7 +6,7 @@
 
 namespace cybrion
 {
-    static constexpr i32 PLAYER_BLOCK_INTERACT_DELAY = 200;
+    static constexpr i32 PLAYER_BLOCK_INTERACT_DELAY = 200000;
 
     struct PlayerInput
     {

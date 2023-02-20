@@ -52,6 +52,7 @@ namespace cybrion
 
     void BlockLoader::loadTextures()
     {
+        constexpr i32 BLOCK_TEXTURE_SIZE = 16;
         string folderPath = "D:/github/cybrion/resources/textures/blocks/";
 
         // count number of block textures
@@ -61,7 +62,7 @@ namespace cybrion
         }
 
         // init texture array
-        m_textureArray.init(16, 16, layerCount, 4, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+        m_textureArray.init(BLOCK_TEXTURE_SIZE, BLOCK_TEXTURE_SIZE, layerCount, 4, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 
         // loading textures
         stbi_set_flip_vertically_on_load(true);
@@ -74,7 +75,7 @@ namespace cybrion
             i32 width, height, nchannels;
             u8* data = stbi_load(path.c_str(), &width, &height, &nchannels, STBI_rgb_alpha);
 
-            if (width != 16 || height != 16)
+            if (width != BLOCK_TEXTURE_SIZE || height != BLOCK_TEXTURE_SIZE)
             {
                 CYBRION_CLIENT_ERROR("Incorrect texture size");
                 continue;

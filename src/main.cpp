@@ -16,6 +16,7 @@ int main()
     RegisterEnum(BlockType::LOG  , "log");
     RegisterEnum(BlockType::SAND , "sand");
     RegisterEnum(BlockType::ROCK , "rock");
+    RegisterEnum(BlockType::BRICK, "brick");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");
@@ -24,8 +25,12 @@ int main()
     RegisterEnum(SoilType::GRASS  , "grass");
 
     // rock type
+    RegisterEnum(RockType::STONE, "stone");
     RegisterEnum(RockType::GRAVEL, "gravel");
     RegisterEnum(RockType::COBBLESTONE, "cobblestone");
+
+    // brick type
+    RegisterEnum(BrickType::STONE, "stone");
 
     // block shape
     RegisterEnum(BlockShape::CUBE   , "cube");

@@ -40,7 +40,6 @@ namespace cybrion
         WorldGenerator m_generator;
         umap<ivec3, ref<Chunk>> m_chunkMap;
         vector<ref<Entity>> m_entities;
-        queue<ref<Chunk>> m_loadChunkResults;
-        std::mutex m_chunkLock;
+        moodycamel::ConcurrentQueue<ref<Chunk>> m_loadChunkResults;
     };
 }

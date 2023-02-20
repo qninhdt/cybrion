@@ -3,9 +3,7 @@
 
 "[type=dirt]":
   display_name: Dirt
-  top: grass_top
-  side: grass_side
-  bottom: grass_bottom
+  all: dirt
   
 "[type=basalt]":
   display_name: Basalt
@@ -18,3 +16,6 @@
   
 "[type=grass]":
   display_name: Grass
+  top: grass_top
+  side: grass_side
+  bottom: dirt

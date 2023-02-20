@@ -9,6 +9,7 @@ namespace cybrion
         LOG,
         SAND,
         ROCK,
+        BRICK,
         ENUM_SIZE
     };
 

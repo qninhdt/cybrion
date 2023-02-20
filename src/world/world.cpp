@@ -35,9 +35,7 @@ namespace cybrion
             if (chunk->isUnloaded())
                 return;
 
-            m_chunkLock.lock();
-            m_loadChunkResults.push(chunk);
-            m_chunkLock.unlock();
+            m_loadChunkResults.enqueue(chunk);
         });
     }
 
@@ -75,22 +73,12 @@ namespace cybrion
 
     void World::tick()
     {
-        vector<ref<Chunk>> results;
-        m_chunkLock.lock();
-        while (!m_loadChunkResults.empty())
+        ref<Chunk> chunk;
+        while (m_loadChunkResults.try_dequeue(chunk))
         {
-            ref<Chunk> chunk = m_loadChunkResults.front();
-            m_loadChunkResults.pop();
-
             if (chunk->isUnloaded())
                 continue;
 
-            results.push_back(chunk);
-        }
-        m_chunkLock.unlock();
-
-        for (auto& chunk : results)
-        {
             chunk->m_id = ++chunkId;
             chunk->eachNeighbors([&](ref<Chunk>&, const ivec3& dir) {
                 ref<Chunk> neighbor = getChunk(chunk->getChunkPos() + dir);

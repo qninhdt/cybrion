@@ -22,15 +22,18 @@ namespace cybrion
 
     void Player::tick()
     {
+        static int x = 0;
         // controller
-        if (m_input.isMoving || glm::length(m_input.deltaRot) > 0.001f)
+        if (m_input.isMoving)
+            m_entity->setVelocity(m_input.moveDir * (m_input.run ? 20.0f : 2.0f));
+        else
+            m_entity->setVelocity({ 0, 0, 0 });
+        
+        if (glm::length(m_input.deltaRot) > 0.01f)
         {
-            if (m_input.isMoving)
-                m_entity->setVelocity(m_input.moveDir * (m_input.run ? 20.0f : 2.0f));
-            
             vec3 rot = m_entity->getRot() + m_input.deltaRot * 0.003f;
 
-            f32 eps = 0.001f;
+            f32 eps = 0.1f;
             if (rot.x > pi / 2 - eps && rot.x < pi * 3 / 2 + eps)
             {
                 if (rot.x - pi / 2 - eps < pi * 3 / 2 + eps - rot.x)
@@ -44,14 +47,11 @@ namespace cybrion
             m_input.deltaRot = { 0, 0, 0 }; // reset
         }
 
-        if (!m_input.isMoving)
-            m_entity->setVelocity({ 0, 0, 0 });
-
         if (m_input.rightClick)
         {
             if (m_targetBlock && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
             {
-                Game::Get().getWorld().placeBlock(m_targetPos, m_targetFace, Blocks::COBBLESTONE);
+                Game::Get().getWorld().placeBlock(m_targetPos, m_targetFace, Blocks::OAK_LOG);
                 m_blockInteractStopwatch.reset();
             }
             m_input.rightClick = false;
