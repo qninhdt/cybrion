@@ -20,6 +20,8 @@ namespace cybrion
     BrickBlock& Blocks::BRICK = s_blocks.get<BrickBlock>();
     BrickBlock& Blocks::STONE_BRICK = BRICK.set<"type">(BrickType::STONE);
 
+    SandBlock& Blocks::SAND = s_blocks.get<SandBlock>();
+
     Blocks& Blocks::Get()
     {
         return s_blocks;

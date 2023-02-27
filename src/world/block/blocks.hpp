@@ -33,6 +33,7 @@ namespace cybrion
         static RockBlock& COBBLESTONE;
         static RockBlock& STONE;
         static BrickBlock& STONE_BRICK;
+        static SandBlock& SAND;
 
         static Blocks& Get();
     private:
