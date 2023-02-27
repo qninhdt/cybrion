@@ -1,0 +1,8 @@
+out
+
+*.dat
+*.jbt
+*hjbt
+
+.vs
+.vscode

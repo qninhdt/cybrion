@@ -186,8 +186,21 @@ namespace cybrion
     {
         if (!Application::Get().isCursorEnable())
         {
-            auto& input = m_player.getInput();
-            input.deltaRot += vec3(-delta.y, -delta.x, 0) * Application::Get().getDeltaTime() * 75.0f;
+            vec3 rot = m_camera.getRot() + vec3(-delta.y, -delta.x, 0) * Application::Get().getDeltaTime() * 75.0f * 0.003f;
+
+            f32 eps = 0.1f;
+            if (rot.x > pi / 2 - eps && rot.x < pi * 3 / 2 + eps)
+            {
+                if (rot.x - pi / 2 - eps < pi * 3 / 2 + eps - rot.x)
+                    rot.x = pi / 2 - eps;
+                else
+                    rot.x = pi * 3 / 2 + eps;
+            }
+
+            m_camera.setRot(rot);
+
+            m_camera.updateViewMat();
+            m_player.getInput().rot = m_camera.getRot();
         }
     }
 

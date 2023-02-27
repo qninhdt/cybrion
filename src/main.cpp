@@ -1,10 +1,6 @@
 #include "client/application.hpp"
-
-//#include "client/resource/block_loader.hpp"
-//#include "core/enum.hpp"
-//#include "world/block/nature/soil_block.hpp"
-//#include "world/block/nature/rock_block.hpp"
-//#include "world/block/nature/log_block.hpp"
+#include <jbt/hjbt.hpp>
+#include <jbt/jbt.hpp>
 
 using namespace cybrion;
 

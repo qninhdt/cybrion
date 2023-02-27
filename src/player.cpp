@@ -29,23 +29,7 @@ namespace cybrion
         else
             m_entity->setVelocity({ 0, 0, 0 });
         
-        if (glm::length(m_input.deltaRot) > 0.01f)
-        {
-            vec3 rot = m_entity->getRot() + m_input.deltaRot * 0.003f;
-
-            f32 eps = 0.1f;
-            if (rot.x > pi / 2 - eps && rot.x < pi * 3 / 2 + eps)
-            {
-                if (rot.x - pi / 2 - eps < pi * 3 / 2 + eps - rot.x)
-                    rot.x = pi / 2 - eps;
-                else
-                    rot.x = pi * 3 / 2 + eps;
-            }
-
-            m_entity->setRot(rot);
-
-            m_input.deltaRot = { 0, 0, 0 }; // reset
-        }
+        m_entity->setRot(m_input.rot);
 
         if (m_input.rightClick)
         {

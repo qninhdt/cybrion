@@ -21,8 +21,6 @@ namespace cybrion
         if (m_target)
         {
             setPos(m_target->lerpPos(delta));
-            setRot(m_target->lerpRot(delta));
-
             updateViewMat();
         }
     }

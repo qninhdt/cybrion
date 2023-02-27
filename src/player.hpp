@@ -14,7 +14,7 @@ namespace cybrion
         bool rightClick = false;
         bool leftClick = false;
         vec3 moveDir = { 0, 0, 0 };
-        vec3 deltaRot = { 0, 0, 0 };
+        vec3 rot = { 0, 0, 0 };
         bool run = false;
     };
 
