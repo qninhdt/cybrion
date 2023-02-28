@@ -1,6 +1,6 @@
 "[type=cobblestone]":
   display_name: Cobblestone
-  all: stone
+  all: cobblestone
 "[type=stone]":
   display_name: Stone
   all: stone

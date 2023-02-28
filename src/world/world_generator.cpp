@@ -16,7 +16,7 @@ namespace cybrion
         m_plainNoise.SetFrequency(0.002f);
 
         m_desertNoise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-        m_desertNoise.SetFrequency(0.003f);
+        m_desertNoise.SetFrequency(0.002f);
 
         m_biomeNoise0.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
         m_biomeNoise0.SetFrequency(.002f);
@@ -45,9 +45,31 @@ namespace cybrion
 
                 if (chunkPos.y >= 0)
                 {
+                    bool hasMountain = false;
+                    bool hasRiver = false;
+
+                    f32 wNoise = m_noise.GetNoise(wposX, wposZ);
+                    f32 mountainNoise = m_noise.GetNoise(wposX/2, wposZ/2) * 0.8
+                        + m_noise.GetNoise(wposX * 4, wposZ * 4) * 0.1
+                        + m_noise.GetNoise(wposX * 8, wposZ * 8) * 0.1;
+
+                    mountainNoise = (mountainNoise + 1) / 2;
+
+                    if (mountainNoise > 0.65)
+                    {
+                        hasMountain = true;
+                        f32 wNoise1 = m_noise.GetNoise(wposX * 2 + 1024, wposZ * 2 + 1024) * 0.5
+                            + m_noise.GetNoise(wposX * 4 + 1024, wposZ * 4 + 1024) * 0.25
+                            + m_noise.GetNoise(wposX * 8 + 1024, wposZ * 8 + 1024) * 0.25;
+                        wNoise1 = pow((wNoise1 + 1)/2, 2);
+                        wNoise += (mountainNoise - 0.65f) * 25 * wNoise1;
+                    }
+
                     f32 river = getRiverValue(wposX, wposZ);
 
-                    if (river > 0) continue;
+                    hasRiver = river > 0;
+
+                    if (hasRiver && !hasMountain) continue;
 
                     if (biome == BiomeType::PLAIN)
                     {
@@ -60,9 +82,9 @@ namespace cybrion
                         // |         .    .         .  | -> stone  : 20-30
                         // |---------------------------|
                         //
-                        constexpr i32 MAX_PLAIN_HEIGHT = 50;
+                        constexpr i32 MAX_PLAIN_HEIGHT = 45;
 
-                        f32 noise = m_noise.GetNoise(wposX, wposZ) * 0.8
+                        f32 noise = wNoise * 0.8
                             + m_plainNoise.GetNoise(wposX * 8, wposZ * 8) * 0.10f
                             + m_plainNoise.GetNoise(wposX * 16, wposZ * 16) * 0.10f;
 
@@ -72,21 +94,56 @@ namespace cybrion
                         for (i32 y = 0; y < lh; ++y)
                         {
                             i32 wy = y + chunkPos.y;
-                            if (wy == wh - 1)
-                                chunk->setBlock({ x, y, z }, Blocks::GRASS);
-                            else if (wy > wh * 3 / 4)
-                                chunk->setBlock({ x, y, z }, Blocks::DIRT);
+                            if (hasMountain)
+                            {
+                                f32 shitNoise = m_noise.GetNoise(wposX * 8, wposZ * 8) * 0.40
+                                    + m_noise.GetNoise(wposX * 16, wposZ * 16) * 0.20
+                                    + m_noise.GetNoise(wposX * 32, wposZ * 32) * 0.40;
+
+                                if (wy < 75 - shitNoise * 10)
+                                {
+                                    if (wy == wh - 1)
+                                        chunk->setBlock({ x, y, z }, Blocks::GRASS);
+                                    else if (wy > wh * 3 / 4)
+                                        chunk->setBlock({ x, y, z }, Blocks::DIRT);
+                                    else
+                                        chunk->setBlock({ x, y, z }, Blocks::STONE);
+                                }
+                                else
+                                {
+                                    chunk->setBlock({ x, y, z }, (i32(shitNoise * 20) % 5 != 0) ? Blocks::STONE : Blocks::COBBLESTONE);
+                                }
+                            }
                             else
-                                chunk->setBlock({ x, y, z }, Blocks::STONE);
+                            {
+                                if (wy == wh - 1)
+                                    chunk->setBlock({ x, y, z }, Blocks::GRASS);
+                                else if (wy > wh * 3 / 4)
+                                    chunk->setBlock({ x, y, z }, Blocks::DIRT);
+                                else
+                                    chunk->setBlock({ x, y, z }, Blocks::STONE);
+                            }
                         }
                     }
                     else if (biome == BiomeType::DESERT)
                     {
-                        constexpr i32 MAX_DESERT_HEIGHT = 50;
+                        constexpr i32 MAX_DESERT_HEIGHT = 45;
 
-                        f32 noise = m_noise.GetNoise(wposX, wposZ) * 0.8
+                        f32 noise = wNoise * 0.8
                             + m_desertNoise.GetNoise(wposX * 8, wposZ * 8) * 0.10f
                             + m_desertNoise.GetNoise(wposX * 16, wposZ * 16) * 0.10f;
+
+                        f32 bigRockNoise = m_noise.GetNoise(wposX * 2 + 1024, wposZ * 2 + 1024);
+                        bigRockNoise = (bigRockNoise + 1) / 2;
+                        
+                        bool isBigRock = false;
+
+                        if (bigRockNoise > 0.92)
+                        {
+                            isBigRock = true;
+                            noise += std::min(0.93f - 0.92f, bigRockNoise - 0.92f) * 35
+                                + std::max(0.0f, bigRockNoise - 0.93f) * 5 * (m_noise.GetNoise(wposX * 32 + 512, wposZ * 32 + 512) + 1);
+                        }
 
                         i32 wh = (noise + 1) / 2 * MAX_DESERT_HEIGHT + 15;
                         i32 lh = std::min(Chunk::CHUNK_SIZE, wh - chunkPos.y);
@@ -94,10 +151,32 @@ namespace cybrion
                         for (i32 y = 0; y < lh; ++y)
                         {
                             i32 wy = y + chunkPos.y;
-                            if (wy > wh * 3 / 4)
-                                chunk->setBlock({ x, y, z }, Blocks::SAND);
+
+                            if (hasMountain)
+                            {
+                                f32 shitNoise = m_noise.GetNoise(wposX * 8, wposZ * 8) * 0.20
+                                    + m_noise.GetNoise(wposX * 16, wposZ * 16) * 0.40
+                                    + m_noise.GetNoise(wposX * 32, wposZ * 32) * 0.40;
+
+                                if (wy < 75 - shitNoise * 10)
+                                    chunk->setBlock({ x, y, z }, Blocks::SAND);
+                                else
+                                    chunk->setBlock({ x, y, z }, (i32(shitNoise * 20) % 5 != 0) ? Blocks::STONE : Blocks::COBBLESTONE);
+                            }
+                            else if (isBigRock)
+                            {
+                                if (wy > wh - 3)
+                                    chunk->setBlock({ x, y, z }, Blocks::SAND);
+                                else
+                                    chunk->setBlock({ x, y, z }, Blocks::STONE);
+                            }
                             else
-                                chunk->setBlock({ x, y, z }, Blocks::STONE);
+                            {
+                                if (wy > wh * 3 / 4)
+                                    chunk->setBlock({ x, y, z }, Blocks::SAND);
+                                else
+                                    chunk->setBlock({ x, y, z }, Blocks::STONE);
+                            }
                         }
                     }
                 }
@@ -132,7 +211,7 @@ namespace cybrion
         //    return BiomeType::DESERT;
         //else
         //    return BiomeType::HILL;
-        if (noise0 > 0)
+        if (noise0 > -0.1)
             return BiomeType::PLAIN;
         else
             return BiomeType::DESERT;
