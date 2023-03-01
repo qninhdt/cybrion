@@ -1,5 +1,7 @@
 #include "world/world_generator.hpp"
+#include "game.hpp"
 #include "world/block/blocks.hpp"
+#include "world/block/nature/log_block.hpp"
 
 namespace cybrion
 {
@@ -189,6 +191,53 @@ namespace cybrion
                 }
             }
         }
+    }
+
+    void WorldGenerator::generateStructure(const ref<Chunk>& chunk)
+    {
+        auto& world = Game::Get().getWorld();
+
+        ivec3 chunkPos = chunk->getChunkPos() * Chunk::CHUNK_SIZE;
+
+        if (chunkPos.y > 20 && chunkPos.y < 50)
+            for (i32 x = 0; x < Chunk::CHUNK_SIZE; ++x)
+                for (i32 z = 0; z < Chunk::CHUNK_SIZE; ++z)
+                    for (i32 y = 0; y < Chunk::CHUNK_SIZE; ++y)
+                    {
+                        if (chunk->getBlock({ x,y,z }) == Blocks::GRASS && x%10==0 && z%10==0)
+                        {
+                            growTreeAt(chunkPos + ivec3(x, y, z));
+                            break;
+                        }
+                    }
+
+        chunk->m_hasStructure = true;
+    }
+
+    void WorldGenerator::growTreeAt(const ivec3& pos)
+    {
+        auto& world = Game::Get().getWorld();
+        auto& wood = Blocks::OAK_LOG.set<"axis">(LogAxis::Y);
+        ivec3 p = pos;
+
+        i32 h = (rand() % 3) + 2;
+
+        for (i32 i = 0; i < h; ++i) {
+            world.setBlockOnly(p, wood); p.y += 1;
+        }
+    
+        i32 dx = (rand() % 3) - 1;
+        i32 dz = (rand() % 3) - 1;
+
+        if (dx == 0 && dz == 0) dx = 1;
+
+        p.x += dx;
+        p.z += dz;
+
+        for (i32 i = 0; i < h; ++i) {
+            world.setBlockOnly(p, wood); p.y += 1;
+        }
+
     }
 
     BiomeType WorldGenerator::getBiome(i32 x, i32 z) const

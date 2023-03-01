@@ -79,6 +79,8 @@ namespace cybrion
             if (chunk->isUnloaded())
                 continue;
 
+            chunk->m_ready = true;
+
             chunk->m_id = ++chunkId;
             chunk->eachNeighbors([&](ref<Chunk>&, const ivec3& dir) {
                 ref<Chunk> neighbor = getChunk(chunk->getChunkPos() + dir);
@@ -88,12 +90,21 @@ namespace cybrion
                     chunk->setNeighbor(dir, neighbor);
                     neighbor->setNeighbor(-dir, chunk);
                 }
+
+                if (neighbor && neighbor->isReady() && neighbor->areAllNeighborsReady() && !neighbor->m_hasStructure)
+                {
+                    m_generator.generateStructure(neighbor);
+                    Game::Get().onChunkLoaded(neighbor);
+                }
             });
 
             chunk->setNeighbor({ 0, 0, 0 }, chunk);
-            chunk->m_ready = true;
 
-            Game::Get().onChunkLoaded(chunk);
+            if (chunk->areAllNeighborsReady())
+            {
+                m_generator.generateStructure(chunk);
+                Game::Get().onChunkLoaded(chunk);
+            }
         }
 
         for (auto& entity : m_entities)
@@ -151,7 +162,8 @@ namespace cybrion
 
         auto it = m_chunkMap.find(chunkPos);
 
-        CYBRION_ASSERT(it != m_chunkMap.end(), "Cannot change block because chunk is not loaded");
+        if (it == m_chunkMap.end()) return { nullptr, {0, 0, 0}, Blocks::AIR, Blocks::AIR };
+        //CYBRION_ASSERT(it != m_chunkMap.end(), "Cannot change block because chunk is not loaded");
 
         auto chunk = it->second;
 
@@ -160,9 +172,22 @@ namespace cybrion
 
         BlockModifyResult result{ chunk, pos, oldBlock, block };
 
-        Game::Get().onBlockChanged(result);
+        if (chunk->m_hasStructure)
+            Game::Get().onBlockChanged(result);
 
         return result;
+    }
+
+    void World::setBlockOnly(const ivec3& pos, Block& block)
+    {
+        ivec3 chunkPos = Chunk::posToChunkPos(pos);
+        uvec3 localPos = Chunk::posToLocalPos(pos);
+
+        auto it = m_chunkMap.find(chunkPos);
+
+        if (it == m_chunkMap.end()) return;
+
+        it->second->setBlock(localPos, block);
     }
 
     BlockModifyResult World::placeBlock(const ivec3& pos, BlockFace face, Block& block)

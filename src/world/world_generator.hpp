@@ -17,7 +17,10 @@ namespace cybrion
     public:
         WorldGenerator();
 
-        void generateChunkAt(const ref<Chunk>& pos);
+        void generateChunkAt(const ref<Chunk>& chunk);
+        void generateStructure(const ref<Chunk>& chunk);
+
+        void growTreeAt(const ivec3& pos);
 
         BiomeType getBiome(i32 x, i32 z) const;
         f32 getRiverValue(f32 x, f32 z) const;

@@ -41,12 +41,16 @@ namespace cybrion
         void eachBlocks(const std::function<void(Block&, const ivec3&)>& callback);
         void eachBlockAndNeighbors(const ivec3& pos, const std::function<void(Block*&, ref<Chunk>&, const ivec3& dir)>& callback);
 
+        bool areAllNeighborsReady();
+
         u32 getId() const;
         u32 getMemorySizeApproximately() const;
 
         ChunkStatus getStatus() const;
         bool isReady() const;
         bool isUnloaded() const;
+
+        bool hasStructure() const;
 
         ~Chunk();
 
@@ -66,6 +70,7 @@ namespace cybrion
         std::atomic<ChunkStatus> m_status;
         std::atomic<bool> m_ready;
         std::atomic<bool> m_unloaded;
+        std::atomic<bool> m_hasStructure;
 
         BlockStorage m_blocks;
         Chunk3x3x3 m_neighbors;

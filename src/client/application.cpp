@@ -209,7 +209,6 @@ namespace cybrion
         {
             // input
             // --------------------------------------------
-            glfwPollEvents();
 
             Camera& camera = LocalGame::Get().getCamera();
 
@@ -286,6 +285,7 @@ namespace cybrion
           
             // update render
             glfwSwapBuffers(m_window);
+            glfwPollEvents();
         }
     }
 

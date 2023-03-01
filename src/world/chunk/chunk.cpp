@@ -10,7 +10,8 @@ namespace cybrion
         m_id(0),
         m_status(ChunkStatus::NONE),
         m_ready(false),
-        m_unloaded(false)
+        m_unloaded(false),
+        m_hasStructure(false)
     {
         m_pos = m_chunkPos * Chunk::CHUNK_SIZE + ivec3(Chunk::CHUNK_SIZE / 2, Chunk::CHUNK_SIZE / 2, Chunk::CHUNK_SIZE / 2);
     }
@@ -115,6 +116,18 @@ namespace cybrion
                 }
     }
 
+    bool Chunk::areAllNeighborsReady()
+    {
+        bool result = true;
+
+        eachNeighbors([&](ref<Chunk>& chunk, const ivec3&) {
+            if (!chunk || !chunk->isReady())
+                result = false;
+        });
+
+        return result;
+    }
+
     u32 Chunk::getId() const
     {
         return m_id;
@@ -138,6 +151,11 @@ namespace cybrion
     bool Chunk::isUnloaded() const
     {
         return m_unloaded;
+    }
+
+    bool Chunk::hasStructure() const
+    {
+        return m_hasStructure;
     }
 
     Chunk::~Chunk()

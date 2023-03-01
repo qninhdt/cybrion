@@ -98,8 +98,13 @@ namespace cybrion
         prepareRebuild(renderer);
 
         chunk->eachNeighbors([this](ref<Chunk>& neighbor, const ivec3&) {
-            if (neighbor)
-                prepareRebuild(getChunkRenderer(neighbor));
+            if (neighbor && neighbor->hasStructure())
+            {
+                auto renderer = getChunkRenderer(neighbor);
+
+                if (renderer)
+                    prepareRebuild(renderer);
+            }
         });
     }
 
@@ -168,7 +173,8 @@ namespace cybrion
             ivec3 pos = result.pos + dir;
             ivec3 localPos = Chunk::posToLocalPos(pos);
 
-            prepareRebuild(renderer);
+            if (renderer->m_chunk->hasStructure())
+                prepareRebuild(renderer);
 
             if (block->getDisplay() == BlockDisplay::TRANSPARENT)
             {

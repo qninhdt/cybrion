@@ -6,4 +6,11 @@
 - [x] Simple world
 - [x] Collision detection
 - [x] Thread pool for loading chunk and meshing
-- [ ] Save system (jbt?)
+- [ ] Tree
+- [ ] Glass
+- [ ] Water
+- [ ] Flower
+- [ ] Inventory
+- [ ] Game gui
+- [ ] Save system
+- [ ] End

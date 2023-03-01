@@ -191,7 +191,7 @@ namespace cybrion
 
             Block& getBlock(u32 id)
             {
-                return *m_idToBlock[id];
+                  return *m_idToBlock[id];
             }
 
             void computeRotation()
