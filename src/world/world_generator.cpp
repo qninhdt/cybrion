@@ -204,9 +204,10 @@ namespace cybrion
                 for (i32 z = 0; z < Chunk::CHUNK_SIZE; ++z)
                     for (i32 y = 0; y < Chunk::CHUNK_SIZE; ++y)
                     {
-                        if (chunk->getBlock({ x,y,z }) == Blocks::GRASS && x%10==0 && z%10==0)
+                        ivec3 wpos = chunkPos + ivec3(x, y, z);
+                        if (chunk->getBlock({ x,y,z }) == Blocks::GRASS && wpos.x%30==0 && wpos.z%30==0)
                         {
-                            growTreeAt(chunkPos + ivec3(x, y, z));
+                            growTreeAt(chunkPos + ivec3(x, y+1, z));
                             break;
                         }
                     }
@@ -225,7 +226,14 @@ namespace cybrion
         for (i32 i = 0; i < h; ++i) {
             world.setBlockOnly(p, wood); p.y += 1;
         }
-    
+
+        for (i32 i = -1; i <= 1; ++i)
+            for (i32 j = -1; j <= 1; ++j)
+                if (!(i == 0 && j == 0) && (rand()%3) == 0)
+                    world.setBlockOnly(p + ivec3(i, -1, j), Blocks::OAK_LEAF);
+
+        world.setBlock(p, Blocks::OAK_LEAF);
+
         i32 dx = (rand() % 3) - 1;
         i32 dz = (rand() % 3) - 1;
 
@@ -238,6 +246,31 @@ namespace cybrion
             world.setBlockOnly(p, wood); p.y += 1;
         }
 
+        array<ivec3, 4> dirs = { {
+            { -1, 0, 0 },
+            { +1, 0, 0 },
+            { 0, 0, -1 },
+            { 0, 0, +1 }
+        } };
+
+        i32 lh = std::max(h - 1, 2);
+        for (i32 i = -lh; i <= lh; ++i) {
+            for (i32 j = -lh; j <= lh; ++j)
+            {
+                if ((abs(i) - lh) + (abs(j) - lh) != 0)
+                    world.setBlockOnly(p + ivec3(i, 0, j), Blocks::OAK_LEAF);
+            }
+        }
+
+        lh -= 1;
+        p.y += 1;
+        for (i32 i = -lh; i <= lh; ++i) {
+            for (i32 j = -lh; j <= lh; ++j)
+            {
+                if ((abs(i) - lh) + (abs(j) - lh) != 0)
+                    world.setBlockOnly(p + ivec3(i, 0, j), Blocks::OAK_LEAF);
+            }
+        }
     }
 
     BiomeType WorldGenerator::getBiome(i32 x, i32 z) const

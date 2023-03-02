@@ -10,6 +10,10 @@ namespace cybrion
         SAND,
         ROCK,
         BRICK,
+        LEAF,
+        GLASS,
+        FLOWER,
+        WATER,
         ENUM_SIZE
     };
 

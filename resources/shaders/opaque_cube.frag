@@ -31,5 +31,10 @@ void main() {
 	if (enable_ao == 1) factor *= ao_;
 	if (enable_diffuse == 1) factor *= diffuse[normal];
 	
-    color = factor * texture(texures, vec3(uv, tex_id));
+    color = texture(texures, vec3(uv, tex_id));
+	
+	if (color.w < 0.5)
+		discard;
+	
+	color = factor * color;
 }

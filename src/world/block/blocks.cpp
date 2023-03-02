@@ -21,6 +21,9 @@ namespace cybrion
     BrickBlock& Blocks::STONE_BRICK = BRICK.set<"type">(BrickType::STONE);
 
     SandBlock& Blocks::SAND = s_blocks.get<SandBlock>();
+    
+    LeafBlock& Blocks::LEAF = s_blocks.get<LeafBlock>();
+    LeafBlock& Blocks::OAK_LEAF = LEAF.set<"type">(WoodType::OAK);
 
     Blocks& Blocks::Get()
     {

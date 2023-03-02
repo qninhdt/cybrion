@@ -13,6 +13,10 @@ int main()
     RegisterEnum(BlockType::SAND , "sand");
     RegisterEnum(BlockType::ROCK , "rock");
     RegisterEnum(BlockType::BRICK, "brick");
+    RegisterEnum(BlockType::GLASS, "glass");
+    RegisterEnum(BlockType::WATER, "water");
+    RegisterEnum(BlockType::FLOWER, "flower");
+    RegisterEnum(BlockType::LEAF, "leaf");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");

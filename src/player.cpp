@@ -35,7 +35,7 @@ namespace cybrion
         {
             if (m_targetBlock && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
             {
-                Game::Get().getWorld().placeBlock(m_targetPos, m_targetFace, Blocks::OAK_LOG);
+                Game::Get().getWorld().placeBlock(m_targetPos, m_targetFace, Blocks::OAK_LEAF);
                 m_blockInteractStopwatch.reset();
             }
             m_input.rightClick = false;
