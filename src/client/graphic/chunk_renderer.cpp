@@ -8,11 +8,16 @@ namespace cybrion
     ChunkRenderer::ChunkRenderer(const ref<Chunk>& chunk):
         m_chunk(chunk),
         opaqueMesh(true),
+        transparentMesh(true),
         m_inBuildQueue(false),
         m_version(0),
         m_hasBuilt(false)
     {
         opaqueMesh.setAttributes({
+            { GL::Type::UINT }, // packed_vertex
+        });
+
+        transparentMesh.setAttributes({
             { GL::Type::UINT }, // packed_vertex
         });
     }
@@ -50,7 +55,9 @@ namespace cybrion
                     : m_chunk->tryGetBlock(pos + dir);
                 
                 // cull this face when neighbor block is opaque
-                culling[u32(face)] = !neighbor || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE);
+               culling[u32(face)] = !neighbor
+                   || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE)
+                   || (neighbor && neighbor->getDisplay() == BlockDisplay::LIQUID && block.getDisplay() == BlockDisplay::LIQUID);
                 visible |= !culling[u32(face)];
                 maybeVisible |= !neighbor;
             }
@@ -62,12 +69,18 @@ namespace cybrion
                 else
                     m_chunk->getBlockAndNeighbors(pos, blocks);
 
-                cubeRenderer.generateCubeMesh(culling, pos, blocks, result->vertices);
+                if (block.getDisplay() == BlockDisplay::LIQUID)
+                    cubeRenderer.generateCubeMesh(culling, pos, blocks, result->transparentVertices);
+                else
+                    cubeRenderer.generateCubeMesh(culling, pos, blocks, result->opaqueVertices);
             }
         });
 
         opaqueMesh.setPos(m_chunk->getPos());
         opaqueMesh.updateModelMat();
+
+        transparentMesh.setPos(m_chunk->getPos());
+        transparentMesh.updateModelMat();
         
         return result;
     }

@@ -17,7 +17,8 @@ namespace cybrion
 
     struct ChunkMeshResult
     {
-        vector<u32> vertices;
+        vector<u32> opaqueVertices;
+        vector<u32> transparentVertices;
         ref<ChunkRenderer> renderer;
         u32 version;
     };
@@ -28,6 +29,7 @@ namespace cybrion
 
         ref<Chunk> m_chunk;
         GL::Mesh opaqueMesh;
+        GL::Mesh transparentMesh;
         umap<ivec3, Block*> visibleBlocks;
 
         std::atomic<bool> m_inBuildQueue;

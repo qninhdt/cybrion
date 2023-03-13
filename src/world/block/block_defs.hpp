@@ -27,6 +27,7 @@ namespace cybrion
     enum class BlockDisplay
     {
         OPAQUE,
+        LIQUID,
         SEMI_OPAQUE,
         TRANSPARENT,
         SEMI_TRANSPARENT

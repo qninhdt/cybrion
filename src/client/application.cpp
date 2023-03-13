@@ -168,11 +168,7 @@ namespace cybrion
 
         glClearColor(1, 1, 1, 1);
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_FRONT);
-
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-
         
         glDebugMessageCallback(GLDebugMessageCallback, NULL);
 

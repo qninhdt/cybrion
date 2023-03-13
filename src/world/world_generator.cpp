@@ -71,7 +71,22 @@ namespace cybrion
 
                     hasRiver = river > 0;
 
-                    if (hasRiver && !hasMountain) continue;
+                    if (hasRiver && !hasMountain)
+                    {
+                        f32 noise = wNoise * 0.8
+                            + m_plainNoise.GetNoise(wposX * 8, wposZ * 8) * 0.10f
+                            + m_plainNoise.GetNoise(wposX * 16, wposZ * 16) * 0.10f;
+
+                        i32 wh = (noise + 1) / 2 * 40 + 15;
+                        i32 lh = std::min(Chunk::CHUNK_SIZE, wh - chunkPos.y);
+
+                        for (i32 y = 0; y < lh; ++y)
+                        {
+                            i32 wy = y + chunkPos.y;
+                            chunk->setBlock({ x, y, z }, Blocks::WATER);
+                        }
+                        continue;
+                    }
 
                     if (biome == BiomeType::PLAIN)
                     {

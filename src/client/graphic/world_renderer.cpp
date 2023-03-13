@@ -36,8 +36,12 @@ namespace cybrion
             if (renderer->m_version != result->version)
                 continue;
 
-            renderer->opaqueMesh.setVertices(result->vertices.data(), result->vertices.size());
-            renderer->opaqueMesh.setDrawCount(result->vertices.size() / 4 * 6);
+            renderer->opaqueMesh.setVertices(result->opaqueVertices.data(), result->opaqueVertices.size());
+            renderer->opaqueMesh.setDrawCount(result->opaqueVertices.size() / 4 * 6);
+
+            renderer->transparentMesh.setVertices(result->transparentVertices.data(), result->transparentVertices.size());
+            renderer->transparentMesh.setDrawCount(result->transparentVertices.size() / 4 * 6);
+
             renderer->m_hasBuilt = true;
 
             ++cnt;
@@ -59,18 +63,45 @@ namespace cybrion
 
         m_opaqueCubeShader.setUniform<"enable_diffuse">((u32)m_enableDiffuse);
         m_opaqueCubeShader.setUniform<"enable_ao">((u32)m_enableAO);
-        for (auto& [id, renderer]: m_chunkRenderers)
+
+        vector<ref<ChunkRenderer>> renderChunks;
+        for (auto& [id, renderer] : m_chunkRenderers)
         {
-            if (!renderer->m_hasBuilt || renderer->opaqueMesh.getDrawCount() == 0) {
+            if (!renderer->m_hasBuilt) {
                 continue;
             }
+            renderChunks.push_back(renderer);
+        }
+
+        vec3 cameraPos = LocalGame::Get().getCamera().getPos();
+        std::sort(renderChunks.begin(), renderChunks.end(), [&](ref<ChunkRenderer>& x, ref<ChunkRenderer>& y) {
+            return glm::distance(cameraPos, x->m_chunk->getPos()) > glm::distance(cameraPos, y->m_chunk->getPos());
+        });
+
+        for (auto& renderer: renderChunks)
+        {
             auto& opaqueMesh = renderer->opaqueMesh;
+            auto& transparentMesh = renderer->transparentMesh;
+
             m_opaqueCubeShader.setUniform<"MVP">(
                 LocalGame::Get().getCamera().getProjViewMat()
                 * opaqueMesh.getModelMat()
             );
 
+            // OPAQUE
+
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
+
             opaqueMesh.drawTriangles();
+
+            //glDisable(GL_CULL_FACE);
+
+            // TRANSPARENT
+            glEnable(GL_BLEND);
+            glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            transparentMesh.drawTriangles();
+            glDisable(GL_BLEND);
         }
 
         if (showEntityBorder)
@@ -170,6 +201,10 @@ namespace cybrion
             if (!block) return;
 
             auto renderer = getChunkRenderer(chunk);
+
+            if (renderer == nullptr)
+                return;
+                
             ivec3 pos = result.pos + dir;
             ivec3 localPos = Chunk::posToLocalPos(pos);
 

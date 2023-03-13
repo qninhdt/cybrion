@@ -6,7 +6,7 @@
 - [x] Simple world
 - [x] Collision detection
 - [x] Thread pool for loading chunk and meshing
-- [ ] Tree
+- [x] Tree
 - [ ] Glass
 - [ ] Water
 - [ ] Flower

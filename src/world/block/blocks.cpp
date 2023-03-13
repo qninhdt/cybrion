@@ -25,6 +25,8 @@ namespace cybrion
     LeafBlock& Blocks::LEAF = s_blocks.get<LeafBlock>();
     LeafBlock& Blocks::OAK_LEAF = LEAF.set<"type">(WoodType::OAK);
 
+    WaterBlock& Blocks::WATER = s_blocks.get<WaterBlock>();
+
     Blocks& Blocks::Get()
     {
         return s_blocks;

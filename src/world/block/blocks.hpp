@@ -9,6 +9,7 @@
 #include "world/block/nature/rock_block.hpp"
 #include "world/block/nature/brick_block.hpp"
 #include "world/block/nature/leaf_block.hpp"
+#include "world/block/nature/water_block.hpp"
 
 namespace cybrion
 {
@@ -23,7 +24,8 @@ namespace cybrion
         SandBlock,
         RockBlock,
         BrickBlock,
-        LeafBlock
+        LeafBlock,
+        WaterBlock
     >
     {
     public:
@@ -37,6 +39,7 @@ namespace cybrion
         static BrickBlock& STONE_BRICK;
         static SandBlock& SAND;
         static LeafBlock& OAK_LEAF;
+        static WaterBlock& WATER;
 
         static Blocks& Get();
     private:

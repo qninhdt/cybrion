@@ -36,5 +36,5 @@ void main() {
 	if (color.w < 0.5)
 		discard;
 	
-	color = factor * color;
+	color = vec4(color.xyz * factor, color.w);
 }

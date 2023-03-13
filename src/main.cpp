@@ -38,7 +38,8 @@ int main()
     RegisterEnum(BlockShape::X      , "cube");
 
     // block display
-    RegisterEnum(BlockDisplay::OPAQUE           , "opaque");
+    RegisterEnum(BlockDisplay::OPAQUE, "opaque");
+    RegisterEnum(BlockDisplay::LIQUID , "liquid");
     RegisterEnum(BlockDisplay::TRANSPARENT      , "transparent");
     RegisterEnum(BlockDisplay::SEMI_OPAQUE      , "semi_opaque");
     RegisterEnum(BlockDisplay::SEMI_TRANSPARENT , "semi_transparent");
