@@ -2,3 +2,4 @@
   display_name: Water
   all: water
   display: liquid
+  sound: water

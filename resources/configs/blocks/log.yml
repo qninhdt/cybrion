@@ -5,6 +5,7 @@
   top: oak_log_top
   side: oak_log_side
   bottom: oak_log_top
+  sound: wood
 
 "[axis=x]":
   rotate_z: 270

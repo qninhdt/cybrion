@@ -3,3 +3,4 @@
 "[type=oak]":
   display_name: Oak Leaf
   all: oak_leaf
+  sound: leaf

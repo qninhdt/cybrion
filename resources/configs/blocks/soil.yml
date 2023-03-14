@@ -4,6 +4,7 @@
 "[type=dirt]":
   display_name: Dirt
   all: dirt
+  sound: dirt
   
 "[type=basalt]":
   display_name: Basalt
@@ -19,3 +20,4 @@
   top: grass_top
   side: grass_side
   bottom: dirt
+  sound: grass

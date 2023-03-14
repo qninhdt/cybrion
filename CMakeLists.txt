@@ -2,10 +2,6 @@
 
 project ("cybrion")
 
-if (MSVC)
-    add_compile_options("/MP")
-endif()
-
 add_executable(${PROJECT_NAME}
     "src/main.cpp"  "src/core/log.cpp" "src/client/resource/shader_manager.cpp" "src/client/local_game.cpp" "src/util/file.cpp" "src/client/application.cpp" "src/client/GL/mesh.cpp" "src/client/GL/texture_array.cpp" "src/core/transform.cpp" "src/client/camera.cpp" "src/client/frame_profiler.cpp" "src/client/hud.cpp" "src/world/chunk/chunk.cpp" "src/util/math.hpp"  "src/world/world.cpp" "src/client/resource/block_loader.cpp" "src/game.cpp" "src/world/block/block.cpp" "src/client/graphic/block_renderer.cpp" "src/client/graphic/world_renderer.cpp" "src/core/stopwatch.cpp" "src/world/block/blocks.cpp" "src/world/entity/entity.cpp" "src/player.cpp" "src/util/math.cpp" "src/client/GL/texture.cpp" "src/voxel_ray.cpp"  "src/client/graphic/basic_mesh_generator.cpp" "src/client/graphic/chunk_renderer.cpp" "src/physic/aabb.cpp" "src/world/world_generator.cpp" "src/client/graphic/entity_renderer.cpp" "src/core/pool.cpp" "third_party/FastNoiseLite/src/FastNoiseLite.cpp")
 
@@ -17,6 +13,9 @@ target_precompile_headers(${PROJECT_NAME} PUBLIC src/pch.hpp)
 
 add_subdirectory(third_party/glad)
 target_link_libraries(${PROJECT_NAME} PUBLIC glad)
+
+add_subdirectory(third_party/irrKlang)
+target_link_libraries(${PROJECT_NAME} PUBLIC irrKlang)
 
 add_subdirectory(third_party/stb_image)
 target_link_libraries(${PROJECT_NAME} PUBLIC stb_image)
@@ -63,7 +62,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${BSHOSHANY_THREAD_POOL_INCLU
 find_package(unofficial-concurrentqueue CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE unofficial::concurrentqueue::concurrentqueue)
 
-if (MSVC)
-    target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:/INCREMENTAL>)
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:/ZI>)
-endif()
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/third_party/irrKlang/bin/irrKlang.dll"
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>)         

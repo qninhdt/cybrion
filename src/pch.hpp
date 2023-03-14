@@ -19,6 +19,7 @@
 #include <limits>
 
 // third-party libraries
+#include <irrKlang.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <robin_hood.h>

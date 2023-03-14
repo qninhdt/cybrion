@@ -172,6 +172,8 @@ namespace cybrion
         
         glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
+        m_soundEngine = irrklang::createIrrKlangDevice();
+
         return true;
     }
 
@@ -452,6 +454,12 @@ namespace cybrion
     {
         m_enableCursor = false;
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    void Application::playSound(const string& name)
+    {
+        string soundPath = getResourcePath("sounds/" + name + ".ogg");
+        m_soundEngine->play2D(soundPath.c_str());
     }
 
     bool Application::isCursorEnable() const

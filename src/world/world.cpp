@@ -233,7 +233,7 @@ namespace cybrion
                         for (i32 z = min.z; z <= max.z; ++z)
                         {
                             Block* block = tryGetBlock({ x, y, z });
-                            if (!block || block->getType() == BlockType::AIR) continue;
+                            if (!block || block->getType() == BlockType::AIR || block->getType() == BlockType::WATER) continue;
 
                             auto current = AABB::sweptAABB({ ppos, size },
                                 { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {0.8,0.8,0.8} }, v);

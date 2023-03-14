@@ -152,6 +152,8 @@ namespace cybrion
                     if (key == "rotate_y") OVERRIDE(m_rotationY, StringToEnum<BlockRotation>(value));
                     if (key == "rotate_z") OVERRIDE(m_rotationZ, StringToEnum<BlockRotation>(value));
 
+                    if (key == "sound") OVERRIDE(m_sound, value);
+
                     if (key == "all")
                     {
                         u32 id = getTextureId(value);

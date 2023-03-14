@@ -112,12 +112,12 @@ namespace cybrion
 
     void LocalGame::onPlaceBlock(const BlockModifyResult& result)
     {
-        CYBRION_GAME_TRACE("Player places block {} at ({}, {}, {})", result.block.toString(), result.pos.x, result.pos.y, result.pos.z);
+        Application::Get().playSound("blocks/" + result.block.getSound());
     }
 
     void LocalGame::onBreakBlock(const BlockModifyResult& result)
     {
-        CYBRION_GAME_TRACE("Player breaks block {}", result.block.toString());
+        Application::Get().playSound("blocks/" + result.oldBlock.getSound());
     }
 
     Camera& LocalGame::getCamera()

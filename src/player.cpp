@@ -66,7 +66,7 @@ namespace cybrion
                     return true;
                 }
                 
-                if (block->getDisplay() == BlockDisplay::TRANSPARENT)
+                if (block->getDisplay() == BlockDisplay::TRANSPARENT || block->getDisplay() == BlockDisplay::LIQUID)
                     return false;
 
                 m_targetFace = Block::GetFaceFromDirection(normal);

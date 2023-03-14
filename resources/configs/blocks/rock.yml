@@ -1,6 +1,8 @@
 "[type=cobblestone]":
   display_name: Cobblestone
   all: cobblestone
+  sound: stone
 "[type=stone]":
   display_name: Stone
   all: stone
+  sound: stone

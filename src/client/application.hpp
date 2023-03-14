@@ -37,12 +37,12 @@ namespace cybrion
         void enableCursor();
         void disableCursor();
 
+        void playSound(const string& name);
+
         bool isCursorEnable() const;
 
         vec2 getDeltaMousePos() const;
-
         
-
         ShaderManager& getShaderManager();
         string getResourcePath(const string& path) const;
 
@@ -66,6 +66,8 @@ namespace cybrion
         FrameProfiler m_frameProfiler;
         HUD m_hud;
         ShaderManager m_shaderManager;
+        
+        irrklang::ISoundEngine* m_soundEngine;
 
         // game
         LocalGame* m_game;

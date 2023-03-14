@@ -16,6 +16,7 @@ namespace cybrion
         m_shape(BlockShape::CUBE),
         m_type(type),
         m_displayName(""),
+        m_sound("dirt"),
         m_display(BlockDisplay::OPAQUE),
         m_rotationX(BlockRotation::R0),
         m_rotationY(BlockRotation::R0),
@@ -45,6 +46,11 @@ namespace cybrion
     string Block::getDisplayName() const
     {
         return m_displayName;
+    }
+
+    string Block::getSound() const
+    {
+        return m_sound;
     }
 
     BlockDisplay Block::getDisplay() const

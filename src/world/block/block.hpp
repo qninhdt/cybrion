@@ -23,6 +23,7 @@ namespace cybrion
         u32 getId() const;
         BlockType getType() const;
         string getDisplayName() const;
+        string getSound() const;
         BlockDisplay getDisplay() const;
         BlockShape getShape() const;
         u32 getTexture(u32 index);
@@ -91,6 +92,8 @@ namespace cybrion
         BlockRotation m_rotationX;
         BlockRotation m_rotationY;
         BlockRotation m_rotationZ;
+
+        string m_sound;
 
         union
         {

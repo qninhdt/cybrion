@@ -95,7 +95,7 @@ namespace cybrion
 
             opaqueMesh.drawTriangles();
 
-            //glDisable(GL_CULL_FACE);
+            glDisable(GL_CULL_FACE);
 
             // TRANSPARENT
             glEnable(GL_BLEND);
