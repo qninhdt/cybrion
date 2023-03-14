@@ -119,7 +119,7 @@ namespace cybrion
         ivec3 ppos = Game::Get().getPlayer().getEntity()->getChunkPos();
 
         for (i32 x = -d; x < d; ++x)
-            for (i32 y = -2; y < 8; ++y)
+            for (i32 y = -2; y <= 6; ++y)
                 for (i32 z = -d; z < d; ++z)
                     if (x*x + z*z <= d*d)
                         loadChunk({ x + ppos.x, y, z + ppos.z });

@@ -1,6 +1,10 @@
 # CYBRION
 
-## todo list
+## Preview
+
+![Screenshot](./screenshot.png)
+
+## Todo list
 - [x] Render first chunk
 - [x] Optimize chunk meshing
 - [x] Simple world
