@@ -7,8 +7,9 @@
 - [x] Collision detection
 - [x] Thread pool for loading chunk and meshing
 - [x] Tree
+- [ ] Block sound
 - [ ] Glass
-- [ ] Water
+- [x] Water
 - [ ] Flower
 - [ ] Inventory
 - [ ] Game gui
