@@ -7,9 +7,11 @@
 #include "world/block/nature/log_block.hpp"
 #include "world/block/nature/sand_block.hpp"
 #include "world/block/nature/rock_block.hpp"
-#include "world/block/nature/brick_block.hpp"
 #include "world/block/nature/leaf_block.hpp"
 #include "world/block/nature/water_block.hpp"
+
+#include "world/block/building/brick_block.hpp"
+#include "world/block/building/fence_block.hpp"
 
 namespace cybrion
 {
@@ -25,7 +27,8 @@ namespace cybrion
         RockBlock,
         BrickBlock,
         LeafBlock,
-        WaterBlock
+        WaterBlock,
+        FenceBlock
     >
     {
     public:
@@ -40,6 +43,7 @@ namespace cybrion
         static SandBlock& SAND;
         static LeafBlock& OAK_LEAF;
         static WaterBlock& WATER;
+        static FenceBlock& OAK_FENCE;
 
         static Blocks& Get();
     private:
@@ -48,6 +52,7 @@ namespace cybrion
         static LogBlock& LOG;
         static BrickBlock& BRICK;
         static LeafBlock& LEAF;
+        static FenceBlock& FENCE;
 
         static Blocks s_blocks;
     };

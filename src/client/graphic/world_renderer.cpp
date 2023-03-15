@@ -18,6 +18,7 @@ namespace cybrion
     {
         m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
         m_opaqueCubeShader = ShaderManager::Get().getShader<OpaqueCubeShader>("opaque_cube");
+        m_blockModelShader = ShaderManager::Get().getShader<BlockModelShader>("block_model");
     }
 
     void WorldRenderer::render(f32 delta, bool showEntityBorder)
@@ -42,6 +43,9 @@ namespace cybrion
             renderer->transparentMesh.setVertices(result->transparentVertices.data(), result->transparentVertices.size());
             renderer->transparentMesh.setDrawCount(result->transparentVertices.size() / 4 * 6);
 
+            renderer->modelMesh.setVertices(result->modelVertices.data(), result->modelVertices.size());
+            renderer->modelMesh.setDrawCount(result->modelVertices.size() / 4 * 6);
+
             renderer->m_hasBuilt = true;
 
             ++cnt;
@@ -59,8 +63,8 @@ namespace cybrion
         }
 
         BlockLoader::Get().bindTextureArray();
-        m_opaqueCubeShader.use();
 
+        m_opaqueCubeShader.use();
         m_opaqueCubeShader.setUniform<"enable_diffuse">((u32)m_enableDiffuse);
         m_opaqueCubeShader.setUniform<"enable_ao">((u32)m_enableAO);
 
@@ -90,18 +94,40 @@ namespace cybrion
 
             // OPAQUE
 
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_FRONT);
+            if (opaqueMesh.getDrawCount() > 0)
+            {
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_FRONT);
 
-            opaqueMesh.drawTriangles();
+                opaqueMesh.drawTriangles();
 
-            glDisable(GL_CULL_FACE);
+                glDisable(GL_CULL_FACE);
+            }
 
             // TRANSPARENT
-            glEnable(GL_BLEND);
-            glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            transparentMesh.drawTriangles();
-            glDisable(GL_BLEND);
+            if (transparentMesh.getDrawCount() > 0)
+            {
+                glEnable(GL_BLEND);
+                glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                transparentMesh.drawTriangles();
+                glDisable(GL_BLEND);
+            }
+        }
+
+        m_blockModelShader.use();
+        for (auto& renderer : renderChunks)
+        {
+            auto& modelMesh = renderer->modelMesh;
+
+            m_blockModelShader.setUniform<"MVP">(
+                LocalGame::Get().getCamera().getProjViewMat()
+                * modelMesh.getModelMat()
+            );
+
+            if (modelMesh.getDrawCount() > 0)
+            {
+                modelMesh.drawTriangles();
+            }
         }
 
         if (showEntityBorder)

@@ -1,6 +1,7 @@
 #include "block_loader.hpp"
 
 #include "client/application.hpp"
+#include "util/file.hpp"
 
 #define OVERRIDE(field, value)\
     for (auto& block: blocks) block->##field = value
@@ -22,12 +23,18 @@ namespace cybrion
     void BlockLoader::load()
     {
         loadTextures();
+        loadModels();
         loadConfigFiles();
     }
 
     u32 BlockLoader::getTextureId(const string& name)
     {
         return m_textureIdMap[name];
+    }
+
+    ref<BlockModel> BlockLoader::getModel(const string& name) const
+    {
+        return m_modelMap.find(name)->second;
     }
 
     void BlockLoader::bindTextureArray()
@@ -53,7 +60,7 @@ namespace cybrion
     void BlockLoader::loadTextures()
     {
         constexpr i32 BLOCK_TEXTURE_SIZE = 16;
-        string folderPath = "D:/github/cybrion/resources/textures/blocks/";
+        string folderPath = Application::Get().getResourcePath("textures/blocks/");
 
         // count number of block textures
         u32 layerCount = 0;
@@ -70,6 +77,10 @@ namespace cybrion
         {
             string path = entry.path().string();
             string name = entry.path().stem().string();
+
+            if (entry.path().extension() != ".png")
+                continue;
+
             CYBRION_CLIENT_TRACE("Loaded block texture: {}", name);
 
             i32 width, height, nchannels;
@@ -88,6 +99,97 @@ namespace cybrion
 
             stbi_image_free(data);
         }
+    }
+
+    void BlockLoader::loadModels()
+    {
+        string folderPath = Application::Get().getResourcePath("models/blocks/");
+
+        for (auto& entry : std::filesystem::directory_iterator(folderPath))
+        {
+            string path = entry.path().string();
+            string name = entry.path().stem().string();
+
+            if (entry.path().extension() != ".obj")
+                continue;
+
+            CYBRION_CLIENT_TRACE("Loaded block model: {}", name);
+
+            auto model = loadObjFile(path);
+            m_modelMap[name] = model;
+        }
+    }
+
+    ref<BlockModel> BlockLoader::loadObjFile(const string& path)
+    {
+        std::ifstream file(path);
+        auto model = std::make_shared<BlockModel>();
+
+        vector<vec3> vpos;
+        vector<vec3> vnormal;
+        vector<vec2> vtex;
+
+        string sline;
+        u32 texId = 0;
+        while (std::getline(file, sline))
+        {
+            std::stringstream line(sline);
+
+            string type;
+            line >> type;
+
+            if (type == "#")
+                continue;
+
+            if (type == "v")
+            {
+                vec3 pos;
+                line >> pos.x >> pos.y >> pos.z;
+                vpos.push_back(pos);
+            }
+            else if (type == "vn")
+            {
+                vec3 normal;
+                line >> normal.x >> normal.y >> normal.z;
+                vnormal.push_back(normal);
+            }
+            else if (type == "vt")
+            {
+                vec3 tex;
+                line >> tex.x >> tex.y >> tex.z;
+                vtex.push_back(tex);
+            }
+            else if (type == "usemtl")
+            {
+                line >> texId;
+            }
+            else if (type == "f")
+            {
+                string tri;
+                while (line >> tri)
+                {
+                    std::stringstream ss(tri);
+
+                    i32 id[3];
+                    for (i32 i = 0; i < 3; ++i)
+                    {
+                        string s;
+                        std::getline(ss, s, '/');
+                        id[i] = std::stoi(s);
+                    }
+
+                    model->vertices.push_back({
+                        vpos[id[0] - 1],
+                        vtex[id[1] - 1],
+                        vnormal[id[2] - 1],
+                        texId
+                    });
+                }
+            }
+        }
+
+        file.close();
+        return model;
     }
 
     bool BlockLoader::loadConfigFile(const string& path)
@@ -142,48 +244,70 @@ namespace cybrion
                 for (auto it0 : value)
                 {
                     string key = it0.first.as<string>();
-                    string value = it0.second.as<string>();
 
-                    if (key == "display_name") OVERRIDE(m_displayName, value);
-                    if (key == "shape") OVERRIDE(m_shape, StringToEnum<BlockShape>(value));
-                    if (key == "display") OVERRIDE(m_display, StringToEnum<BlockDisplay>(value));
-
-                    if (key == "rotate_x") OVERRIDE(m_rotationX, StringToEnum<BlockRotation>(value));
-                    if (key == "rotate_y") OVERRIDE(m_rotationY, StringToEnum<BlockRotation>(value));
-                    if (key == "rotate_z") OVERRIDE(m_rotationZ, StringToEnum<BlockRotation>(value));
-
-                    if (key == "sound") OVERRIDE(m_sound, value);
-
-                    if (key == "all")
+                    if (it0.second.IsSequence())
                     {
-                        u32 id = getTextureId(value);
-                        OVERRIDE(m_topTexture    , id);
-                        OVERRIDE(m_bottomTexture , id);
-                        OVERRIDE(m_northTexture  , id);
-                        OVERRIDE(m_southTexture  , id);
-                        OVERRIDE(m_eastTexture   , id);
-                        OVERRIDE(m_westTexture   , id);
+                        if (key == "model_tex")
+                        {
+                            vector<u32> vtex;
+                            for (auto it1 : it0.second)
+                            {
+                                u32 texId = getTextureId(it1.as<string>());
+                                vtex.push_back(texId);
+                            }
+                            OVERRIDE(m_modelTextures, vtex);
+                        }
                     }
-
-                    if (key == "side")
+                    else
                     {
-                        u32 id = getTextureId(value);
-                        OVERRIDE(m_northTexture , id);
-                        OVERRIDE(m_southTexture , id);
-                        OVERRIDE(m_eastTexture  , id);
-                        OVERRIDE(m_westTexture  , id);
-                    }
+                        string value = it0.second.as<string>();
 
-                    if (key == "top")
-                    {
-                        u32 id = getTextureId(value);
-                        OVERRIDE(m_topTexture  , id);
-                    }
+                        if (key == "display_name") OVERRIDE(m_displayName, value);
+                        if (key == "display") OVERRIDE(m_display, StringToEnum<BlockDisplay>(value));
 
-                    if (key == "bottom")
-                    {
-                        u32 id = getTextureId(value);
-                        OVERRIDE(m_bottomTexture, id);
+                        if (key == "model")
+                        {
+                            OVERRIDE(m_shape, BlockShape::CUSTOM);
+                            OVERRIDE(m_model, getModel(value));
+                        }
+
+                        if (key == "rotate_x") OVERRIDE(m_rotationX, StringToEnum<BlockRotation>(value));
+                        if (key == "rotate_y") OVERRIDE(m_rotationY, StringToEnum<BlockRotation>(value));
+                        if (key == "rotate_z") OVERRIDE(m_rotationZ, StringToEnum<BlockRotation>(value));
+
+                        if (key == "sound") OVERRIDE(m_sound, value);
+
+                        if (key == "all")
+                        {
+                            u32 id = getTextureId(value);
+                            OVERRIDE(m_topTexture, id);
+                            OVERRIDE(m_bottomTexture, id);
+                            OVERRIDE(m_northTexture, id);
+                            OVERRIDE(m_southTexture, id);
+                            OVERRIDE(m_eastTexture, id);
+                            OVERRIDE(m_westTexture, id);
+                        }
+
+                        if (key == "side")
+                        {
+                            u32 id = getTextureId(value);
+                            OVERRIDE(m_northTexture, id);
+                            OVERRIDE(m_southTexture, id);
+                            OVERRIDE(m_eastTexture, id);
+                            OVERRIDE(m_westTexture, id);
+                        }
+
+                        if (key == "top")
+                        {
+                            u32 id = getTextureId(value);
+                            OVERRIDE(m_topTexture, id);
+                        }
+
+                        if (key == "bottom")
+                        {
+                            u32 id = getTextureId(value);
+                            OVERRIDE(m_bottomTexture, id);
+                        }
                     }
                 }
             }

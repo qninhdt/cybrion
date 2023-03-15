@@ -132,9 +132,9 @@ namespace cybrion
                 Block* b2 = blocks[p2.x + 1][p2.y + 1][p2.z + 1];
                 Block* b3 = blocks[p3.x + 1][p3.y + 1][p3.z + 1];
 
-                bool o1 = b1 && b1->getDisplay() == BlockDisplay::OPAQUE;
-                bool o2 = b2 && b2->getDisplay() == BlockDisplay::OPAQUE;
-                bool o3 = b3 && b3->getDisplay() == BlockDisplay::OPAQUE;
+                bool o1 = b1 && b1->getDisplay() == BlockDisplay::OPAQUE && b1->getShape() == BlockShape::CUBE;
+                bool o2 = b2 && b2->getDisplay() == BlockDisplay::OPAQUE && b2->getShape() == BlockShape::CUBE;
+                bool o3 = b3 && b3->getDisplay() == BlockDisplay::OPAQUE && b3->getShape() == BlockShape::CUBE;
 
                 u32 ao;
 

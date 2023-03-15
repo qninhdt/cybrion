@@ -14,6 +14,7 @@ namespace cybrion
         GLASS,
         FLOWER,
         WATER,
+        FENCE,
         ENUM_SIZE
     };
 

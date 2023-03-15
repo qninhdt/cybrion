@@ -9,6 +9,7 @@ namespace cybrion
         m_chunk(chunk),
         opaqueMesh(true),
         transparentMesh(true),
+        modelMesh(true),
         m_inBuildQueue(false),
         m_version(0),
         m_hasBuilt(false)
@@ -19,6 +20,13 @@ namespace cybrion
 
         transparentMesh.setAttributes({
             { GL::Type::UINT }, // packed_vertex
+        });
+
+        modelMesh.setAttributes({
+            { GL::Type::VEC3 }, // pos
+            { GL::Type::VEC2 }, // tex
+            { GL::Type::VEC3 }, // normal
+            { GL::Type::UINT }, // tex_id
         });
     }
     
@@ -48,31 +56,50 @@ namespace cybrion
             // we can use simple block getter when block is not in chunk border
             bool inBorder = Chunk::isInBorder(pos);
 
-            for (auto& [dir, face] : BlockRenderer::CubeDirections)
+            if (block.getShape() == BlockShape::CUBE)
             {
-               Block* neighbor = inBorder
-                    ? std::get<0>(m_chunk->tryGetBlockMaybeOutside(pos + dir))
-                    : m_chunk->tryGetBlock(pos + dir);
-                
-                // cull this face when neighbor block is opaque
-               culling[u32(face)] = !neighbor
-                   || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE)
-                   || (neighbor && neighbor->getDisplay() == BlockDisplay::LIQUID && block.getDisplay() == BlockDisplay::LIQUID);
-                visible |= !culling[u32(face)];
-                maybeVisible |= !neighbor;
+                for (auto& [dir, face] : BlockRenderer::CubeDirections)
+                {
+                    Block* neighbor = inBorder
+                        ? std::get<0>(m_chunk->tryGetBlockMaybeOutside(pos + dir))
+                        : m_chunk->tryGetBlock(pos + dir);
+
+                    // cull this face when neighbor block is opaque
+                    culling[u32(face)] = !neighbor
+                        || (neighbor && neighbor->getDisplay() == BlockDisplay::OPAQUE)
+                        || (neighbor && neighbor->getDisplay() == BlockDisplay::LIQUID && block.getDisplay() == BlockDisplay::LIQUID);
+                    culling[u32(face)] &= !neighbor || neighbor->getShape() == BlockShape::CUBE;
+                    visible |= !culling[u32(face)];
+                    maybeVisible |= !neighbor;
+                }
+
+                if (visible)
+                {
+                    if (inBorder)
+                        m_chunk->getBlockAndNeighborsMaybeOutside(pos, blocks);
+                    else
+                        m_chunk->getBlockAndNeighbors(pos, blocks);
+
+                    if (block.getDisplay() == BlockDisplay::LIQUID)
+                        cubeRenderer.generateCubeMesh(culling, pos, blocks, result->transparentVertices);
+                    else
+                        cubeRenderer.generateCubeMesh(culling, pos, blocks, result->opaqueVertices);
+                }
             }
-
-            if (visible)
+            else
             {
-                if (inBorder)
-                    m_chunk->getBlockAndNeighborsMaybeOutside(pos, blocks);
-                else
-                    m_chunk->getBlockAndNeighbors(pos, blocks);
+                auto model = block.getModel();
 
-                if (block.getDisplay() == BlockDisplay::LIQUID)
-                    cubeRenderer.generateCubeMesh(culling, pos, blocks, result->transparentVertices);
-                else
-                    cubeRenderer.generateCubeMesh(culling, pos, blocks, result->opaqueVertices);
+                for (auto vertex : model->vertices)
+                {
+                    vertex.texId = block.getModelTexture(vertex.texId);
+                    vertex.pos += vec3(pos) + vec3(
+                        0.5f - Chunk::CHUNK_SIZE / 2,
+                        0.5f - Chunk::CHUNK_SIZE / 2,
+                        0.5f - Chunk::CHUNK_SIZE / 2
+                    );
+                    result->modelVertices.push_back(vertex);
+                }
             }
         });
 
@@ -81,6 +108,9 @@ namespace cybrion
 
         transparentMesh.setPos(m_chunk->getPos());
         transparentMesh.updateModelMat();
+
+        modelMesh.setPos(m_chunk->getPos());
+        modelMesh.updateModelMat();
         
         return result;
     }

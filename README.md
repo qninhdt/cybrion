@@ -11,11 +11,13 @@
 - [x] Collision detection
 - [x] Thread pool for loading chunk and meshing
 - [x] Tree
-- [ ] Block sound
+- [x] Block sound
 - [ ] Glass
 - [x] Water
 - [ ] Flower
+- [ ] Improve world generation
 - [ ] Inventory
-- [ ] Game gui
+- [ ] Add sky
 - [ ] Save system
+- [ ] Game gui
 - [ ] End

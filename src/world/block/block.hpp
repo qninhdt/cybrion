@@ -5,6 +5,19 @@
 
 namespace cybrion
 {
+    struct BlockVertex
+    {
+        vec3 pos;
+        vec2 tex;
+        vec3 normal;
+        u32 texId;
+    };
+
+    struct BlockModel
+    {
+        vector<BlockVertex> vertices;
+    };
+
     namespace detail
     {
         template <typename... B>
@@ -31,6 +44,8 @@ namespace cybrion
         BlockRotation getRotationX() const;
         BlockRotation getRotationY() const;
         BlockRotation getRotationZ() const;
+        ref<BlockModel> getModel() const;
+        u32 getModelTexture(u32 index) const;
 
         template<typename B>
         B& as()
@@ -94,6 +109,9 @@ namespace cybrion
         BlockRotation m_rotationZ;
 
         string m_sound;
+
+        ref<BlockModel> m_model;
+        vector<u32> m_modelTextures;
 
         union
         {

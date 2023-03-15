@@ -17,6 +17,7 @@ int main()
     RegisterEnum(BlockType::WATER, "water");
     RegisterEnum(BlockType::FLOWER, "flower");
     RegisterEnum(BlockType::LEAF, "leaf");
+    RegisterEnum(BlockType::FENCE, "fence");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");

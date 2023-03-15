@@ -12,6 +12,7 @@
 namespace cybrion
 {
     using OpaqueCubeShader = GL::Shader<"MVP", "enable_diffuse", "enable_ao">;
+    using BlockModelShader = GL::Shader<"MVP">;
     using BasicShader = GL::Shader<"MVP">;
 
     class WorldRenderer
@@ -51,6 +52,7 @@ namespace cybrion
 
         BasicShader m_basicShader;
         OpaqueCubeShader m_opaqueCubeShader;
+        BlockModelShader m_blockModelShader;
 
         bool m_enableAO;
         bool m_enableDiffuse;

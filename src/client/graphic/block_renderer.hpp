@@ -26,6 +26,8 @@ namespace cybrion
 
         void generateCubeMesh(bool culling[6], const ivec3& position, const Block::Block3x3x3& blocks, vector<u32>& result);
         void generateCubeTexture();
+
+        void generatateXShapeMesh(const ivec3& position, const Block& block, vector<f32>& result);
     
         static array<tuple<ivec3, BlockFace>, 6> CubeDirections;
         static array<array<vec3, 4>, 6> CubeVertices;

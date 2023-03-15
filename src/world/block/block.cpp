@@ -15,6 +15,7 @@ namespace cybrion
     Block::Block(const BlockType& type) :
         m_shape(BlockShape::CUBE),
         m_type(type),
+        m_model(nullptr),
         m_displayName(""),
         m_sound("dirt"),
         m_display(BlockDisplay::OPAQUE),
@@ -86,6 +87,16 @@ namespace cybrion
     BlockRotation Block::getRotationZ() const
     {
         return m_rotationZ;
+    }
+
+    ref<BlockModel> Block::getModel() const
+    {
+        return m_model;
+    }
+
+    u32 Block::getModelTexture(u32 index) const
+    {
+        return m_modelTextures[index];
     }
 
     bool Block::operator == (const Block& other) const

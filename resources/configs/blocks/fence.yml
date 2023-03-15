@@ -1,0 +1,6 @@
+"[]":
+  model: fence
+"[type=oak]":
+  display: Oak Fence
+  model_tex:
+    - oak_log_side

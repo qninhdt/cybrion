@@ -27,6 +27,9 @@ namespace cybrion
 
     WaterBlock& Blocks::WATER = s_blocks.get<WaterBlock>();
 
+    FenceBlock& Blocks::FENCE = s_blocks.get<FenceBlock>();
+    FenceBlock& Blocks::OAK_FENCE = FENCE.set<"type">(WoodType::OAK);
+
     Blocks& Blocks::Get()
     {
         return s_blocks;
