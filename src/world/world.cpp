@@ -115,7 +115,7 @@ namespace cybrion
         
         updateEntityTransforms();
 
-        i32 d = 8;
+        i32 d = 4;
         ivec3 ppos = Game::Get().getPlayer().getEntity()->getChunkPos();
 
         for (i32 x = -d; x < d; ++x)
@@ -168,12 +168,25 @@ namespace cybrion
         auto chunk = it->second;
 
         Block& oldBlock = chunk->getBlock(localPos);
+
+        if (oldBlock == block)
+            return { chunk, pos, block, block };
+
         chunk->setBlock(localPos, block);
 
         BlockModifyResult result{ chunk, pos, oldBlock, block };
 
         if (chunk->m_hasStructure)
+        {
+            chunk->eachBlockAndNeighbors(localPos, [&](Block*& neighbor, ref<Chunk>&, const ivec3& dir) {
+                if (neighbor && !(dir.x == 0 && dir.y == 0 && dir.z == 0))
+                {
+                    neighbor->onNeighborChanged(pos + dir, pos, oldBlock, block);
+                }
+            });
+
             Game::Get().onBlockChanged(result);
+        }
 
         return result;
     }

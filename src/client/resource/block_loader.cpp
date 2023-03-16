@@ -6,6 +6,9 @@
 #define OVERRIDE(field, value)\
     for (auto& block: blocks) block->##field = value
 
+#define PUSH_BACK(field, value)\
+    for (auto& block: blocks) block->##field.push_back(value)
+
 namespace cybrion
 {
     BlockLoader* BlockLoader::s_blockLoader = nullptr;
@@ -32,9 +35,9 @@ namespace cybrion
         return m_textureIdMap[name];
     }
 
-    ref<BlockModel> BlockLoader::getModel(const string& name) const
+    ref<BlockMesh> BlockLoader::getMesh(const string& name) const
     {
-        return m_modelMap.find(name)->second;
+        return m_meshMap.find(name)->second;
     }
 
     void BlockLoader::bindTextureArray()
@@ -116,14 +119,14 @@ namespace cybrion
             CYBRION_CLIENT_TRACE("Loaded block model: {}", name);
 
             auto model = loadObjFile(path);
-            m_modelMap[name] = model;
+            m_meshMap[name] = model;
         }
     }
 
-    ref<BlockModel> BlockLoader::loadObjFile(const string& path)
+    ref<BlockMesh> BlockLoader::loadObjFile(const string& path)
     {
         std::ifstream file(path);
-        auto model = std::make_shared<BlockModel>();
+        auto model = std::make_shared<BlockMesh>();
 
         vector<vec3> vpos;
         vector<vec3> vnormal;
@@ -257,6 +260,13 @@ namespace cybrion
                             }
                             OVERRIDE(m_modelTextures, vtex);
                         }
+
+                        if (key == "model")
+                        {
+                            OVERRIDE(m_shape, BlockShape::CUSTOM);
+                            for (auto it1: it0.second)
+                                PUSH_BACK(m_meshes, getMesh(it1.as<string>()));
+                        }
                     }
                     else
                     {
@@ -264,11 +274,11 @@ namespace cybrion
 
                         if (key == "display_name") OVERRIDE(m_displayName, value);
                         if (key == "display") OVERRIDE(m_display, StringToEnum<BlockDisplay>(value));
-
+                        
                         if (key == "model")
                         {
                             OVERRIDE(m_shape, BlockShape::CUSTOM);
-                            OVERRIDE(m_model, getModel(value));
+                            PUSH_BACK(m_meshes, getMesh(value));
                         }
 
                         if (key == "rotate_x") OVERRIDE(m_rotationX, StringToEnum<BlockRotation>(value));

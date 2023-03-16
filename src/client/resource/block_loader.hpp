@@ -15,7 +15,7 @@ namespace cybrion
 
         u32 getTextureId(const string& name);
 
-        ref<BlockModel> getModel(const string& name) const;
+        ref<BlockMesh> getMesh(const string& name) const;
 
         void bindTextureArray();
 
@@ -28,12 +28,12 @@ namespace cybrion
         void loadTextures();
         void loadModels();
 
-        ref<BlockModel> loadObjFile(const string& path);
+        ref<BlockMesh> loadObjFile(const string& path);
 
         bool loadConfigFile(const string& path);
 
         GL::TextureArray m_textureArray;
         umap<string, u32> m_textureIdMap;
-        umap<string, ref<BlockModel>> m_modelMap;
+        umap<string, ref<BlockMesh>> m_meshMap;
     };
 }

@@ -88,17 +88,20 @@ namespace cybrion
             }
             else
             {
-                auto model = block.getModel();
+                auto meshes = block.getMeshes();
 
-                for (auto vertex : model->vertices)
+                for (auto mesh : meshes)
                 {
-                    vertex.texId = block.getModelTexture(vertex.texId);
-                    vertex.pos += vec3(pos) + vec3(
-                        0.5f - Chunk::CHUNK_SIZE / 2,
-                        0.5f - Chunk::CHUNK_SIZE / 2,
-                        0.5f - Chunk::CHUNK_SIZE / 2
-                    );
-                    result->modelVertices.push_back(vertex);
+                    for (auto vertex : mesh->vertices)
+                    {
+                        vertex.texId = block.getModelTexture(vertex.texId);
+                        vertex.pos += vec3(pos) + vec3(
+                            0.5f - Chunk::CHUNK_SIZE / 2,
+                            0.5f - Chunk::CHUNK_SIZE / 2,
+                            0.5f - Chunk::CHUNK_SIZE / 2
+                        );
+                        result->modelVertices.push_back(vertex);
+                    }
                 }
             }
         });

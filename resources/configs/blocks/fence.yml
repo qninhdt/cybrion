@@ -1,6 +1,15 @@
 "[]":
-  model: fence
+  model: fence_post
+  sound: wood
 "[type=oak]":
-  display: Oak Fence
+  display_name: Oak Fence
   model_tex:
     - oak_log_side
+"[east=1]":
+  model: fence_side_0
+"[north=1]":
+  model: fence_side_1
+"[west=1]":
+  model: fence_side_2
+"[south=1]":
+  model: fence_side_3

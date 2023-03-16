@@ -15,7 +15,6 @@ namespace cybrion
     Block::Block(const BlockType& type) :
         m_shape(BlockShape::CUBE),
         m_type(type),
-        m_model(nullptr),
         m_displayName(""),
         m_sound("dirt"),
         m_display(BlockDisplay::OPAQUE),
@@ -89,9 +88,9 @@ namespace cybrion
         return m_rotationZ;
     }
 
-    ref<BlockModel> Block::getModel() const
+    vector<ref<BlockMesh>>& Block::getMeshes()
     {
-        return m_model;
+        return m_meshes;
     }
 
     u32 Block::getModelTexture(u32 index) const
@@ -107,6 +106,10 @@ namespace cybrion
     Block& Block::getPlacedBlock(const ivec3& pos, BlockFace face)
     {
         return *this;
+    }
+
+    void Block::onNeighborChanged(const ivec3& pos, const ivec3& neighborPos, const Block& from, const Block& to)
+    {
     }
 
     BlockFace Block::GetFaceFromDirection(const ivec3& dir)

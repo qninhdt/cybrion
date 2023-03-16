@@ -13,7 +13,7 @@ namespace cybrion
         u32 texId;
     };
 
-    struct BlockModel
+    struct BlockMesh
     {
         vector<BlockVertex> vertices;
     };
@@ -44,7 +44,7 @@ namespace cybrion
         BlockRotation getRotationX() const;
         BlockRotation getRotationY() const;
         BlockRotation getRotationZ() const;
-        ref<BlockModel> getModel() const;
+        vector<ref<BlockMesh>>& getMeshes();
         u32 getModelTexture(u32 index) const;
 
         template<typename B>
@@ -62,6 +62,7 @@ namespace cybrion
         virtual string toString() const = 0;
 
         virtual Block& getPlacedBlock(const ivec3& pos, BlockFace face);
+        virtual void onNeighborChanged(const ivec3& pos, const ivec3& neighborPos, const Block& from, const Block& to);
 
         static array<tuple<ivec3, BlockFace>, 6> Directions;
 
@@ -110,7 +111,7 @@ namespace cybrion
 
         string m_sound;
 
-        ref<BlockModel> m_model;
+        vector<ref<BlockMesh>> m_meshes;
         vector<u32> m_modelTextures;
 
         union
