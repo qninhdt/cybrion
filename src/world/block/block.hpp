@@ -2,6 +2,7 @@
 
 #include "world/block/block_state.hpp"
 #include "world/block/block_defs.hpp"
+#include "physic/aabb.hpp"
 
 namespace cybrion
 {
@@ -44,6 +45,7 @@ namespace cybrion
         BlockRotation getRotationX() const;
         BlockRotation getRotationY() const;
         BlockRotation getRotationZ() const;
+        AABB getBound() const;
         vector<ref<BlockMesh>>& getMeshes();
         u32 getModelTexture(u32 index) const;
 
@@ -62,7 +64,8 @@ namespace cybrion
         virtual string toString() const = 0;
 
         virtual Block& getPlacedBlock(const ivec3& pos, BlockFace face);
-        virtual void onNeighborChanged(const ivec3& pos, const ivec3& neighborPos, const Block& from, const Block& to);
+        virtual void onPlaced(const ivec3& pos);
+        virtual void onBroken(const ivec3& pos);
 
         static array<tuple<ivec3, BlockFace>, 6> Directions;
 
@@ -113,6 +116,8 @@ namespace cybrion
 
         vector<ref<BlockMesh>> m_meshes;
         vector<u32> m_modelTextures;
+
+        AABB m_bound;
 
         union
         {

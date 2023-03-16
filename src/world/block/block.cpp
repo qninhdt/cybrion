@@ -16,6 +16,7 @@ namespace cybrion
         m_shape(BlockShape::CUBE),
         m_type(type),
         m_displayName(""),
+        m_bound({ 0, 0, 0 }, { 1, 1, 1 }),
         m_sound("dirt"),
         m_display(BlockDisplay::OPAQUE),
         m_rotationX(BlockRotation::R0),
@@ -88,6 +89,11 @@ namespace cybrion
         return m_rotationZ;
     }
 
+    AABB Block::getBound() const
+    {
+        return m_bound;
+    }
+
     vector<ref<BlockMesh>>& Block::getMeshes()
     {
         return m_meshes;
@@ -108,7 +114,11 @@ namespace cybrion
         return *this;
     }
 
-    void Block::onNeighborChanged(const ivec3& pos, const ivec3& neighborPos, const Block& from, const Block& to)
+    void Block::onPlaced(const ivec3& pos)
+    {
+    }
+
+    void Block::onBroken(const ivec3& pos)
     {
     }
 

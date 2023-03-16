@@ -69,7 +69,16 @@ namespace cybrion
                 if (block->getDisplay() == BlockDisplay::TRANSPARENT || block->getDisplay() == BlockDisplay::LIQUID)
                     return false;
 
-                m_targetFace = Block::GetFaceFromDirection(normal);
+                AABB bound = block->getBound();
+                bound = { bound.getPos() + vec3(blockPos) + vec3(0.5f, 0.5f, 0.5f), bound.getSize()};
+                
+                ivec3 bnormal{ 0,0,0 };
+                if (!VoxelRay::Intersection(m_entity->getPos(), m_entity->getDir(), bound, bnormal))
+                    return false;
+
+                //std::cout << bnormal.x << ' ' << bnormal.y << ' ' << bnormal.z << '\n';
+
+                m_targetFace = Block::GetFaceFromDirection(bnormal);
                 m_targetPos = blockPos;
                 m_targetBlock = block;
 

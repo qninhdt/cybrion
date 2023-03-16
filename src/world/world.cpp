@@ -174,17 +174,13 @@ namespace cybrion
 
         chunk->setBlock(localPos, block);
 
+        oldBlock.onBroken(pos);
+        block.onPlaced(pos);
+
         BlockModifyResult result{ chunk, pos, oldBlock, block };
 
         if (chunk->m_hasStructure)
         {
-            chunk->eachBlockAndNeighbors(localPos, [&](Block*& neighbor, ref<Chunk>&, const ivec3& dir) {
-                if (neighbor && !(dir.x == 0 && dir.y == 0 && dir.z == 0))
-                {
-                    neighbor->onNeighborChanged(pos + dir, pos, oldBlock, block);
-                }
-            });
-
             Game::Get().onBlockChanged(result);
         }
 

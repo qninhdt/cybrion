@@ -267,6 +267,23 @@ namespace cybrion
                             for (auto it1: it0.second)
                                 PUSH_BACK(m_meshes, getMesh(it1.as<string>()));
                         }
+
+                        if (key == "bound")
+                        {
+                            AABB bound{
+                                {
+                                    it0.second[0].as<f32>(),
+                                    it0.second[1].as<f32>(),
+                                    it0.second[2].as<f32>()
+                                },
+                                {
+                                    it0.second[3].as<f32>(),
+                                    it0.second[4].as<f32>(),
+                                    it0.second[5].as<f32>()
+                                },
+                            };
+                            OVERRIDE(m_bound, bound);
+                        }
                     }
                     else
                     {

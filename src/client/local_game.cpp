@@ -76,8 +76,12 @@ namespace cybrion
         if (m_player.getTargetBlock() != nullptr)
         {
             ivec3 pos = m_player.getTargetPos();
+            Block& block = m_world.getBlock(pos);
+            AABB bound = block.getBound();
 
-            m_targetBlockMesh.setPos({ pos.x + 0.5f, pos.y + 0.5f, pos.z + 0.5f });
+            m_targetBlockMesh.setPos(vec3(pos) + bound.getPos() + vec3(0.5f, 0.5f, 0.5f));
+            //std::cout << bound.getSize().x << ' ' << bound.getSize().y << ' ' << bound.getSize().z << '\n';
+            m_targetBlockMesh.setScale(bound.getSize());
             m_targetBlockMesh.updateModelMat();
 
             m_basicShader.use();

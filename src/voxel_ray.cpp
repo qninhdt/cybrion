@@ -72,4 +72,62 @@ namespace cybrion
             }
         }
     }
+    bool VoxelRay::Intersection(const vec3& position, const vec3& direction, const AABB& aabb, ivec3& normal)
+    {
+        vec3 min = aabb.getMin();
+        vec3 max = aabb.getMax();
+
+        i32 stepX = util::signNum(direction.x);
+        i32 stepY = util::signNum(direction.y);
+        i32 stepZ = util::signNum(direction.z);
+
+        f32 tx1 = (min.x - position.x) / direction.x;
+        f32 tx2 = (max.x - position.x) / direction.x;
+
+        f32 tmin = std::min(tx1, tx2);
+        f32 tmax = std::max(tx1, tx2);
+
+        f32 ty1 = (min.y - position.y) / direction.y;
+        f32 ty2 = (max.y - position.y) / direction.y;
+
+        tmin = std::max(tmin, std::min(ty1, ty2));
+        tmax = std::min(tmax, std::max(ty1, ty2));
+
+        f32 tz1 = (min.z - position.z) / direction.z;
+        f32 tz2 = (max.z - position.z) / direction.z;
+
+        tmin = std::max(tmin, std::min(tz1, tz2));
+        tmax = std::min(tmax, std::max(tz1, tz2));
+
+        if (tmin > tmax)
+            return false;
+
+        vec3 point = position + direction * tmin;
+        vec3 localPoint = point - aabb.getPos();
+
+        float minp = std::numeric_limits<float>::max();
+
+        float distance = std::abs(aabb.getSize().x - std::abs(localPoint.x))/ aabb.getSize().x;
+        if (distance < minp) {
+            minp = distance;
+            normal = { 1, 0, 0 };
+            normal *= util::signNum(localPoint.x);
+        }
+
+        distance = std::abs(aabb.getSize().y - std::abs(localPoint.y))/ aabb.getSize().y;
+        if (distance < minp) {
+            minp = distance;
+            normal = { 0, 1, 0 };
+            normal *= util::signNum(localPoint.y);
+        }
+
+        distance = std::abs(aabb.getSize().z - std::abs(localPoint.z))/ aabb.getSize().z;
+        if (distance < minp) {
+            minp = distance;
+            normal = { 0, 0, 1 };
+            normal *= util::signNum(localPoint.z);
+        }
+
+        return true;
+    }
 }
