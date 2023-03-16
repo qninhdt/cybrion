@@ -64,8 +64,10 @@ namespace cybrion
         virtual string toString() const = 0;
 
         virtual Block& getPlacedBlock(const ivec3& pos, BlockFace face);
+        virtual bool beforePlace(const ivec3& pos);
         virtual void onPlaced(const ivec3& pos);
         virtual void onBroken(const ivec3& pos);
+        virtual void onTick(const ivec3& pos);
 
         static array<tuple<ivec3, BlockFace>, 6> Directions;
 

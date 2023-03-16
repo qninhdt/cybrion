@@ -298,6 +298,9 @@ namespace cybrion
                             PUSH_BACK(m_meshes, getMesh(value));
                         }
 
+                        if (key == "model_tex")
+                            PUSH_BACK(m_modelTextures, getTextureId(value));
+
                         if (key == "rotate_x") OVERRIDE(m_rotationX, StringToEnum<BlockRotation>(value));
                         if (key == "rotate_y") OVERRIDE(m_rotationY, StringToEnum<BlockRotation>(value));
                         if (key == "rotate_z") OVERRIDE(m_rotationZ, StringToEnum<BlockRotation>(value));

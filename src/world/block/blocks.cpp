@@ -7,7 +7,7 @@ namespace cybrion
     AirBlock& Blocks::AIR = s_blocks.get<AirBlock>();
 
     SoilBlock& Blocks::SOIL  = s_blocks.get<SoilBlock>();
-    SoilBlock& Blocks::GRASS = SOIL.set<"type">(SoilType::GRASS);
+    SoilBlock& Blocks::GRASS_BLOCK = SOIL.set<"type">(SoilType::GRASS);
     SoilBlock& Blocks::DIRT  = SOIL.set<"type">(SoilType::DIRT);
 
     LogBlock& Blocks::LOG    = s_blocks.get<LogBlock>();
@@ -29,6 +29,21 @@ namespace cybrion
 
     FenceBlock& Blocks::FENCE = s_blocks.get<FenceBlock>().set<"east">(0).set<"north">(0).set<"west">(0).set<"south">(0);
     FenceBlock& Blocks::OAK_FENCE = FENCE.set<"type">(WoodType::OAK);
+
+    PlantBlock& Blocks::PLANT = s_blocks.get<PlantBlock>();
+    PlantBlock& Blocks::GRASS = PLANT.set<"type">(PlantType::GRASS);
+    PlantBlock& Blocks::FERN = PLANT.set<"type">(PlantType::FERN);
+    PlantBlock& Blocks::DANDELION = PLANT.set<"type">(PlantType::DANDELION);
+    PlantBlock& Blocks::POPPY = PLANT.set<"type">(PlantType::POPPY);
+    PlantBlock& Blocks::BLUE_ORCHID = PLANT.set<"type">(PlantType::BLUE_ORCHID);
+    PlantBlock& Blocks::ALLIUM = PLANT.set<"type">(PlantType::ALLIUM);
+    PlantBlock& Blocks::AZURE = PLANT.set<"type">(PlantType::AZURE);
+    PlantBlock& Blocks::RED_TULIP = PLANT.set<"type">(PlantType::RED_TULIP);
+    PlantBlock& Blocks::WHITE_TULIP = PLANT.set<"type">(PlantType::WHITE_TULIP);
+    PlantBlock& Blocks::PINK_TULIP = PLANT.set<"type">(PlantType::PINK_TULIP);
+    PlantBlock& Blocks::OXEYE_DAISY = PLANT.set<"type">(PlantType::OXEYE_DAISY);
+    PlantBlock& Blocks::CORNFLOWER = PLANT.set<"type">(PlantType::CORNFLOWER);
+    PlantBlock& Blocks::LILY_OF_THE_VALLEY = PLANT.set<"type">(PlantType::LILY_OF_THE_VALLEY);
 
     Blocks& Blocks::Get()
     {

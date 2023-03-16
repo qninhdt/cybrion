@@ -17,10 +17,7 @@ namespace cybrion
     >
     {
     public:
-        Block& getPlacedBlock(const ivec3& pos, BlockFace face);
-        void onPlaced(const ivec3& pos);
-        void onBroken(const ivec3& pos);
-        void updateNeighborFences(const ivec3& pos);
+        void onTick(const ivec3& pos);
         FenceBlock& getFenceAt(World& world, const ivec3& pos);
     };
 }

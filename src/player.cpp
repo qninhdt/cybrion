@@ -35,7 +35,13 @@ namespace cybrion
         {
             if (m_targetBlock && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
             {
-                Game::Get().getWorld().placeBlock(m_targetPos, m_targetFace, Blocks::OAK_FENCE);
+                ivec3 placedPos = m_targetPos + Block::GetDirectionFromFace(m_targetFace);
+                auto& world = Game::Get().getWorld();
+
+                static int i = 0;
+                if (world.getBlock(placedPos) == Blocks::AIR)
+                    world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++%13)));
+
                 m_blockInteractStopwatch.reset();
             }
             m_input.rightClick = false;
@@ -45,7 +51,7 @@ namespace cybrion
         {
             if (m_targetBlock && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
             {
-                Game::Get().getWorld().breakBlock(m_targetPos);
+                Game::Get().getWorld().placeBlock(m_targetPos, Blocks::AIR);
                 m_blockInteractStopwatch.reset();
             }
             m_input.leftClick = false;

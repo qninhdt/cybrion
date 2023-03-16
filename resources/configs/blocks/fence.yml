@@ -4,8 +4,7 @@
   bound: [0, 0, 0, 0.25, 1, 0.25]
 "[type=oak]":
   display_name: Oak Fence
-  model_tex:
-    - oak_log_side
+  model_tex: oak_log_side
 "[east=1]":
   model: fence_side_0
   bound: [0.1875, 0, 0, 0.625, 1, 0.25]

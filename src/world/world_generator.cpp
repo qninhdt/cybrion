@@ -120,7 +120,7 @@ namespace cybrion
                                 if (wy < 75 - shitNoise * 10)
                                 {
                                     if (wy == wh - 1)
-                                        chunk->setBlock({ x, y, z }, Blocks::GRASS);
+                                        chunk->setBlock({ x, y, z }, Blocks::GRASS_BLOCK);
                                     else if (wy > wh * 3 / 4)
                                         chunk->setBlock({ x, y, z }, Blocks::DIRT);
                                     else
@@ -134,7 +134,7 @@ namespace cybrion
                             else
                             {
                                 if (wy == wh - 1)
-                                    chunk->setBlock({ x, y, z }, Blocks::GRASS);
+                                    chunk->setBlock({ x, y, z }, Blocks::GRASS_BLOCK);
                                 else if (wy > wh * 3 / 4)
                                     chunk->setBlock({ x, y, z }, Blocks::DIRT);
                                 else
@@ -220,7 +220,7 @@ namespace cybrion
                     for (i32 y = 0; y < Chunk::CHUNK_SIZE; ++y)
                     {
                         ivec3 wpos = chunkPos + ivec3(x, y, z);
-                        if (chunk->getBlock({ x,y,z }) == Blocks::GRASS && wpos.x%30==0 && wpos.z%30==0)
+                        if (chunk->getBlock({ x,y,z }) == Blocks::GRASS_BLOCK && wpos.x%30==0 && wpos.z%30==0)
                         {
                             growTreeAt(chunkPos + ivec3(x, y+1, z));
                             break;

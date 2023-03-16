@@ -3,7 +3,7 @@
 
 namespace cybrion
 {
-    Block& FenceBlock::getPlacedBlock(const ivec3& pos, BlockFace face)
+    /*Block& FenceBlock::getPlacedBlock(const ivec3& pos, BlockFace face)
     {
         return *this;
     }
@@ -38,6 +38,12 @@ namespace cybrion
             if (neighbor.getType() == BlockType::FENCE)
                 world.setBlockOnly(npos, getFenceAt(world, npos));
         }
+    }*/
+
+    void FenceBlock::onTick(const ivec3& pos)
+    {
+        auto& world = Game::Get().getWorld();
+        world.setBlock(pos, getFenceAt(world, pos));
     }
 
     FenceBlock& FenceBlock::getFenceAt(World& world, const ivec3& pos)

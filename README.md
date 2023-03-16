@@ -2,7 +2,8 @@
 
 ## Preview
 
-![Screenshot](./screenshot.png)
+![Screenshot](./docs/screenshots/large_view.png)
+![Screenshot](./docs/screenshots/flowers.png)
 
 ## Todo list
 - [x] Render first chunk
@@ -15,7 +16,7 @@
 - [x] Water
 - [ ] Glass
 - [x] Custom block model (.obj)
-- [ ] Flower
+- [x] Flower
 - [ ] Improve world generation
 - [ ] Inventory
 - [ ] Add sky

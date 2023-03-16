@@ -1,6 +1,4 @@
 #include "client/application.hpp"
-#include <jbt/hjbt.hpp>
-#include <jbt/jbt.hpp>
 
 using namespace cybrion;
 
@@ -15,9 +13,9 @@ int main()
     RegisterEnum(BlockType::BRICK, "brick");
     RegisterEnum(BlockType::GLASS, "glass");
     RegisterEnum(BlockType::WATER, "water");
-    RegisterEnum(BlockType::FLOWER, "flower");
     RegisterEnum(BlockType::LEAF, "leaf");
     RegisterEnum(BlockType::FENCE, "fence");
+    RegisterEnum(BlockType::PLANT, "plant");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");
@@ -61,6 +59,21 @@ int main()
 
     // wood type
     RegisterEnum(WoodType::OAK, "oak");
+    
+    // plant type
+    RegisterEnum(PlantType::GRASS       , "grass");
+    RegisterEnum(PlantType::FERN        , "fern");
+    RegisterEnum(PlantType::DANDELION   , "dandelion");
+    RegisterEnum(PlantType::POPPY       , "poppy");
+    RegisterEnum(PlantType::BLUE_ORCHID , "blue_orchid");
+    RegisterEnum(PlantType::ALLIUM      , "allium");
+    RegisterEnum(PlantType::AZURE       , "azure");
+    RegisterEnum(PlantType::RED_TULIP   , "red_tulip");
+    RegisterEnum(PlantType::WHITE_TULIP , "white_tulip");
+    RegisterEnum(PlantType::PINK_TULIP  , "pink_tulip");
+    RegisterEnum(PlantType::OXEYE_DAISY , "oxeye_daisy");
+    RegisterEnum(PlantType::CORNFLOWER  , "cornflower");
+    RegisterEnum(PlantType::LILY_OF_THE_VALLEY , "lily_of_the_valley");
 
     // log axis
     RegisterEnum(LogAxis::X, "x");

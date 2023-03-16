@@ -1,0 +1,41 @@
+"[]":
+  model: x_shape
+"[type=grass]":
+  display_name: Grass
+  model_tex: grass
+"[type=fern]":
+  display_name: Fern 
+  model_tex: fern
+"[type=dandelion]":
+  display_name: Dandelion
+  model_tex: dandelion
+"[type=poppy]":
+  display_name: Poppy 
+  model_tex: poppy
+"[type=blue_orchid]":
+  display_name: Blue Orchid
+  model_tex: blue_orchid
+"[type=allium]":
+  display_name: Allium 
+  model_tex: allium
+"[type=azure]":
+  display_name: Azure 
+  model_tex: azure
+"[type=red_tulip]":
+  display_name: Red Tulip
+  model_tex: red_tulip
+"[type=white_tulip]":
+  display_name: White Tulip
+  model_tex: white_tulip
+"[type=pink_tulip]":
+  display_name: Pink Tulip
+  model_tex: pink_tulip
+"[type=oxeye_daisy]":
+  display_name: Oxeye Daisy
+  model_tex: oxeye_daisy
+"[type=cornflower]":
+  display_name: Cornflower
+  model_tex: cornflower
+"[type=lily_of_the_valley]":
+  display_name: Lily of the Valley
+  model_tex: lily_of_the_valley

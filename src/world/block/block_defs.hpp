@@ -12,9 +12,9 @@ namespace cybrion
         BRICK,
         LEAF,
         GLASS,
-        FLOWER,
         WATER,
         FENCE,
+        PLANT,
         ENUM_SIZE
     };
 

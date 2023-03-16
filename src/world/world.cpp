@@ -174,16 +174,7 @@ namespace cybrion
 
         chunk->setBlock(localPos, block);
 
-        oldBlock.onBroken(pos);
-        block.onPlaced(pos);
-
         BlockModifyResult result{ chunk, pos, oldBlock, block };
-
-        if (chunk->m_hasStructure)
-        {
-            Game::Get().onBlockChanged(result);
-        }
-
         return result;
     }
 
@@ -199,21 +190,30 @@ namespace cybrion
         it->second->setBlock(localPos, block);
     }
 
-    BlockModifyResult World::placeBlock(const ivec3& pos, BlockFace face, Block& block)
+    BlockModifyResult World::placeBlock(const ivec3& pos, Block& block)
     {
-        ivec3 ppos = pos + Block::GetDirectionFromFace(face);
-        Block& placedBlock = block.getPlacedBlock(pos, face);
-        auto result = setBlock(ppos, placedBlock);
-        Game::Get().onPlaceBlock(result);
+        if (!block.beforePlace(pos))
+            return { nullptr, {0, 0, 0}, Blocks::AIR, Blocks::AIR };
 
-        return result;
-    }
+        auto result = setBlock(pos, block);
 
-    BlockModifyResult World::breakBlock(const ivec3& pos)
-    {
-        auto result = setBlock(pos, Blocks::AIR);
-        Game::Get().onBreakBlock(result);
-        
+        if (result.chunk->m_hasStructure)
+        {
+            Game::Get().onBlockChanged(result);
+
+            if (result.block == Blocks::AIR)
+                Game::Get().onBreakBlock(result);
+            else
+                Game::Get().onPlaceBlock(result);
+        }
+
+        result.block.onPlaced(result.pos);
+
+        result.chunk->eachBlockAndNeighbors(Chunk::posToLocalPos(result.pos), [&](Block*& neighbor, ref<Chunk>&, const ivec3& dir) {
+            if (neighbor)
+                neighbor->onTick(result.pos + dir);
+        });
+
         return result;
     }
 

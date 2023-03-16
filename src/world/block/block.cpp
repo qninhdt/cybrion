@@ -114,11 +114,20 @@ namespace cybrion
         return *this;
     }
 
+    bool Block::beforePlace(const ivec3& pos)
+    {
+        return true;
+    }
+
     void Block::onPlaced(const ivec3& pos)
     {
     }
 
     void Block::onBroken(const ivec3& pos)
+    {
+    }
+
+    void Block::onTick(const ivec3& pos)
     {
     }
 
