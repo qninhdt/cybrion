@@ -15,6 +15,7 @@ namespace cybrion
         WATER,
         FENCE,
         PLANT,
+        TABLECLOTH,
         ENUM_SIZE
     };
 

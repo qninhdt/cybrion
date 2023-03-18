@@ -3,43 +3,6 @@
 
 namespace cybrion
 {
-    /*Block& FenceBlock::getPlacedBlock(const ivec3& pos, BlockFace face)
-    {
-        return *this;
-    }
-
-    void FenceBlock::onPlaced(const ivec3& pos)
-    {
-        updateNeighborFences(pos);
-    }
-
-    void FenceBlock::onBroken(const ivec3& pos)
-    {
-        updateNeighborFences(pos);
-    }
-
-    void FenceBlock::updateNeighborFences(const ivec3& pos)
-    {
-        array<vec2, 5> dirs = { {
-            { 0, +1 },
-            { 0, -1 },
-            { +1, 0 },
-            { -1, 0 },
-            { 0, 0 }
-        } };
-
-        auto& world = Game::Get().getWorld();
-
-        for (auto& dir : dirs)
-        {
-            ivec3 npos = { pos.x + dir.x, pos.y, pos.z + dir.y };
-            Block& neighbor = world.getBlock(npos);
-
-            if (neighbor.getType() == BlockType::FENCE)
-                world.setBlockOnly(npos, getFenceAt(world, npos));
-        }
-    }*/
-
     void FenceBlock::onTick(const ivec3& pos)
     {
         auto& world = Game::Get().getWorld();

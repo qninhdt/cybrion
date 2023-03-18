@@ -34,6 +34,8 @@ namespace cybrion
 
         PlayerInput& getInput();
 
+        BlockFace getBlockDirection(bool horizontal = false) const;
+
     private:
         ref<Entity> m_entity;
 

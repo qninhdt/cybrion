@@ -13,6 +13,7 @@
 
 #include "world/block/building/brick_block.hpp"
 #include "world/block/building/fence_block.hpp"
+#include "world/block/building/tablecloth_block.hpp"
 
 namespace cybrion
 {
@@ -30,7 +31,8 @@ namespace cybrion
         LeafBlock,
         WaterBlock,
         FenceBlock,
-        PlantBlock
+        PlantBlock,
+        TableclothBlock
     >
     {
     public:
@@ -59,6 +61,8 @@ namespace cybrion
         static PlantBlock& OXEYE_DAISY;
         static PlantBlock& CORNFLOWER;
         static PlantBlock& LILY_OF_THE_VALLEY;
+
+        static TableclothBlock& TABLECLOTH;
 
         static Blocks& Get();
     private:

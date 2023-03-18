@@ -89,6 +89,30 @@ namespace cybrion
             
             for (u32 i = 0; i < 6; ++i)
                 m_toWorldFace[m_toLocalFace[i]] = i;
+
+            if (m_shape == BlockShape::CUSTOM && 
+                (m_rotationX != BlockRotation::R0 || m_rotationY != BlockRotation::R0 || m_rotationZ != BlockRotation::R0))
+            {
+                mat4 rotateMat = glm::eulerAngleXYZ(
+                    u32(m_rotationX) * pi / 2,
+                    u32(m_rotationY) * pi / 2,
+                    u32(m_rotationZ) * pi / 2
+                );
+
+                for (auto& mesh : m_meshes)
+                {
+                    auto temp = mesh;
+                    mesh = std::make_shared<BlockMesh>();
+                    mesh->vertices = temp->vertices;
+
+                    for (auto& vert : mesh->vertices)
+                    {
+                        vec4 pos{ vert.pos.x, vert.pos.y, vert.pos.z, 1 };
+                        pos = rotateMat * pos;
+                        vert.pos = { pos.x, pos.y, pos.z };
+                    }
+                }
+            }
         }
 
         void cycleFace(u32& f1, u32& f2, u32& f3, u32& f4, u32 n)

@@ -40,7 +40,10 @@ namespace cybrion
 
                 static int i = 0;
                 if (world.getBlock(placedPos) == Blocks::AIR)
-                    world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++%13)));
+                {
+                    //world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++ % 13)));
+                    world.placeBlock(placedPos, Blocks::TABLECLOTH);
+                }
 
                 m_blockInteractStopwatch.reset();
             }
@@ -111,5 +114,36 @@ namespace cybrion
     PlayerInput& Player::getInput()
     {
         return m_input;
+    }
+
+    BlockFace Player::getBlockDirection(bool horizontal) const
+    {
+        array<tuple<vec3, BlockFace>, 6> dirs = { {
+            { { +1, 0, 0 }, BlockFace::EAST   },
+            { { 0, 0, +1 }, BlockFace::SOUTH  },
+            { { -1, 0, 0 }, BlockFace::WEST   },
+            { { 0, 0, -1 }, BlockFace::NORTH  },
+            { { 0, +1, 0 }, BlockFace::TOP    },
+            { { 0, -1, 0 }, BlockFace::BOTTOM },
+        } };
+
+        BlockFace result = BlockFace::EAST;
+        f32 max = 0;
+        vec3 dir = getEntity()->getDir();
+
+        for (auto& [axis, face] : dirs)
+        {
+            if (horizontal && (face == BlockFace::TOP || face == BlockFace::BOTTOM))
+                continue;
+
+            f32 cos = glm::dot(axis, dir) / glm::length(dir);
+            if (cos > max)
+            {
+                result = face;
+                max = cos;
+            }
+        }
+
+        return result;
     }
 }

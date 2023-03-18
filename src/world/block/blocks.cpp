@@ -45,6 +45,8 @@ namespace cybrion
     PlantBlock& Blocks::CORNFLOWER = PLANT.set<"type">(PlantType::CORNFLOWER);
     PlantBlock& Blocks::LILY_OF_THE_VALLEY = PLANT.set<"type">(PlantType::LILY_OF_THE_VALLEY);
 
+    TableclothBlock& Blocks::TABLECLOTH = s_blocks.get<TableclothBlock>();
+
     Blocks& Blocks::Get()
     {
         return s_blocks;
