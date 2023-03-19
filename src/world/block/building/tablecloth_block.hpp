@@ -12,6 +12,6 @@ namespace cybrion
     {
     public:
 
-        void onPlaced(const ivec3& pos);
+        Block& getPlacedBlock(const ivec3& pos);
     };
 }

@@ -63,7 +63,7 @@ namespace cybrion
 
         virtual string toString() const = 0;
 
-        virtual Block& getPlacedBlock(const ivec3& pos, BlockFace face);
+        virtual Block& getPlacedBlock(const ivec3& pos);
         virtual bool beforePlace(const ivec3& pos);
         virtual void onPlaced(const ivec3& pos);
         virtual void onBroken(const ivec3& pos);
@@ -90,15 +90,16 @@ namespace cybrion
             for (u32 i = 0; i < 6; ++i)
                 m_toWorldFace[m_toLocalFace[i]] = i;
 
-            if (m_shape == BlockShape::CUSTOM && 
-                (m_rotationX != BlockRotation::R0 || m_rotationY != BlockRotation::R0 || m_rotationZ != BlockRotation::R0))
-            {
-                mat4 rotateMat = glm::eulerAngleXYZ(
-                    u32(m_rotationX) * pi / 2,
-                    u32(m_rotationY) * pi / 2,
-                    u32(m_rotationZ) * pi / 2
-                );
+            mat4 rotateMat = glm::eulerAngleXYZ(
+                u32(m_rotationX) * pi / 2,
+                u32(m_rotationY) * pi / 2,
+                u32(m_rotationZ) * pi / 2
+            );
 
+            m_bound.rotate({ (u32)m_rotationX, (u32)m_rotationY, (u32)m_rotationZ });
+
+            if (m_shape == BlockShape::CUSTOM)
+            {
                 for (auto& mesh : m_meshes)
                 {
                     auto temp = mesh;
@@ -106,11 +107,7 @@ namespace cybrion
                     mesh->vertices = temp->vertices;
 
                     for (auto& vert : mesh->vertices)
-                    {
-                        vec4 pos{ vert.pos.x, vert.pos.y, vert.pos.z, 1 };
-                        pos = rotateMat * pos;
-                        vert.pos = { pos.x, pos.y, pos.z };
-                    }
+                        vert.pos = rotateMat * vec4(vert.pos, 1);
                 }
             }
         }

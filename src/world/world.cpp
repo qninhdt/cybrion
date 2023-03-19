@@ -195,7 +195,7 @@ namespace cybrion
         if (!block.beforePlace(pos))
             return { nullptr, {0, 0, 0}, Blocks::AIR, Blocks::AIR };
 
-        auto result = setBlock(pos, block);
+        auto result = setBlock(pos, block.getPlacedBlock(pos));
 
         if (result.chunk->m_hasStructure)
         {

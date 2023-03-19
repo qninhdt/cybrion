@@ -3,17 +3,13 @@
 
 namespace cybrion
 {
-    void TableclothBlock::onPlaced(const ivec3& pos)
+    Block& TableclothBlock::getPlacedBlock(const ivec3& pos)
     {
-        auto& player = Game::Get().getPlayer();
-        BlockFace face = player.getBlockDirection(true);
+        BlockFace face = Game::Get().getPlayer().getBlockDirection(true);
 
-        auto block = this;
         if (face == BlockFace::EAST || face == BlockFace::WEST)
-            block = &block->set<"dir">(1);
+            return set<"dir">(1);
         else
-            block = &block->set<"dir">(0);
-
-        Game::Get().getWorld().setBlock(pos, *block);
+            return set<"dir">(0);
     }
 }

@@ -32,6 +32,21 @@ namespace cybrion
         return m_size;
     }
 
+    void AABB::rotate(const ivec3& rot)
+    {
+        mat4 rotateMat = glm::eulerAngleXYZ(
+            u32(rot.x) * pi / 2,
+            u32(rot.y) * pi / 2,
+            u32(rot.z) * pi / 2
+        );
+
+        m_pos = rotateMat * vec4(m_pos, 1);
+        
+        if (rot.x % 2 != 0) std::swap(m_size.y, m_size.z);
+        if (rot.y % 2 != 0) std::swap(m_size.z, m_size.x);
+        if (rot.z % 2 != 0) std::swap(m_size.x, m_size.y);
+    }
+
     AABB AABB::mergeAABB(const AABB& a, const AABB& b)
     {
         vec3 aMin = a.getMin();

@@ -24,20 +24,7 @@ namespace cybrion
     >
     {
     public:
-        Block& getPlacedBlock(const ivec3& pos, BlockFace face)
-        {
-            switch (face)
-            {
-            case cybrion::BlockFace::WEST:
-            case cybrion::BlockFace::EAST:
-                return set<"axis">(LogAxis::X);
-            case cybrion::BlockFace::TOP:
-            case cybrion::BlockFace::BOTTOM:
-                return set<"axis">(LogAxis::Y);
-            default:
-                return set<"axis">(LogAxis::Z);
-            }
-        }
+        Block& getPlacedBlock(const ivec3& pos);
     };
          
 }

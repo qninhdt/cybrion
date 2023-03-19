@@ -1,4 +1,5 @@
 #include "world/block/block.hpp"
+#include "game.hpp"
 
 namespace cybrion
 {
@@ -109,7 +110,7 @@ namespace cybrion
         return m_id == other.m_id;
     }
 
-    Block& Block::getPlacedBlock(const ivec3& pos, BlockFace face)
+    Block& Block::getPlacedBlock(const ivec3& pos)
     {
         return *this;
     }
@@ -121,6 +122,7 @@ namespace cybrion
 
     void Block::onPlaced(const ivec3& pos)
     {
+        Game::Get().getWorld().setBlock(pos, *this);
     }
 
     void Block::onBroken(const ivec3& pos)
