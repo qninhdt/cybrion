@@ -1,5 +1,6 @@
 "[]":
   bound: [0, 0, 0, 0.5, 1, 0.5]
+  collision: [0, 0, 0, 0.5, 1, 0.5]
 
 "[face=north]":
   rotate_y: 0

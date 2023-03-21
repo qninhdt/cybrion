@@ -47,6 +47,7 @@ namespace cybrion
         BlockRotation getRotationZ() const;
         AABB getBound() const;
         vector<ref<BlockMesh>>& getMeshes();
+        vector<AABB>& getCollisionBounds();
         u32 getModelTexture(u32 index) const;
 
         template<typename B>
@@ -142,6 +143,7 @@ namespace cybrion
         vector<u32> m_modelTextures;
 
         AABB m_bound;
+        vector<AABB> m_collisionBounds;
 
         union
         {

@@ -203,6 +203,22 @@ namespace cybrion
         return model;
     }
 
+    AABB getAABBFromYAMLNode(const YAML::Node& node)
+    {
+        return {
+            {
+                node[0].as<f32>(),
+                node[1].as<f32>(),
+                node[2].as<f32>()
+            },
+            {
+                node[3].as<f32>(),
+                node[4].as<f32>(),
+                node[5].as<f32>()
+            },
+        };
+    }
+
     bool BlockLoader::loadConfigFile(const string& path)
     {
         YAML::Node config = YAML::LoadFile(path);
@@ -276,21 +292,21 @@ namespace cybrion
                                 PUSH_BACK(m_meshes, getMesh(it1.as<string>()));
                         }
 
+                        if (key == "collision")
+                        {
+                            vector<AABB> collisionBounds;
+
+                            if (it0.second[0].IsSequence())
+                                for (auto it1 : it0.second)
+                                    collisionBounds.push_back(getAABBFromYAMLNode(it1));
+                            else
+                                collisionBounds.push_back(getAABBFromYAMLNode(it0.second));
+                            OVERRIDE(m_collisionBounds, collisionBounds);
+                        }
+
                         if (key == "bound")
                         {
-                            AABB bound{
-                                {
-                                    it0.second[0].as<f32>(),
-                                    it0.second[1].as<f32>(),
-                                    it0.second[2].as<f32>()
-                                },
-                                {
-                                    it0.second[3].as<f32>(),
-                                    it0.second[4].as<f32>(),
-                                    it0.second[5].as<f32>()
-                                },
-                            };
-                            OVERRIDE(m_bound, bound);
+                            OVERRIDE(m_bound, getAABBFromYAMLNode(it0.second));
                         }
                     }
                     else
@@ -304,6 +320,15 @@ namespace cybrion
                         {
                             OVERRIDE(m_shape, BlockShape::CUSTOM);
                             PUSH_BACK(m_meshes, getMesh(value));
+                        }
+
+                        if (key == "collision")
+                        {
+                            if (it0.second.IsNull())
+                            {
+                                vector<AABB> emptyCollisionBounds;
+                                OVERRIDE(m_collisionBounds, emptyCollisionBounds);
+                            }
                         }
 
                         if (key == "model_tex")

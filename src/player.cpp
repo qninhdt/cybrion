@@ -25,7 +25,7 @@ namespace cybrion
         static int x = 0;
         // controller
         if (m_input.isMoving)
-            m_entity->setVelocity(m_input.moveDir * (m_input.run ? 20.0f : 2.0f));
+            m_entity->setVelocity(m_input.moveDir * (m_input.run ? 20.0f : 0.8f));
         else
             m_entity->setVelocity({ 0, 0, 0 });
         
@@ -42,7 +42,7 @@ namespace cybrion
                 if (world.getBlock(placedPos) == Blocks::AIR)
                 {
                     //world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++ % 13)));
-                    //world.placeBlock(placedPos, Blocks::WHITE_KNIGHT);
+                    //world.placeBlock(placedPos, Blocks::OAK_FENCE);
                     world.placeBlock(placedPos, Blocks::BLACK_KNIGHT.set<"type">((ChessType)(i++ % 6)));
                 }
 

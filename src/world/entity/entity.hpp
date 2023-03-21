@@ -23,6 +23,7 @@ namespace cybrion
         vec3 getVelocity() const;
         void setVelocity(const vec3& velocity);
 
+        AABB getLocalBB() const;
         AABB getBB() const;
         AABB getOldBB() const;
 

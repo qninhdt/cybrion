@@ -1,5 +1,6 @@
 "[]":
   display_name: Water
   all: water
+  collision: null
   display: liquid
   sound: water

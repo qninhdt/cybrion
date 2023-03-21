@@ -242,13 +242,19 @@ namespace cybrion
                         for (i32 z = min.z; z <= max.z; ++z)
                         {
                             Block* block = tryGetBlock({ x, y, z });
-                            if (!block || block->getType() == BlockType::AIR || block->getType() == BlockType::WATER) continue;
 
-                            auto current = AABB::sweptAABB({ ppos, size },
-                                { vec3(x + 0.5f,y + 0.5f,z + 0.5f), {0.8,0.8,0.8} }, v);
+                            if (!block) continue;
 
-                            if (current.delta < result.delta)
-                                result = current;
+                            vec3 offset = { x + 0.5f, y + 0.5f, z + 0.5f };
+
+                            for (AABB& cbound : block->getCollisionBounds())
+                            {
+                                auto current = AABB::sweptAABB({ ppos, size },
+                                    { cbound.getPos() + offset, cbound.getSize()}, v);
+
+                                if (current.delta < result.delta)
+                                    result = current;
+                            }
                         }
 
                 pos = ppos + (v * result.delta) + 0.001f * result.normal;
@@ -266,7 +272,7 @@ namespace cybrion
             }
 
             /// FIXME: should be setAABBposition()
-            entity->setPos(pos);
+            entity->setPos(pos - entity->getLocalBB().getPos());
         }
     }
 }

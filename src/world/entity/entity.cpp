@@ -10,7 +10,7 @@ namespace cybrion
     {
     }
 
-    Entity::Entity(const vec3& pos): m_velocity(0), m_id(s_idN++)
+    Entity::Entity(const vec3& pos): m_velocity(0), m_id(s_idN++), m_localBB({ 0, -0.8, 0 }, { 0.4, 1.8, 0.4 })
     {
         m_pos = pos;
         m_posO = m_pos;
@@ -54,6 +54,11 @@ namespace cybrion
     void Entity::setVelocity(const vec3& velocity)
     {
         m_velocity = velocity;
+    }
+
+    AABB Entity::getLocalBB() const
+    {
+        return m_localBB;
     }
 
     AABB Entity::getBB() const

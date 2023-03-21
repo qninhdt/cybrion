@@ -33,6 +33,7 @@ namespace cybrion
         m_toWorldFace{ 0 },
         m_id(0)
     {
+        m_collisionBounds.push_back({ { 0,0,0 }, { 1,1,1 } });
     }
 
     u32 Block::getId() const
@@ -98,6 +99,11 @@ namespace cybrion
     vector<ref<BlockMesh>>& Block::getMeshes()
     {
         return m_meshes;
+    }
+
+    vector<AABB>& Block::getCollisionBounds()
+    {
+        return m_collisionBounds;
     }
 
     u32 Block::getModelTexture(u32 index) const
