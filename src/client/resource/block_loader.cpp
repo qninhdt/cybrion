@@ -62,7 +62,7 @@ namespace cybrion
 
     void BlockLoader::loadTextures()
     {
-        constexpr i32 BLOCK_TEXTURE_SIZE = 16;
+        constexpr i32 BLOCK_TEXTURE_SIZE = 256;
         string folderPath = Application::Get().getResourcePath("textures/blocks/");
 
         // count number of block textures
@@ -89,18 +89,26 @@ namespace cybrion
             i32 width, height, nchannels;
             u8* data = stbi_load(path.c_str(), &width, &height, &nchannels, STBI_rgb_alpha);
 
-            if (width != BLOCK_TEXTURE_SIZE || height != BLOCK_TEXTURE_SIZE)
+            if ((width & (width - 1)) || (height & (height - 1)))
             {
                 CYBRION_CLIENT_ERROR("Incorrect texture size");
                 continue;
             }
-
+            
             u32 id = name == "no_texture" ? 0 : m_textureIdMap.size() + (m_textureIdMap.count("no_texture") == 0);
             m_textureIdMap[name] = id;
 
-            m_textureArray.setSubImage(id, data);
+            u8* resizedData = (u8*)malloc(BLOCK_TEXTURE_SIZE * BLOCK_TEXTURE_SIZE * nchannels);
+
+            stbir_resize_uint8_generic(data, width, height, 0,
+                resizedData, BLOCK_TEXTURE_SIZE, BLOCK_TEXTURE_SIZE, 0,
+                nchannels, STBIR_FLAG_ALPHA_USES_COLORSPACE, -1, STBIR_EDGE_ZERO,
+                STBIR_FILTER_BOX, STBIR_COLORSPACE_LINEAR, NULL);
+
+            m_textureArray.setSubImage(id, resizedData);
 
             stbi_image_free(data);
+            free(resizedData);
         }
     }
 

@@ -35,6 +35,7 @@
 #include <yaml-cpp/yaml.h>
 #include <entt/entt.hpp>
 #include <stb_image.h>
+#include <stb_image_resize.h>
 #include <BS_thread_pool.hpp>
 #include <concurrentqueue/concurrentqueue.h>
 #include <FastNoiseLite.h>
