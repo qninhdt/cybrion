@@ -7,7 +7,7 @@ namespace cybrion
     class TableclothBlock : public TBlock<
         TableclothBlock,
         BlockType::TABLECLOTH,
-        block::state<u32, "dir", 2>
+        block::state<u32, "face", 2>
     >
     {
     public:

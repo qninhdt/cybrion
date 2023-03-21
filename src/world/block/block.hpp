@@ -59,6 +59,7 @@ namespace cybrion
 
         static BlockFace GetFaceFromDirection(const ivec3& dir);
         static BlockFace GetOppositeFace(const BlockFace& face);
+        static BlockHorizontalFace GetOppositeHorizontalFace(const BlockHorizontalFace& face);
         static ivec3 GetDirectionFromFace(const BlockFace& face);
 
         virtual string toString() const = 0;

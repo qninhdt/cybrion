@@ -42,7 +42,8 @@ namespace cybrion
                 if (world.getBlock(placedPos) == Blocks::AIR)
                 {
                     //world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++ % 13)));
-                    world.placeBlock(placedPos, Blocks::TABLECLOTH);
+                    //world.placeBlock(placedPos, Blocks::WHITE_KNIGHT);
+                    world.placeBlock(placedPos, Blocks::BLACK_KNIGHT.set<"type">((ChessType)(i++ % 6)));
                 }
 
                 m_blockInteractStopwatch.reset();
@@ -116,7 +117,7 @@ namespace cybrion
         return m_input;
     }
 
-    BlockFace Player::getBlockDirection(bool horizontal) const
+    BlockFace Player::getBlockFace() const
     {
         array<tuple<vec3, BlockFace>, 6> dirs = { {
             { { +1, 0, 0 }, BlockFace::EAST   },
@@ -133,9 +134,32 @@ namespace cybrion
 
         for (auto& [axis, face] : dirs)
         {
-            if (horizontal && (face == BlockFace::TOP || face == BlockFace::BOTTOM))
-                continue;
+            f32 cos = glm::dot(axis, dir) / glm::length(dir);
+            if (cos > max)
+            {
+                result = face;
+                max = cos;
+            }
+        }
 
+        return result;
+    }
+
+    BlockHorizontalFace Player::getBlockHorizontalFace() const
+    {
+        array<tuple<vec3, BlockHorizontalFace>, 6> dirs = { {
+            { { +1, 0, 0 }, BlockHorizontalFace::EAST   },
+            { { 0, 0, +1 }, BlockHorizontalFace::SOUTH  },
+            { { -1, 0, 0 }, BlockHorizontalFace::WEST   },
+            { { 0, 0, -1 }, BlockHorizontalFace::NORTH  }
+        } };
+
+        BlockHorizontalFace result = BlockHorizontalFace::EAST;
+        f32 max = 0;
+        vec3 dir = getEntity()->getDir();
+
+        for (auto& [axis, face] : dirs)
+        {
             f32 cos = glm::dot(axis, dir) / glm::length(dir);
             if (cos > max)
             {

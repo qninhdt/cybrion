@@ -13,7 +13,9 @@
 
 #include "world/block/building/brick_block.hpp"
 #include "world/block/building/fence_block.hpp"
-#include "world/block/building/tablecloth_block.hpp"
+
+#include "world/block/decoration/tablecloth_block.hpp"
+#include "world/block/decoration/chess_block.hpp"
 
 namespace cybrion
 {
@@ -32,7 +34,8 @@ namespace cybrion
         WaterBlock,
         FenceBlock,
         PlantBlock,
-        TableclothBlock
+        TableclothBlock,
+        ChessBlock
     >
     {
     public:
@@ -43,11 +46,9 @@ namespace cybrion
         static LogBlock& OAK_LOG;
         static RockBlock& COBBLESTONE;
         static RockBlock& STONE;
-        static BrickBlock& STONE_BRICK;
         static SandBlock& SAND;
         static LeafBlock& OAK_LEAF;
         static WaterBlock& WATER;
-        static FenceBlock& OAK_FENCE;
         static PlantBlock& GRASS;
         static PlantBlock& FERN;
         static PlantBlock& DANDELION;
@@ -62,7 +63,22 @@ namespace cybrion
         static PlantBlock& CORNFLOWER;
         static PlantBlock& LILY_OF_THE_VALLEY;
 
+        static BrickBlock& STONE_BRICK;
+        static FenceBlock& OAK_FENCE;
+
         static TableclothBlock& TABLECLOTH;
+        static ChessBlock& WHITE_KING;
+        static ChessBlock& WHITE_QUEEN;
+        static ChessBlock& WHITE_ROOK;
+        static ChessBlock& WHITE_BISHOP;
+        static ChessBlock& WHITE_KNIGHT;
+        static ChessBlock& WHITE_PAWN;
+        static ChessBlock& BLACK_KING;
+        static ChessBlock& BLACK_QUEEN;
+        static ChessBlock& BLACK_ROOK;
+        static ChessBlock& BLACK_BISHOP;
+        static ChessBlock& BLACK_KNIGHT;
+        static ChessBlock& BLACK_PAWN;
 
         static Blocks& Get();
     private:
@@ -73,6 +89,7 @@ namespace cybrion
         static LeafBlock& LEAF;
         static FenceBlock& FENCE;
         static PlantBlock& PLANT;
+        static ChessBlock& CHESS;
 
         static Blocks s_blocks;
     };

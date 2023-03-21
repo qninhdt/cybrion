@@ -153,6 +153,11 @@ namespace cybrion
         return (BlockFace)(((i32)face + 3) % 6);
     }
 
+    BlockHorizontalFace Block::GetOppositeHorizontalFace(const BlockHorizontalFace& face)
+    {
+        return (BlockHorizontalFace)(((i32)face + 2) % 4);
+    }
+
     ivec3 Block::GetDirectionFromFace(const BlockFace& face)
     {
         switch (face)

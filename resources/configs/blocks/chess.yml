@@ -1,0 +1,53 @@
+"[]":
+  bound: [0, 0, 0, 0.5, 1, 0.5]
+
+"[face=north]":
+  rotate_y: 0
+"[face=west]":
+  rotate_y: 90
+"[face=south]":
+  rotate_y: 180
+"[face=east]":
+  rotate_y: 270
+
+"[type=king]":
+  model: king
+"[type=king,color=white]":
+  model_tex: white_king
+"[type=king,color=black]":
+  model_tex: black_king
+
+"[type=queen]":
+  model: queen
+"[type=queen,color=white]":
+  model_tex: white_queen
+"[type=queen,color=black]":
+  model_tex: black_queen
+
+"[type=rook]":
+  model: rook
+"[type=rook,color=white]":
+  model_tex: white_rook
+"[type=rook,color=black]":
+  model_tex: black_rook
+
+"[type=bishop]":
+  model: bishop
+"[type=bishop,color=white]":
+  model_tex: white_bishop
+"[type=bishop,color=black]":
+  model_tex: black_bishop
+
+"[type=knight]":
+  model: knight
+"[type=knight,color=white]":
+  model_tex: white_knight
+"[type=knight,color=black]":
+  model_tex: black_knight
+
+"[type=pawn]":
+  model: pawn
+"[type=pawn,color=white]":
+  model_tex: white_pawn
+"[type=pawn,color=black]":
+  model_tex: black_pawn

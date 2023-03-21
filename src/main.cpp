@@ -17,6 +17,7 @@ int main()
     RegisterEnum(BlockType::FENCE, "fence");
     RegisterEnum(BlockType::PLANT, "plant");
     RegisterEnum(BlockType::TABLECLOTH, "tablecloth");
+    RegisterEnum(BlockType::CHESS, "chess");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");
@@ -29,13 +30,24 @@ int main()
     RegisterEnum(RockType::GRAVEL, "gravel");
     RegisterEnum(RockType::COBBLESTONE, "cobblestone");
 
+    // chess type
+    RegisterEnum(ChessType::KING   , "king");
+    RegisterEnum(ChessType::QUEEN  , "queen");
+    RegisterEnum(ChessType::BISHOP , "bishop");
+    RegisterEnum(ChessType::ROOK   , "rook");
+    RegisterEnum(ChessType::KNIGHT , "knight");
+    RegisterEnum(ChessType::PAWN   , "pawn");
+
+    // chess color
+    RegisterEnum(ChessColor::WHITE, "white");
+    RegisterEnum(ChessColor::BLACK, "black");
+
     // brick type
     RegisterEnum(BrickType::STONE, "stone");
 
     // block shape
     RegisterEnum(BlockShape::CUBE   , "cube");
     RegisterEnum(BlockShape::CUSTOM , "custom");
-    RegisterEnum(BlockShape::X      , "cube");
 
     // block display
     RegisterEnum(BlockDisplay::OPAQUE, "opaque");
@@ -57,6 +69,11 @@ int main()
     RegisterEnum(BlockFace::WEST   , "west");
     RegisterEnum(BlockFace::BOTTOM , "bottom");
     RegisterEnum(BlockFace::NORTH  , "north");
+
+    RegisterEnum(BlockHorizontalFace::EAST, "east");
+    RegisterEnum(BlockHorizontalFace::SOUTH, "south");
+    RegisterEnum(BlockHorizontalFace::WEST, "west");
+    RegisterEnum(BlockHorizontalFace::NORTH, "north");
 
     // wood type
     RegisterEnum(WoodType::OAK, "oak");

@@ -16,13 +16,13 @@ namespace cybrion
         FENCE,
         PLANT,
         TABLECLOTH,
+        CHESS,
         ENUM_SIZE
     };
 
     enum class BlockShape
     {
         CUBE,
-        X,
         CUSTOM
     };
 
@@ -51,5 +51,13 @@ namespace cybrion
         R90,
         R180,
         R270
+    };
+
+    enum class BlockHorizontalFace
+    {
+        EAST,
+        SOUTH,
+        WEST,
+        NORTH
     };
 }
