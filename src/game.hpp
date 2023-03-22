@@ -24,6 +24,7 @@ namespace cybrion
         virtual void onChunkChanged(const ref<Chunk>& chunk) = 0;
         virtual void onBreakBlock(const BlockModifyResult& result) = 0;
         virtual void onPlaceBlock(const BlockModifyResult& result) = 0;
+        virtual void onPlaySound(const string& name) = 0;
 
         static Game& Get();
 

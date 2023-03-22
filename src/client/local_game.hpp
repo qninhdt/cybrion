@@ -33,6 +33,7 @@ namespace cybrion
         void onChunkChanged(const ref<Chunk>& result) override;
         void onBreakBlock(const BlockModifyResult& result) override;
         void onPlaceBlock(const BlockModifyResult& result) override;
+        void onPlaySound(const string& name) override;
 
         void onKeyPressed(KeyCode key, bool isRepeated);
         void onKeyReleased(KeyCode key);

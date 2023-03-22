@@ -26,6 +26,8 @@ namespace cybrion
 
         void tick();
 
+        void playSound(const string& name);
+
         Block& getBlock(const ivec3& pos);
         Block* tryGetBlock(const ivec3& pos);
         BlockModifyResult setBlock(const ivec3& pos, Block& block);

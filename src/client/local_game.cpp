@@ -119,6 +119,11 @@ namespace cybrion
         Application::Get().playSound("blocks/" + result.block.getSound());
     }
 
+    void LocalGame::onPlaySound(const string& name)
+    {
+        Application::Get().playSound(name);
+    }
+
     void LocalGame::onBreakBlock(const BlockModifyResult& result)
     {
         Application::Get().playSound("blocks/" + result.oldBlock.getSound());

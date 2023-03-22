@@ -18,6 +18,7 @@ namespace cybrion
     {
     public:
         void onTick(const ivec3& pos);
+        bool isValidNeighbor(Block* block);
         FenceBlock& getFenceAt(World& world, const ivec3& pos);
     };
 }

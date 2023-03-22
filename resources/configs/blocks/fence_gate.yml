@@ -1,5 +1,6 @@
 "[]":
   interactive: True
+  sound: wood
   bound: [0, 0.15625, 0, 1, 0.6875, 0.125]
 
 "[face=north]":

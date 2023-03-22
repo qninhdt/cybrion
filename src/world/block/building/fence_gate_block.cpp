@@ -13,6 +13,8 @@ namespace cybrion
 
     void FenceGateBlock::onInteract(const ivec3& pos)
     {
-        Game::Get().getWorld().updateBlock(pos, set<"open">(!get<"open">()));
+        auto& world = Game::Get().getWorld();
+        world.updateBlock(pos, set<"open">(!get<"open">()));
+        world.playSound("blocks/wood");
     }
 }

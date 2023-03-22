@@ -44,7 +44,11 @@ namespace cybrion
                     if (world.getBlock(placedPos) == Blocks::AIR)
                     {
                         //world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++ % 13)));
-                        world.placeBlock(placedPos, Blocks::OAK_FENCE);
+                        i++;
+                        if (i%3==0)
+                            world.placeBlock(placedPos, Blocks::OAK_FENCE_GATE);
+                        else
+                            world.placeBlock(placedPos, Blocks::OAK_FENCE);
                         //world.placeBlock(placedPos, Blocks::BLACK_KNIGHT.set<"type">((ChessType)(i++ % 6)));
                     }
                 }

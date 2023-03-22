@@ -146,6 +146,11 @@ namespace cybrion
         }
     }
 
+    void World::playSound(const string& name)
+    {
+        Game::Get().onPlaySound(name);
+    }
+
     Block& World::getBlock(const ivec3& pos)
     {
         Block* block = tryGetBlock(pos);

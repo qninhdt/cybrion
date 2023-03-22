@@ -202,7 +202,7 @@ namespace cybrion
         template <typename... B>
         friend class detail::BaseBlocks;
 
-        static constexpr BlockType BlockType = type;
+        static constexpr BlockType Type = type;
 
         bool checkQuery(const umap<string, string>& query) const override
         {
@@ -240,7 +240,7 @@ namespace cybrion
             template <typename B>
             B& get()
             {
-                return (B&)getBlock(B::BlockType);
+                return (B&)getBlock(B::Type);
             }
 
             Block& getBlock(BlockType type)
@@ -285,16 +285,16 @@ namespace cybrion
             void registerImpl(u32 index)
             {
                 auto& self = (detail::block_registry<T>&) * this;
-                BlockType type = T::BlockType;
+                BlockType type = T::Type;
 
                 T block;
                 u32 idx = 0;
                 T::each_possible_values(block, [&] {
                     self.blocks[idx] = block;
-                self.blocks[idx].m_id = idx + index;
-                m_idToBlock[idx + index] = &self.blocks[idx];
-                idx += 1;
-                    });
+                    self.blocks[idx].m_id = idx + index;
+                    m_idToBlock[idx + index] = &self.blocks[idx];
+                    idx += 1;
+                });
 
                 m_typeToRange[u32(type)] = { index, index + idx };
 
