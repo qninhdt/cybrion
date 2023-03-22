@@ -25,7 +25,7 @@ namespace cybrion
         static int x = 0;
         // controller
         if (m_input.isMoving)
-            m_entity->setVelocity(m_input.moveDir * (m_input.run ? 20.0f : 0.8f));
+            m_entity->setVelocity(m_input.moveDir * (m_input.ctrl ? 20.0f : (m_input.shift ? 0.5f : 1)));
         else
             m_entity->setVelocity({ 0, 0, 0 });
         
@@ -35,15 +35,22 @@ namespace cybrion
         {
             if (m_targetBlock && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
             {
-                ivec3 placedPos = m_targetPos + Block::GetDirectionFromFace(m_targetFace);
-                auto& world = Game::Get().getWorld();
-
-                static int i = 0;
-                if (world.getBlock(placedPos) == Blocks::AIR)
+                if (!m_targetBlock->isInteractive() || m_input.shift)
                 {
-                    //world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++ % 13)));
-                    //world.placeBlock(placedPos, Blocks::OAK_FENCE);
-                    world.placeBlock(placedPos, Blocks::BLACK_KNIGHT.set<"type">((ChessType)(i++ % 6)));
+                    ivec3 placedPos = m_targetPos + Block::GetDirectionFromFace(m_targetFace);
+                    auto& world = Game::Get().getWorld();
+
+                    static int i = 0;
+                    if (world.getBlock(placedPos) == Blocks::AIR)
+                    {
+                        //world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++ % 13)));
+                        world.placeBlock(placedPos, Blocks::OAK_FENCE);
+                        //world.placeBlock(placedPos, Blocks::BLACK_KNIGHT.set<"type">((ChessType)(i++ % 6)));
+                    }
+                }
+                else
+                {
+                    m_targetBlock->onInteract(m_targetPos);
                 }
 
                 m_blockInteractStopwatch.reset();

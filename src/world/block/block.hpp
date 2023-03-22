@@ -49,6 +49,7 @@ namespace cybrion
         vector<ref<BlockMesh>>& getMeshes();
         vector<AABB>& getCollisionBounds();
         u32 getModelTexture(u32 index) const;
+        bool isInteractive() const;
 
         template<typename B>
         B& as()
@@ -70,6 +71,7 @@ namespace cybrion
         virtual void onPlaced(const ivec3& pos);
         virtual void onBroken(const ivec3& pos);
         virtual void onTick(const ivec3& pos);
+        virtual void onInteract(const ivec3& pos);
 
         static array<tuple<ivec3, BlockFace>, 6> Directions;
 
@@ -99,6 +101,9 @@ namespace cybrion
             );
 
             m_bound.rotate({ (u32)m_rotationX, (u32)m_rotationY, (u32)m_rotationZ });
+
+            for (auto& bound : m_collisionBounds)
+                bound.rotate({ (u32)m_rotationX, (u32)m_rotationY, (u32)m_rotationZ });
 
             if (m_shape == BlockShape::CUSTOM)
             {
@@ -138,6 +143,8 @@ namespace cybrion
         BlockRotation m_rotationZ;
 
         string m_sound;
+
+        bool m_isInteractive;
 
         vector<ref<BlockMesh>> m_meshes;
         vector<u32> m_modelTextures;

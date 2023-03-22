@@ -21,7 +21,7 @@ namespace cybrion
         virtual void onChunkLoaded(const ref<Chunk>& chunk) = 0;
         virtual void onChunkUnloaded(const ref<Chunk>& chunk) = 0;
         virtual void onEntitySpawned(const ref<Entity>& entity) = 0;
-        virtual void onBlockChanged(const BlockModifyResult& result) = 0;
+        virtual void onChunkChanged(const ref<Chunk>& chunk) = 0;
         virtual void onBreakBlock(const BlockModifyResult& result) = 0;
         virtual void onPlaceBlock(const BlockModifyResult& result) = 0;
 

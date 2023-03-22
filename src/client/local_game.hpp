@@ -30,7 +30,7 @@ namespace cybrion
         void onChunkLoaded(const ref<Chunk>& chunk) override;
         void onChunkUnloaded(const ref<Chunk>& chunk) override;
         void onEntitySpawned(const ref<Entity>& entity) override;
-        void onBlockChanged(const BlockModifyResult& result) override;
+        void onChunkChanged(const ref<Chunk>& result) override;
         void onBreakBlock(const BlockModifyResult& result) override;
         void onPlaceBlock(const BlockModifyResult& result) override;
 

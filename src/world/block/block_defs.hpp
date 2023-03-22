@@ -14,6 +14,7 @@ namespace cybrion
         GLASS,
         WATER,
         FENCE,
+        FENCE_GATE,
         PLANT,
         TABLECLOTH,
         CHESS,

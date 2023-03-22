@@ -222,7 +222,7 @@ namespace cybrion
 
     void WorldRenderer::updateBlock(const BlockModifyResult& result)
     {
-        result.chunk->eachBlockAndNeighbors(Chunk::posToLocalPos(result.pos), [&](Block* block, ref<Chunk>& chunk, const ivec3& dir) 
+        /*result.chunk->eachBlockAndNeighbors(Chunk::posToLocalPos(result.pos), [&](Block* block, ref<Chunk>& chunk, const ivec3& dir) 
         {
             if (!block) return;
 
@@ -261,7 +261,18 @@ namespace cybrion
             }
 
             renderer->visibleBlocks.erase(localPos);
-       });
+       });*/
+    }
+
+    void WorldRenderer::updateChunk(const ref<Chunk>& chunk)
+    {
+        auto renderer = getChunkRenderer(chunk);
+
+        if (renderer == nullptr)
+            return;
+
+        if (renderer->m_chunk->hasStructure())
+            prepareRebuild(renderer);
     }
 
     void WorldRenderer::updateEntityRenderers(f32 delta)

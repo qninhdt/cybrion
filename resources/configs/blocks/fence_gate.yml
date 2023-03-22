@@ -1,0 +1,25 @@
+"[]":
+  interactive: True
+  bound: [0, 0.15625, 0, 1, 0.6875, 0.125]
+
+"[face=north]":
+  rotate_y: 0
+"[face=west]":
+  rotate_y: 90
+"[face=south]":
+  rotate_y: 180
+"[face=east]":
+  rotate_y: 270
+
+"[open=true]":
+  model: fence_gate_open
+  collision:
+    - [0.4375, 0.15625, 0.21875, 0.125, 0.6875, 0.5]
+    - [-0.4375, 0.15625, 0.21875, 0.125, 0.6875, 0.5]
+
+"[open=false]":
+  model: fence_gate
+  collision: [0, 0.15625, 0, 1, 0.6875, 0.125]
+
+"[type=oak]":
+  model_tex: oak_plank

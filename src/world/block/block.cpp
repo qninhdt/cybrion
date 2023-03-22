@@ -19,6 +19,7 @@ namespace cybrion
         m_displayName(""),
         m_bound({ 0, 0, 0 }, { 1, 1, 1 }),
         m_sound("dirt"),
+        m_isInteractive(false),
         m_display(BlockDisplay::OPAQUE),
         m_rotationX(BlockRotation::R0),
         m_rotationY(BlockRotation::R0),
@@ -111,6 +112,11 @@ namespace cybrion
         return m_modelTextures[index];
     }
 
+    bool Block::isInteractive() const
+    {
+        return m_isInteractive;
+    }
+
     bool Block::operator == (const Block& other) const
     {
         return m_id == other.m_id;
@@ -136,6 +142,10 @@ namespace cybrion
     }
 
     void Block::onTick(const ivec3& pos)
+    {
+    }
+
+    void Block::onInteract(const ivec3& pos)
     {
     }
 

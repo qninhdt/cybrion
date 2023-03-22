@@ -13,6 +13,7 @@
 
 #include "world/block/building/brick_block.hpp"
 #include "world/block/building/fence_block.hpp"
+#include "world/block/building/fence_gate_block.hpp"
 
 #include "world/block/decoration/tablecloth_block.hpp"
 #include "world/block/decoration/chess_block.hpp"
@@ -33,6 +34,7 @@ namespace cybrion
         LeafBlock,
         WaterBlock,
         FenceBlock,
+        FenceGateBlock,
         PlantBlock,
         TableclothBlock,
         ChessBlock
@@ -65,6 +67,7 @@ namespace cybrion
 
         static BrickBlock& STONE_BRICK;
         static FenceBlock& OAK_FENCE;
+        static FenceGateBlock& OAK_FENCE_GATE;
 
         static TableclothBlock& TABLECLOTH;
         static ChessBlock& WHITE_KING;
@@ -88,6 +91,7 @@ namespace cybrion
         static BrickBlock& BRICK;
         static LeafBlock& LEAF;
         static FenceBlock& FENCE;
+        static FenceGateBlock& FENCE_GATE;
         static PlantBlock& PLANT;
         static ChessBlock& CHESS;
 

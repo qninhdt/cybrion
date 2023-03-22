@@ -315,6 +315,8 @@ namespace cybrion
 
                         if (key == "display_name") OVERRIDE(m_displayName, value);
                         if (key == "display") OVERRIDE(m_display, StringToEnum<BlockDisplay>(value));
+
+                        if (key == "interactive") OVERRIDE(m_isInteractive, value == "True");
                         
                         if (key == "model")
                         {

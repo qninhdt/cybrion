@@ -8,6 +8,7 @@ namespace cybrion
         m_neighbors{nullptr},
         m_chunkPos(chunkPos),
         m_id(0),
+        m_dirty(true),
         m_status(ChunkStatus::NONE),
         m_ready(false),
         m_unloaded(false),
@@ -50,6 +51,7 @@ namespace cybrion
     void Chunk::setBlock(const ivec3& pos, Block& block)
     {
         CYBRION_ASSERT(0 <= pos.x && pos.x < CHUNK_SIZE && 0 <= pos.y && pos.y < CHUNK_SIZE && 0 <= pos.z && pos.z < CHUNK_SIZE, "Out of chunk size");
+        m_dirty = true;
         m_blocks.set(posToIndex(pos), block.getId());
     }
 
@@ -156,6 +158,11 @@ namespace cybrion
     bool Chunk::hasStructure() const
     {
         return m_hasStructure;
+    }
+
+    void Chunk::setDirty(bool dirty)
+    {
+        m_dirty = dirty;
     }
 
     Chunk::~Chunk()

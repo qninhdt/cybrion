@@ -30,7 +30,7 @@ namespace cybrion
         BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, { 1, 0, 0 });
         BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.005f, { 1, 1, 1 });
 
-        m_player.setEntity(m_world.spawnEntity({ 16, 100, 160 }));
+        m_player.setEntity(m_world.spawnEntity({ 16, 80, 160 }));
         m_camera.setTarget(m_player.getEntity());
     }
 
@@ -109,9 +109,9 @@ namespace cybrion
         m_worldRenderer.addEntity(entity);
     }
 
-    void LocalGame::onBlockChanged(const BlockModifyResult& result)
+    void LocalGame::onChunkChanged(const ref<Chunk>& chunk)
     {
-        m_worldRenderer.updateBlock(result);
+        m_worldRenderer.updateChunk(chunk);
     }
 
     void LocalGame::onPlaceBlock(const BlockModifyResult& result)

@@ -30,6 +30,9 @@ namespace cybrion
     FenceBlock& Blocks::FENCE     = s_blocks.get<FenceBlock>().set<"east">(0).set<"north">(0).set<"west">(0).set<"south">(0);
     FenceBlock& Blocks::OAK_FENCE = FENCE.set<"type">(WoodType::OAK);
 
+    FenceGateBlock& Blocks::FENCE_GATE = s_blocks.get<FenceGateBlock>().set<"open">(0);
+    FenceGateBlock& Blocks::OAK_FENCE_GATE = FENCE_GATE.set<"type">(WoodType::OAK);
+
     PlantBlock& Blocks::PLANT       = s_blocks.get<PlantBlock>();
     PlantBlock& Blocks::GRASS       = PLANT.set<"type">(PlantType::GRASS);
     PlantBlock& Blocks::FERN        = PLANT.set<"type">(PlantType::FERN);

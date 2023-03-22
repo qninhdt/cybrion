@@ -52,6 +52,8 @@ namespace cybrion
 
         bool hasStructure() const;
 
+        void setDirty(bool dirty);
+
         ~Chunk();
 
         static i32 posToIndex(const ivec3& pos);
@@ -71,6 +73,7 @@ namespace cybrion
         std::atomic<bool> m_ready;
         std::atomic<bool> m_unloaded;
         std::atomic<bool> m_hasStructure;
+        std::atomic<bool> m_dirty;
 
         BlockStorage m_blocks;
         Chunk3x3x3 m_neighbors;

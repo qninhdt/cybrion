@@ -33,6 +33,7 @@ namespace cybrion
 
         void prepareRebuild(const ref<ChunkRenderer>& renderer);
         void updateBlock(const BlockModifyResult& result);
+        void updateChunk(const ref<Chunk>& chunk);
 
         void updateEntityRenderers(f32 delta);
 

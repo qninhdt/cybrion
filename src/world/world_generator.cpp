@@ -239,13 +239,13 @@ namespace cybrion
         i32 h = (rand() % 3) + 2;
 
         for (i32 i = 0; i < h; ++i) {
-            world.setBlockOnly(p, wood); p.y += 1;
+            world.setBlock(p, wood); p.y += 1;
         }
 
         for (i32 i = -1; i <= 1; ++i)
             for (i32 j = -1; j <= 1; ++j)
                 if (!(i == 0 && j == 0) && (rand()%3) == 0)
-                    world.setBlockOnly(p + ivec3(i, -1, j), Blocks::OAK_LEAF);
+                    world.setBlock(p + ivec3(i, -1, j), Blocks::OAK_LEAF);
 
         world.setBlock(p, Blocks::OAK_LEAF);
 
@@ -258,7 +258,7 @@ namespace cybrion
         p.z += dz;
 
         for (i32 i = 0; i < h; ++i) {
-            world.setBlockOnly(p, wood); p.y += 1;
+            world.setBlock(p, wood); p.y += 1;
         }
 
         array<ivec3, 4> dirs = { {
@@ -273,7 +273,7 @@ namespace cybrion
             for (i32 j = -lh; j <= lh; ++j)
             {
                 if ((abs(i) - lh) + (abs(j) - lh) != 0)
-                    world.setBlockOnly(p + ivec3(i, 0, j), Blocks::OAK_LEAF);
+                    world.setBlock(p + ivec3(i, 0, j), Blocks::OAK_LEAF);
             }
         }
 
@@ -283,7 +283,7 @@ namespace cybrion
             for (i32 j = -lh; j <= lh; ++j)
             {
                 if ((abs(i) - lh) + (abs(j) - lh) != 0)
-                    world.setBlockOnly(p + ivec3(i, 0, j), Blocks::OAK_LEAF);
+                    world.setBlock(p + ivec3(i, 0, j), Blocks::OAK_LEAF);
             }
         }
     }
