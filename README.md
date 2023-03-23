@@ -20,6 +20,6 @@
 - [ ] Improve world generation
 - [ ] Inventory
 - [ ] Add sky
-- [ ] Save system
+- [x] Save system
 - [ ] Game gui
 - [ ] End
