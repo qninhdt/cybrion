@@ -76,15 +76,15 @@ namespace cybrion
         void fromJBT(const jbt::byte_array_t& data)
         {
             if (data.size)
-                std::memcpy(m_data, data.data, data.size);
+                std::memcpy(m_data, data.data.get(), data.size);
         }
 
         jbt::byte_array_t toJBT()
         {
             u32 size = TOTAL_INTS * sizeof(u32);
-            jbt::byte_array_t data{ new i8[size], size, false };
+            jbt::byte_array_t data{ std::make_shared<i8[]>(size), size, false};
 
-            std::memcpy(data.data, m_data, size);
+            std::memcpy(data.data.get(), m_data, size);
 
             return data;
         }

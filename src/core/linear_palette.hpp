@@ -68,14 +68,19 @@ namespace cybrion
             auto& data = tag.get_byte_array("data");
             auto& palette = tag.get_tag("palette");
 
-            m_idToValue.clear();
+            if (data.data == nullptr)
+                return;
 
+            m_idToValue.clear();
             for (i32 i = 0; i < palette.size(); ++i)
-            {
                 m_idToValue.push_back(palette.get_uint(i));
+
+            if (m_storage)
+            {
+                delete m_storage;
+                m_storage = nullptr;
             }
 
-            if (m_storage) delete m_storage;
             u32 bit = std::round(std::log2(8 * data.size / SIZE));
             m_storage = BitStorage::create<SIZE>(bit);
 

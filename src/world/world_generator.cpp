@@ -210,6 +210,12 @@ namespace cybrion
 
     void WorldGenerator::generateStructure(const ref<Chunk>& chunk)
     {
+        if (!chunk->isNewChunk())
+        {
+            chunk->m_hasStructure = true;
+            return;
+        }
+
         auto& world = Game::Get().getWorld();
 
         ivec3 chunkPos = chunk->getChunkPos() * Chunk::CHUNK_SIZE;

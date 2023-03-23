@@ -151,11 +151,11 @@ namespace jbt {
 
 	void serializer::read_byte_array(std::istream& input, byte_array_t& result) {
 		read_uint(input, result.size);
-		result.data = result.size ? new int8_t[result.size] : nullptr;
+		result.data = result.size ? std::make_shared<std::int8_t[]>(result.size) : nullptr;
 		result.is_owner = false;
 
 		if (result.size)
-			input.read(reinterpret_cast<char*>(result.data), result.size);
+			input.read(reinterpret_cast<char*>(result.data.get()), result.size);
 	}
 
 	void serializer::write_bool(std::ostream& output, const bool& value) {
@@ -282,7 +282,7 @@ namespace jbt {
 	void serializer::write_byte_array(std::ostream& output, const byte_array_t& value) {
 		write_uint(output, value.size);
 		if (value.size)
-			output.write(reinterpret_cast<char*>(value.data), value.size);
+			output.write(reinterpret_cast<char*>(value.data.get()), value.size);
 	}
 
 	void diff_endian_serializer::read_short(std::istream& input, int16_t& result) {

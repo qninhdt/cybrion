@@ -16,7 +16,7 @@ namespace jbt {
 	using list_t = std::vector<tag>;
 
 	struct byte_array_t {
-		int8_t* data;
+		std::shared_ptr<std::int8_t[]> data;
 		uint32_t size;
 		bool is_owner;
 	};

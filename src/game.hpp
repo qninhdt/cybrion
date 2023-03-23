@@ -12,10 +12,9 @@ namespace cybrion
 
         Game(const string& worldPath);
 
-        ~Game();
-
         void load();
         void tick();
+        void stop();
 
         World& getWorld();
         Player& getPlayer();

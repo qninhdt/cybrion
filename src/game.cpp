@@ -12,11 +12,6 @@ namespace cybrion
         s_game = this;
     }
 
-    Game::~Game()
-    {
-        m_world->save(m_worldPath);
-    }
-
     void Game::load()
     {
         if (!std::filesystem::exists(m_worldPath))
@@ -39,6 +34,11 @@ namespace cybrion
     {
         m_world->tick();
         m_player.tick();
+    }
+
+    void Game::stop()
+    {
+        m_world->save(m_worldPath);
     }
 
     World& Game::getWorld()

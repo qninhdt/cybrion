@@ -489,6 +489,7 @@ namespace cybrion
         if (m_game)
         {
             CYBRION_CLIENT_TRACE("Saving world");
+            m_game->stop();
             delete m_game;
         }   
 

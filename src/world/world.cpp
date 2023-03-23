@@ -41,7 +41,7 @@ namespace cybrion
             jbt::tag tag;
             region->read(chunkId, tag);
             chunk->fromJBT(tag);
-            chunk->m_hasStructure = true;
+            chunk->m_isNewChunk = false;
             m_loadChunkResults.enqueue(chunk);
         }
         else
@@ -84,10 +84,9 @@ namespace cybrion
 
         m_chunkMap.erase(it);
 
-        if (chunk->hasStructure())
+        if (chunk->hasStructure() && chunk->m_touched)
         {
-            saveChunk(pos, chunk);
-            std::cout << "save chunk " << pos.x << ' ' << pos.y << ' ' << pos.z << '\n';
+            m_saveChunkQueue.push(chunk);
         }
     }
 
@@ -118,10 +117,9 @@ namespace cybrion
                     neighbor->setNeighbor(-dir, chunk);
                 }
 
-                if (neighbor && neighbor->isReady() && neighbor->areAllNeighborsReady())
+                if (neighbor && neighbor->isReady() && neighbor->areAllNeighborsReady() && !neighbor->hasStructure())
                 {
-                    if (!neighbor->hasStructure())
-                        m_generator.generateStructure(neighbor);
+                    m_generator.generateStructure(neighbor);
                     Game::Get().onChunkLoaded(neighbor);
                 }
             });
@@ -146,7 +144,11 @@ namespace cybrion
         
         updateEntityTransforms();
 
-        i32 d = 4;
+        #ifdef CYBRION_DEBUG
+        const i32 d = 4;
+        #else
+        const i32 d = 8;
+        #endif
         ivec3 ppos = Game::Get().getPlayer().getEntity()->getChunkPos();
 
         for (i32 x = -d; x < d; ++x)
@@ -166,6 +168,23 @@ namespace cybrion
 
         for (auto& pos : unloadLists)
             unloadChunk(pos);
+
+        #ifdef CYBRION_DEBUG
+        const i32 SAVED_CHUNK_PER_TICK = 2;
+        #else
+        const i32 SAVED_CHUNK_PER_TICK = 8;
+        #endif
+
+        i32 cnt = 0;
+        std::cout << m_saveChunkQueue.size() << '\n';
+        while (cnt < SAVED_CHUNK_PER_TICK && !m_saveChunkQueue.empty())
+        {
+            auto chunk = m_saveChunkQueue.front();
+            m_saveChunkQueue.pop();
+
+            saveChunk(chunk->getChunkPos(), chunk);
+            cnt += 1;
+        }
 
         syncRegionFiles();
 
@@ -363,7 +382,16 @@ namespace cybrion
         jbt::save_tag(config, path + "/world.jbt");
         
         for (auto& [pos, chunk] : m_chunkMap)
-            saveChunk(pos, chunk);
+            if (chunk->m_touched)
+                saveChunk(pos, chunk);
+
+        while (!m_saveChunkQueue.empty())
+        {
+            auto chunk = m_saveChunkQueue.front();
+            m_saveChunkQueue.pop();
+
+            saveChunk(chunk->getChunkPos(), chunk);
+        }
 
         syncRegionFiles();
     }

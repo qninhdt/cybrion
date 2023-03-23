@@ -9,6 +9,8 @@ namespace cybrion
         m_chunkPos(chunkPos),
         m_id(0),
         m_dirty(true),
+        m_touched(false),
+        m_isNewChunk(true),
         m_status(ChunkStatus::NONE),
         m_ready(false),
         m_unloaded(false),
@@ -52,6 +54,7 @@ namespace cybrion
     {
         CYBRION_ASSERT(0 <= pos.x && pos.x < CHUNK_SIZE && 0 <= pos.y && pos.y < CHUNK_SIZE && 0 <= pos.z && pos.z < CHUNK_SIZE, "Out of chunk size");
         m_dirty = true;
+        m_touched = true;
         m_blocks.set(posToIndex(pos), block.getId());
     }
 
@@ -128,6 +131,11 @@ namespace cybrion
         });
 
         return result;
+    }
+
+    bool Chunk::isNewChunk()
+    {
+        return m_isNewChunk;
     }
 
     u32 Chunk::getId() const
