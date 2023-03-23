@@ -1,5 +1,7 @@
 #version 430
 
+in float logz;
+in vec3 color;
 in vec2 tex;
 in vec3 normal;
 flat in uint tex_id;
@@ -13,4 +15,6 @@ void main() {
 	
 	if (out_color.w < 0.5)
 		discard;
+		
+	gl_FragDepth = logz;
 }

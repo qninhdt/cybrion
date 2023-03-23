@@ -2,6 +2,7 @@
 
 in vec2 uv;
 in float ao;
+in float logz;
 flat in uint tex_id;
 flat in uint normal;
 
@@ -37,4 +38,5 @@ void main() {
 		discard;
 	
 	color = vec4(color.xyz * factor, color.w);
+	gl_FragDepth = logz;
 }

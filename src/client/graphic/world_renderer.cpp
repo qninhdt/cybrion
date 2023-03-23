@@ -90,7 +90,7 @@ namespace cybrion
             m_opaqueCubeShader.setUniform<"MVP">(
                 LocalGame::Get().getCamera().getProjViewMat()
                 * opaqueMesh.getModelMat()
-            );
+            ); 
 
             // OPAQUE
 
@@ -114,7 +114,9 @@ namespace cybrion
             }
         }
 
-        m_blockModelShader.use();
+        m_blockModelShader.use(); 
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         for (auto& renderer : renderChunks)
         {
             auto& modelMesh = renderer->modelMesh;
@@ -129,6 +131,7 @@ namespace cybrion
                 modelMesh.drawTriangles();
             }
         }
+        glDisable(GL_CULL_FACE);
 
         if (showEntityBorder)
         {

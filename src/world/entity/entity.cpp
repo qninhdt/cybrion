@@ -10,7 +10,7 @@ namespace cybrion
     {
     }
 
-    Entity::Entity(const vec3& pos): m_velocity(0), m_id(s_idN++), m_localBB({ 0, -0.8, 0 }, { 0.4, 1.8, 0.4 })
+    Entity::Entity(const vec3& pos): m_velocity(0), m_id(s_idN++), m_localBB({ 0, -0.8, 0 }, { 0.5, 1.8, 0.5 })
     {
         m_pos = pos;
         m_posO = m_pos;

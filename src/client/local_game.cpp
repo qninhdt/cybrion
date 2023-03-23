@@ -10,7 +10,7 @@ namespace cybrion
 
     LocalGame::LocalGame(const string& worldPath):
         Game(worldPath),
-        m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.01f, 1200.0f),
+        m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.001f, 1500.0f),
         m_showWireframe(false),
         m_showEntityBorder(false),
         m_showChunkBoder(false),
@@ -27,7 +27,7 @@ namespace cybrion
         m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
 
         BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, { 1, 0, 0 });
-        BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.005f, { 1, 1, 1 });
+        BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.00f, { 1, 1, 1 });
 
         m_camera.setTarget(m_player.getEntity());
     }
@@ -51,10 +51,6 @@ namespace cybrion
 
     void LocalGame::renderChunkBorder()
     {
-        m_chunkBorderMesh.setPos({ 16, 16, 16 }
-            //m_player.getEntity().get<EntityData>().getChunkWorldPos()
-        );
-
         m_chunkBorderMesh.updateModelMat();
 
         m_basicShader.use();
@@ -84,8 +80,8 @@ namespace cybrion
 
             m_basicShader.use();
             m_basicShader.setUniform<"MVP">(
-                m_camera.getProjViewMat() *
-                m_targetBlockMesh.getModelMat()
+                LocalGame::Get().getCamera().getProjViewMat()
+                * m_targetBlockMesh.getModelMat()
             );
 
             m_targetBlockMesh.drawLines();
