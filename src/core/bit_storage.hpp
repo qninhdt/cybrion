@@ -15,6 +15,8 @@ namespace cybrion
         virtual void set(const u32 &index, const u32 &value) = 0;
         virtual u32 getMaxValue() const = 0;
         virtual u32 getSize() const = 0;
+        virtual void fromJBT(const jbt::byte_array_t& data) = 0;
+        virtual jbt::byte_array_t toJBT() = 0;
 
         void copyFrom(const BitStorage &other)
         {
@@ -69,6 +71,22 @@ namespace cybrion
         u32 getMaxValue() const override
         {
             return MAX_VALUE;
+        }
+
+        void fromJBT(const jbt::byte_array_t& data)
+        {
+            if (data.size)
+                std::memcpy(m_data, data.data, data.size);
+        }
+
+        jbt::byte_array_t toJBT()
+        {
+            u32 size = TOTAL_INTS * sizeof(u32);
+            jbt::byte_array_t data{ new i8[size], size, false };
+
+            std::memcpy(data.data, m_data, size);
+
+            return data;
         }
 
     private:

@@ -39,6 +39,8 @@
 #include <BS_thread_pool.hpp>
 #include <concurrentqueue/concurrentqueue.h>
 #include <FastNoiseLite.h>
+#include <jbt/jbt.hpp>
+#include <jbt/hjbt.hpp>
 
 // common files
 #include "common.hpp""

@@ -45,6 +45,7 @@ namespace cybrion
         
         ShaderManager& getShaderManager();
         string getResourcePath(const string& path) const;
+        string getSavePath(const string& path) const;
 
         f32 getFPS() const;
         f32 getDeltaTime() const;

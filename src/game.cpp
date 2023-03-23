@@ -6,13 +6,27 @@ namespace cybrion
 {
     Game* Game::s_game = nullptr;
 
-    Game::Game()
+    Game::Game(const string& worldPath):
+        m_worldPath(worldPath)
     {
         s_game = this;
     }
 
+    Game::~Game()
+    {
+        m_world->save(m_worldPath);
+    }
+
     void Game::load()
     {
+        if (!std::filesystem::exists(m_worldPath))
+        {
+            CYBRION_GAME_ERROR("World folder is not found");
+            exit(0);
+        }
+
+        m_world = World::loadWorld(m_worldPath);
+
         // load block configs
         m_blockLoader.load();
 
@@ -23,13 +37,13 @@ namespace cybrion
 
     void Game::tick()
     {
-        m_world.tick();
+        m_world->tick();
         m_player.tick();
     }
 
     World& Game::getWorld()
     {
-        return m_world;
+        return *m_world;
     }
 
     Player& Game::getPlayer()

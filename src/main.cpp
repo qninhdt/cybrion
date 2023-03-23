@@ -100,6 +100,7 @@ int main()
     RegisterEnum(LogAxis::Z, "z");
 
     Log::Init();
+    jbt::init();
 
     Application app;
 

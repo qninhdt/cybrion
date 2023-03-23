@@ -8,7 +8,8 @@ namespace cybrion
 {
     LocalGame* LocalGame::s_LocalGame = nullptr;
 
-    LocalGame::LocalGame():
+    LocalGame::LocalGame(const string& worldPath):
+        Game(worldPath),
         m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.01f, 1200.0f),
         m_showWireframe(false),
         m_showEntityBorder(false),
@@ -23,14 +24,11 @@ namespace cybrion
         Game::load();
         createBlockRenderers();
 
-        m_camera.setTarget(getPlayer().getEntity());
-
         m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
 
         BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, { 1, 0, 0 });
         BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.005f, { 1, 1, 1 });
 
-        m_player.setEntity(m_world.spawnEntity({ 16, 80, 160 }));
         m_camera.setTarget(m_player.getEntity());
     }
 
@@ -76,7 +74,7 @@ namespace cybrion
         if (m_player.getTargetBlock() != nullptr)
         {
             ivec3 pos = m_player.getTargetPos();
-            Block& block = m_world.getBlock(pos);
+            Block& block = m_world->getBlock(pos);
             AABB bound = block.getBound();
 
             m_targetBlockMesh.setPos(vec3(pos) + bound.getPos() + vec3(0.5f, 0.5f, 0.5f));

@@ -54,6 +54,9 @@ namespace cybrion
 
         void setDirty(bool dirty);
 
+        void fromJBT(const jbt::tag& tag);
+        jbt::tag toJBT();
+
         ~Chunk();
 
         static i32 posToIndex(const ivec3& pos);

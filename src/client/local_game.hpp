@@ -18,7 +18,7 @@ namespace cybrion
     class LocalGame : public Game
     {
     public:
-        LocalGame();
+        LocalGame(const string& worldPath);
 
         void load();
         void tick();

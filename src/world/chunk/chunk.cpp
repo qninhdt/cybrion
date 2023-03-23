@@ -165,6 +165,19 @@ namespace cybrion
         m_dirty = dirty;
     }
 
+    void Chunk::fromJBT(const jbt::tag& tag)
+    {
+        auto& blocks = tag.get_tag("blocks");
+        m_blocks.fromJBT(blocks);
+    }
+
+    jbt::tag Chunk::toJBT()
+    {
+        jbt::tag tag(jbt::tag_type::OBJECT);
+        tag.set_tag("blocks", m_blocks.toJBT());
+        return tag;
+    }
+
     Chunk::~Chunk()
     {
 

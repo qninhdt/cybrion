@@ -10,7 +10,9 @@ namespace cybrion
     {
     public:
 
-        Game();
+        Game(const string& worldPath);
+
+        ~Game();
 
         void load();
         void tick();
@@ -32,7 +34,8 @@ namespace cybrion
         static Game* s_game;
 
         BlockLoader m_blockLoader;
-        World m_world;
+        ref<World> m_world;
         Player m_player;
+        string m_worldPath;
     };
 }

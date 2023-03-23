@@ -24,6 +24,7 @@ namespace jbt {
 
     hjbt_file::hjbt_file() :
         m_path(""),
+        is_writing(false),
         m_in_stream(nullptr),
         m_out_stream(nullptr),
         m_header_size(0),
@@ -150,6 +151,11 @@ namespace jbt {
         }
     }
 
+    bool hjbt_file::has(const std::uint32_t& tag_id)
+    {
+        return m_info_map.find(tag_id) != m_info_map.end();
+    }
+
     void hjbt_file::read(const std::uint32_t& tag_id, tag& dst) {
         assert(m_info_map.find(tag_id) != m_info_map.end());
 
@@ -233,6 +239,7 @@ namespace jbt {
 
     void hjbt_file::begin_write() {
         assert(m_out_stream == nullptr);
+        is_writing = true;
         m_out_stream = new std::ofstream(m_path, std::ios_base::binary | std::ios_base::in);
     }
 
@@ -260,8 +267,10 @@ namespace jbt {
             ser->write_uint(*m_out_stream, size);
         }
 
+        is_writing = false;
         m_out_stream->close();
         delete m_out_stream;
+        m_out_stream = nullptr;
     }
 
     void hjbt_file::close() {

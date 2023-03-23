@@ -300,7 +300,8 @@ namespace cybrion
 
     void Application::startGame()
     {
-        m_game = new LocalGame();
+        //World::createNewWorld("lmao");
+        m_game = new LocalGame(getSavePath("lmao"));
         m_game->load();
 
         m_playingGame = true;
@@ -319,6 +320,11 @@ namespace cybrion
     string Application::getResourcePath(const string& path) const
     {
         return m_rootPath + "resources/" + path;
+    }
+
+    string Application::getSavePath(const string& path) const
+    {
+        return m_rootPath + "saves/" + path;
     }
 
     f32 Application::getFPS() const
@@ -479,6 +485,12 @@ namespace cybrion
 
         GetPool().pause();
         GetPool().wait_for_tasks();
+
+        if (m_game)
+        {
+            CYBRION_CLIENT_TRACE("Saving world");
+            delete m_game;
+        }   
 
         if (!m_isClosed)
             closeImmediately();

@@ -29,6 +29,7 @@ namespace jbt {
         void open(const std::string& path);
         void close();
 
+        bool has(const std::uint32_t& tag_id);
         void read(const std::uint32_t& tag_id, tag& dst);
         void write(const std::uint32_t& tag_id, const tag& src);
         void remove(const std::uint32_t& tag_id);
@@ -40,6 +41,8 @@ namespace jbt {
         std::uint32_t max_size() const;
         std::uint32_t block_size() const;
         std::string path() const;
+
+        bool is_writing;
 
     private:
         void free_tag(const std::size_t& tag_id);

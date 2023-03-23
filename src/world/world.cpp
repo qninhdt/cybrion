@@ -1,11 +1,13 @@
 #include "world/world.hpp"
 #include "game.hpp"
 #include "core/pool.hpp"
+#include "client/application.hpp"
 
 namespace cybrion
 {
 
-    World::World()
+    World::World(const string& name):
+        m_name(name)
     {}
 
     ref<Entity> World::spawnEntity(const vec3& pos)
@@ -26,17 +28,36 @@ namespace cybrion
         ref<Chunk> chunk = std::make_shared<Chunk>(pos);
         m_chunkMap[pos] = chunk;
 
-        GetPool().submit([this, chunk] {
-            if (chunk->isUnloaded())
-                return;
+        ivec3 regionPos = ToRegionPos(pos);
+        ivec3 localPos = ToLocalRegionPos(pos);
 
-            m_generator.generateChunkAt(chunk);
+        loadRegion(regionPos);
 
-            if (chunk->isUnloaded())
-                return;
+        auto region = m_regionMap[regionPos];
+        u32 chunkId = localPos.x * 32 * 32 + localPos.y * 32 + localPos.z;
 
+        if (region->has(chunkId))
+        {
+            jbt::tag tag;
+            region->read(chunkId, tag);
+            chunk->fromJBT(tag);
+            chunk->m_hasStructure = true;
             m_loadChunkResults.enqueue(chunk);
-        });
+        }
+        else
+        {
+            GetPool().submit([this, chunk] {
+                if (chunk->isUnloaded())
+                    return;
+
+                m_generator.generateChunkAt(chunk);
+
+                if (chunk->isUnloaded())
+                    return;
+
+                m_loadChunkResults.enqueue(chunk);
+            });
+        }
     }
 
     void World::unloadChunk(const ivec3& pos)
@@ -62,6 +83,12 @@ namespace cybrion
         chunk->setNeighbor({ 0, 0, 0 }, nullptr);
 
         m_chunkMap.erase(it);
+
+        if (chunk->hasStructure())
+        {
+            saveChunk(pos, chunk);
+            std::cout << "save chunk " << pos.x << ' ' << pos.y << ' ' << pos.z << '\n';
+        }
     }
 
     ref<Chunk> World::getChunk(const ivec3& pos)
@@ -91,9 +118,10 @@ namespace cybrion
                     neighbor->setNeighbor(-dir, chunk);
                 }
 
-                if (neighbor && neighbor->isReady() && neighbor->areAllNeighborsReady() && !neighbor->m_hasStructure)
+                if (neighbor && neighbor->isReady() && neighbor->areAllNeighborsReady())
                 {
-                    m_generator.generateStructure(neighbor);
+                    if (!neighbor->hasStructure())
+                        m_generator.generateStructure(neighbor);
                     Game::Get().onChunkLoaded(neighbor);
                 }
             });
@@ -102,9 +130,12 @@ namespace cybrion
 
             if (chunk->areAllNeighborsReady())
             {
-                m_generator.generateStructure(chunk);
+                if (!chunk->m_hasStructure)
+                    m_generator.generateStructure(chunk);
                 Game::Get().onChunkLoaded(chunk);
             }
+
+            //std::cout << chunk->toJBT() << '\n';
         }
 
         for (auto& entity : m_entities)
@@ -135,6 +166,8 @@ namespace cybrion
 
         for (auto& pos : unloadLists)
             unloadChunk(pos);
+
+        syncRegionFiles();
 
         for (auto& [pos, chunk] : m_chunkMap)
         {
@@ -238,6 +271,11 @@ namespace cybrion
         return result;
     }
 
+    string World::getName() const
+    {
+        return m_name;
+    }
+
     /// TODO: optimize AABB
     void World::updateEntityTransforms()
     {
@@ -295,5 +333,114 @@ namespace cybrion
             /// FIXME: should be setAABBposition()
             entity->setPos(pos - entity->getLocalBB().getPos());
         }
+    }
+
+    void World::loadRegion(const ivec3& pos)
+    {
+        if (m_regionMap.find(pos) == m_regionMap.end())
+        {
+            string regionPath = m_savePath + "/region/" + GetRegionFilename(pos);
+
+            if (!std::filesystem::exists(regionPath))
+                jbt::hjbt_util::create_empty_file(regionPath, 32 * 32 * 32, 1024);
+
+            m_regionMap[pos] = std::make_shared<jbt::hjbt_file>(regionPath);
+        }
+    }
+
+    void World::save(const string& path)
+    {
+        auto& player = Game::Get().getPlayer();
+        auto playerEntity = player.getEntity();
+
+        jbt::tag config;
+        jbt::open_tag(config, path + "/world.jbt");
+
+        config.set_float("player_x", playerEntity->getPos().x);
+        config.set_float("player_y", playerEntity->getPos().y);
+        config.set_float("player_z", playerEntity->getPos().z);
+
+        jbt::save_tag(config, path + "/world.jbt");
+        
+        for (auto& [pos, chunk] : m_chunkMap)
+            saveChunk(pos, chunk);
+
+        syncRegionFiles();
+    }
+
+    void World::saveChunk(const ivec3& pos, const ref<Chunk>& chunk)
+    {
+        ivec3 regionPos = ToRegionPos(pos);
+        ivec3 localPos = ToLocalRegionPos(pos);
+
+        loadRegion(regionPos);
+
+        auto region = m_regionMap[regionPos];
+
+        if (!region->is_writing)
+            region->begin_write();
+
+        auto tag = chunk->toJBT();
+        region->write(localPos.x * 32 * 32 + localPos.y * 32 + localPos.z, tag);
+
+        /// BUG:FFSA
+        //delete[] tag.get_byte_array("blocks").data;
+    }
+
+    void World::syncRegionFiles()
+    {
+        for (auto& [pos, region] : m_regionMap)
+            if (region->is_writing)
+                region->end_write();
+    }
+    
+    void World::createNewWorld(const string& name)
+    {
+        jbt::tag config(jbt::tag_type::OBJECT);
+
+        config.set_string("name", name);
+
+        config.set_float("player_x", 0);
+        config.set_float("player_y", 80);
+        config.set_float("player_z", 0);
+
+        string worldPath = Application::Get().getSavePath(name);
+
+        // create world folder
+        std::filesystem::create_directory(worldPath);
+        jbt::save_tag(config, worldPath + "/world.jbt");
+
+        std::filesystem::create_directory(worldPath + "/region");
+    }
+
+    ref<World> World::loadWorld(const string& path)
+    {
+        jbt::tag config;
+        jbt::open_tag(config, path + "/world.jbt");
+
+        auto world = std::make_shared<World>(config.get_string("name"));
+        world->m_savePath = path;
+
+        // spawn player
+        Game::Get().getPlayer().setEntity(world->spawnEntity({
+            config.get_float("player_x"),
+            config.get_float("player_y"),
+            config.get_float("player_z")
+        }));
+
+        return world;
+    }
+
+    ivec3 World::ToRegionPos(const ivec3& pos)
+    {
+        return { pos.x >> 5, pos.y >> 5, pos.z >> 5 };
+    }
+    ivec3 World::ToLocalRegionPos(const ivec3& pos)
+    {
+        return { pos.x & 31, pos.y & 31, pos.z & 31 };
+    }
+    string World::GetRegionFilename(const ivec3& pos)
+    {
+        return "r." + std::to_string(pos.x) + "." + std::to_string(pos.y) + "." + std::to_string(pos.z) + ".hjbt";
     }
 }

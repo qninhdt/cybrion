@@ -63,6 +63,42 @@ namespace cybrion
             return m_bitExp;
         }
 
+        void fromJBT(const jbt::tag& tag)
+        {
+            auto& data = tag.get_byte_array("data");
+            auto& palette = tag.get_tag("palette");
+
+            m_idToValue.clear();
+
+            for (i32 i = 0; i < palette.size(); ++i)
+            {
+                m_idToValue.push_back(palette.get_uint(i));
+            }
+
+            if (m_storage) delete m_storage;
+            u32 bit = std::round(std::log2(8 * data.size / SIZE));
+            m_storage = BitStorage::create<SIZE>(bit);
+
+            m_storage->fromJBT(data);
+            m_diffValues = palette.size();
+            m_bitExp = bit;
+        }
+
+        jbt::tag toJBT()
+        {
+            jbt::tag tag(jbt::tag_type::OBJECT);
+
+            tag.set_byte_array("data", m_storage ? m_storage->toJBT() : jbt::byte_array_t{ nullptr, 0, false });
+            
+            jbt::tag palette(jbt::tag_type::LIST);
+            for (u32 i : m_idToValue)
+                palette.add_uint(i);
+
+            tag.set_tag("palette", palette);
+
+            return tag;
+        }
+
     private:
         u32 addValue(const u32& value)
         {

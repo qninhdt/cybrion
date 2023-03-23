@@ -329,10 +329,9 @@ namespace jbt {
 			delete data.v_object;
 			break;
 		case tag_type::BYTE_ARRAY:
-			if (data.v_byte_array->is_owner) {
+			if (data.v_byte_array->size)
 				delete[] data.v_byte_array->data;
-				delete data.v_byte_array;
-			}
+			delete data.v_byte_array;
 			break;
 		}
 	}

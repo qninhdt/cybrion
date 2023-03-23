@@ -17,7 +17,7 @@ namespace cybrion
     {
     public:
 
-        World();
+        World(const string& name);
 
         ref<Entity> spawnEntity(const vec3& pos);
         void loadChunk(const ivec3& pos);
@@ -34,7 +34,21 @@ namespace cybrion
         BlockModifyResult updateBlock(const ivec3& pos, Block& block);
         BlockModifyResult placeBlock(const ivec3& pos, Block& block);
 
+        string getName() const;
+
         void updateEntityTransforms();
+
+        void loadRegion(const ivec3& pos);
+        void save(const string& path);
+        void saveChunk(const ivec3& pos, const ref<Chunk>& chunk);
+        void syncRegionFiles();
+
+        static void createNewWorld(const string& name);
+        static ref<World> loadWorld(const string& path);
+
+        static ivec3 ToRegionPos(const ivec3& pos);
+        static ivec3 ToLocalRegionPos(const ivec3& pos);
+        static string GetRegionFilename(const ivec3& pos);
 
     private:
         u32 chunkId = 0;
@@ -43,5 +57,10 @@ namespace cybrion
         umap<ivec3, ref<Chunk>> m_chunkMap;
         vector<ref<Entity>> m_entities;
         moodycamel::ConcurrentQueue<ref<Chunk>> m_loadChunkResults;
+
+        umap<ivec3, ref<jbt::hjbt_file>> m_regionMap;
+
+        string m_name;
+        string m_savePath;
     };
 }
