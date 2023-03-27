@@ -59,6 +59,7 @@ namespace cybrion
         static void GlfwCloseCallback(GLFWwindow* window);
         static void GlfwMouseMovedCallback(GLFWwindow* window, double x, double y);
         static void GlfwKeyPressedCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        static void GlfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
         static Application* s_application;
 

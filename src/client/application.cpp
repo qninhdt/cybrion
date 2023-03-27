@@ -115,6 +115,7 @@ namespace cybrion
         m_window(nullptr),
         m_pos(0, 0),
         m_game(nullptr),
+        m_soundEngine(nullptr),
         m_rootPath(CYBRION_ROOT_PATH),
         m_playingGame(false)
     {
@@ -165,6 +166,7 @@ namespace cybrion
         glfwSetWindowCloseCallback(m_window, GlfwCloseCallback);
         glfwSetCursorPosCallback(m_window, GlfwMouseMovedCallback);
         glfwSetKeyCallback(m_window, GlfwKeyPressedCallback);
+        glfwSetScrollCallback(m_window, GlfwScrollCallback);
 
         glClearColor(1, 1, 1, 1);
         glEnable(GL_DEPTH_TEST);
@@ -274,13 +276,13 @@ namespace cybrion
             // --------------------------------------------
             f32 lerpFactor = 1.0f * stopwatch.getDeltaTime() / GAME_TICK;
 
+            glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (m_game)
                 m_game->render(lerpFactor);
 
             m_hud.render(deltaTime);
-
           
             // update render
             glfwSwapBuffers(m_window);
@@ -381,21 +383,23 @@ namespace cybrion
     {
         Application& app = *(Application*)glfwGetWindowUserPointer(window);
 
-        if (action == GLFW_PRESS)
+        if (app.isPlayingGame())
         {
-            if (app.isPlayingGame())
+            if (action == GLFW_PRESS)
                 app.m_game->onKeyPressed((KeyCode)key, false);
-        }
-        else if (action == GLFW_REPEAT)
-        {
-            if (app.isPlayingGame())
+            else if (action == GLFW_REPEAT)
                 app.m_game->onKeyPressed((KeyCode)key, true);
-        }
-        else
-        {
-            if (app.isPlayingGame())
+            else
                 app.m_game->onKeyReleased((KeyCode)key);
         }
+    }
+
+    void Application::GlfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+    {
+        Application& app = *(Application*)glfwGetWindowUserPointer(window);
+        
+        if (app.isPlayingGame())
+            app.m_game->onMouseScrolled(yoffset);
     }
 
     u32 Application::getWidth() const

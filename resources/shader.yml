@@ -5,3 +5,5 @@ shader_list:
     reload: true 
   - name: block_model
     reload: true
+  - name: basic_block
+    reload: true

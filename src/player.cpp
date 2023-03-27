@@ -6,8 +6,16 @@
 namespace cybrion
 {
     Player::Player() :
-        m_targetBlock(nullptr)
+        m_targetBlock(nullptr),
+        m_heldSlot(0),
+        m_inventory(INVENTORY_SIZE, nullptr)
     {
+        m_inventory[0] = &Blocks::GRASS_BLOCK;
+        m_inventory[1] = &Blocks::DIRT;
+        m_inventory[2] = &Blocks::STONE;
+        m_inventory[3] = &Blocks::COBBLESTONE;
+        m_inventory[4] = &Blocks::OAK_FENCE.set<"east">(1).set<"west">(1);
+        m_inventory[5] = &Blocks::OAK_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH);
     }
 
     ref<Entity> Player::getEntity() const
@@ -31,6 +39,14 @@ namespace cybrion
         
         m_entity->setRot(m_input.rot);
 
+        if (m_input.scroll)
+        {
+            i32 delta = m_input.scroll < 0 ? 1 : -1;
+            m_heldSlot = (((m_heldSlot + delta) % INVENTORY_SIZE) + INVENTORY_SIZE) % INVENTORY_SIZE;
+
+            m_input.scroll = 0;
+        }
+
         if (m_input.rightClick)
         {
             if (m_targetBlock && m_blockInteractStopwatch.getDeltaTime() > PLAYER_BLOCK_INTERACT_DELAY)
@@ -43,13 +59,10 @@ namespace cybrion
                     static int i = 0;
                     if (world.getBlock(placedPos) == Blocks::AIR)
                     {
-                        //world.placeBlock(placedPos, Blocks::DANDELION.set<"type">((PlantType)(i++ % 13)));
-                        i++;
-                        if (i%3==0)
-                            world.placeBlock(placedPos, Blocks::OAK_FENCE_GATE);
-                        else
-                            world.placeBlock(placedPos, Blocks::OAK_FENCE);
-                        //world.placeBlock(placedPos, Blocks::BLACK_KNIGHT.set<"type">((ChessType)(i++ % 6)));
+                        Block* block = m_inventory[m_heldSlot];
+
+                        if (block)
+                            world.placeBlock(placedPos, *block);
                     }
                 }
                 else
@@ -111,6 +124,21 @@ namespace cybrion
     Block* Player::getTargetBlock() const
     {
         return m_targetBlock;
+    }
+
+    vector<Block*>& Player::getInventory()
+    {
+        return m_inventory;
+    }
+
+    Block* Player::getHeldBlock() const
+    {
+        return m_inventory[m_heldSlot];
+    }
+
+    i32 Player::getHeldSlot() const
+    {
+        return m_heldSlot;
     }
 
     BlockFace Player::getTargetFace() const

@@ -176,7 +176,6 @@ namespace cybrion
         #endif
 
         i32 cnt = 0;
-        std::cout << m_saveChunkQueue.size() << '\n';
         while (cnt < SAVED_CHUNK_PER_TICK && !m_saveChunkQueue.empty())
         {
             auto chunk = m_saveChunkQueue.front();

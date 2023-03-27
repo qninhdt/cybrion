@@ -23,4 +23,5 @@
   collision: [0, 0.15625, 0, 1, 0.6875, 0.125]
 
 "[type=oak]":
+  display_name: Oak Fence Gate
   model_tex: oak_plank

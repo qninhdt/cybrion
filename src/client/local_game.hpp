@@ -39,6 +39,7 @@ namespace cybrion
         void onKeyReleased(KeyCode key);
         void onMouseMoved(const vec2& delta);
         void onWindowResized(u32 width, u32 height);
+        void onMouseScrolled(f32 delta);
 
         Camera& getCamera();
 

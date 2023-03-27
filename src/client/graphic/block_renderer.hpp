@@ -1,6 +1,7 @@
 #pragma once
 
 #include "world/block/block.hpp"
+#include "client/GL/mesh.hpp"
 
 namespace cybrion
 {
@@ -26,6 +27,7 @@ namespace cybrion
 
         void generateCubeMesh(bool culling[6], const ivec3& position, const Block::Block3x3x3& blocks, vector<u32>& result);
         void generateCubeTexture();
+        ref<GL::Mesh> getMesh();
     
         static array<tuple<ivec3, BlockFace>, 6> CubeDirections;
         static array<array<vec3, 4>, 6> CubeVertices;

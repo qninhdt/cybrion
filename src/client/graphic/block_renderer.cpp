@@ -203,6 +203,61 @@ namespace cybrion
             if (nz == 3) cycle4(t[1][3].uv, t[1][2].uv, t[1][1].uv, t[1][0].uv, 2);
         }
     }
+
+    ref<GL::Mesh> BlockRenderer::getMesh()
+    {
+        auto mesh = std::make_shared<GL::Mesh>(true);
+
+        mesh->setAttributes({
+            { GL::Type::VEC3 }, // pos
+            { GL::Type::VEC2 }, // tex
+            { GL::Type::VEC3 }, // normal
+            { GL::Type::UINT }, // tex_id
+        });
+
+        array<vec2, 4> uvs = { {
+           { 0, 0 },
+           { 0, 1 },
+           { 1, 1 },
+           { 1, 0 }
+        } };
+
+        vector<BlockVertex> vertices;
+        if (m_block->getShape() == BlockShape::CUBE)
+        {
+            for (u32 i = 0; i < 6; ++i)
+            {
+                for (u32 j = 0; j < 4; ++j)
+                {
+                    vertices.push_back({
+                        CubeVertices[i][j],
+                        m_cubeTexture[i][j].uv,
+                        std::get<0>(CubeDirections[i]),
+                        m_cubeTexture[i][j].textureId
+                    });
+                }
+            }
+        }
+        else
+        {
+            auto meshes = m_block->getMeshes();
+
+            for (auto mesh : meshes)
+            {
+                for (auto vertex : mesh->vertices)
+                {
+                    vertex.texId = m_block->getModelTexture(vertex.texId);
+                    vertices.push_back(vertex);
+                }
+            }
+        }
+
+        mesh->setVertices(vertices.data(), vertices.size());
+        mesh->setDrawCount(vertices.size() / 4 * 6);
+
+        return mesh;
+    }
+
     u32 BlockRenderer::packCubeVertex(u32 x, u32 y, u32 z, u32 normal, u32 ao, u32 texId)
     {
         u32 n = texId;

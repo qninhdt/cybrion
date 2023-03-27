@@ -215,6 +215,11 @@ namespace cybrion
         m_camera.updateProjMat();
     }
 
+    void LocalGame::onMouseScrolled(f32 delta)
+    {
+        m_player.getInput().scroll = delta;
+    }
+
     LocalGame& LocalGame::Get()
     {
         return *s_LocalGame;

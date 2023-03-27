@@ -17,11 +17,14 @@ namespace cybrion
         vec3 rot = { 0, 0, 0 };
         bool ctrl = false;
         bool shift = false;
+        f32 scroll = 0;
     };
 
     class Player
     {
     public:
+        static constexpr i32 INVENTORY_SIZE = 16;
+        static constexpr i32 DISPLAYED_INVENTORY_SIZE = 9;
 
         Player();
         ref<Entity> getEntity() const;
@@ -30,6 +33,9 @@ namespace cybrion
         void tick();
 
         Block* getTargetBlock() const;
+        vector<Block*>& getInventory();
+        Block* getHeldBlock() const;
+        i32 getHeldSlot() const;
         BlockFace getTargetFace() const;
         ivec3 getTargetPos() const;
 
@@ -47,5 +53,7 @@ namespace cybrion
 
         PlayerInput m_input;
         Stopwatch m_blockInteractStopwatch;
+        vector<Block*> m_inventory;
+        i32 m_heldSlot;
     };
 }
