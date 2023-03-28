@@ -7,9 +7,8 @@ namespace cybrion
     class LeafBlock : public TBlock<
         LeafBlock,
         BlockType::LEAF,
-        block::state<WoodType, "type", 1>
+        block::state<WoodType, "type", 7>
     >
     {
-
     };
 }

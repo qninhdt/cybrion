@@ -4,9 +4,33 @@
   bound: [0, 0, 0, 0.25, 1, 0.25]
   collision: [0, 0, 0, 0.25, 1, 0.25]
 
+"[type=acacia]":
+  display_name: Acacia Fence
+  model_tex: acacia_plank
+
+"[type=birch]":
+  display_name: Birch Fence
+  model_tex: birch_plank
+
+"[type=dark_oak]":
+  display_name: Dark Oak Fence
+  model_tex: dark_oak_plank
+
+"[type=jungle]":
+  display_name: Jungle Fence
+  model_tex: jungle_plank
+
+"[type=mangrove]":
+  display_name: Mangrove Fence
+  model_tex: mangrove_plank
+
 "[type=oak]":
   display_name: Oak Fence
-  model_tex: oak_log_side
+  model_tex: oak_plank
+
+"[type=spruce]":
+  display_name: Spruce Fence
+  model_tex: spruce_plank
 
 "[east=1]":
   model: fence_side_0

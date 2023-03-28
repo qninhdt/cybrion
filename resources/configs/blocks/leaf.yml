@@ -1,6 +1,31 @@
 "[]":
   display: semi_opaque
+  sound: leaf
+
+"[type=acacia]":
+  display_name: Acacia Leaf
+  all: acacia_leaf
+
+"[type=birch]":
+  display_name: Birch Leaf
+  all: birch_leaf
+
+"[type=dark_oak]":
+  display_name: Dark Oak Leaf
+  all: dark_oak_leaf
+
+"[type=jungle]":
+  display_name: Jungle Leaf
+  all: jungle_leaf
+
+"[type=mangrove]":
+  display_name: Mangrove Leaf
+  all: mangrove_leaf
+
 "[type=oak]":
   display_name: Oak Leaf
   all: oak_leaf
-  sound: leaf
+
+"[type=spruce]":
+  display_name: Spruce Leaf
+  all: spruce_leaf

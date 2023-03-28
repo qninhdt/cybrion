@@ -10,69 +10,100 @@ namespace cybrion
             {
                 "Nature",
                 {
-                    &Blocks::GRASS_BLOCK,
-                    &Blocks::DIRT,
-                    &Blocks::STONE,
-                    &Blocks::COBBLESTONE,
-                    &Blocks::SAND,
-                    &Blocks::OAK_LOG,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
-                    &Blocks::OAK_LEAF,
+                    & Blocks::GRASS_BLOCK,
+                    & Blocks::DIRT,
+                    & Blocks::CLAY,
+                    & Blocks::STONE,
+                    & Blocks::COBBLESTONE,
+                    & Blocks::SAND,
+                    & Blocks::ACACIA_LOG,
+                    & Blocks::BIRCH_LOG,
+                    & Blocks::DARK_OAK_LOG,
+                    & Blocks::JUNGLE_LOG,
+                    & Blocks::MANGROVE_LOG,
+                    & Blocks::OAK_LOG,
+                    & Blocks::SPRUCE_LOG,
+                    & Blocks::ACACIA_LEAF,
+                    & Blocks::BIRCH_LEAF,
+                    & Blocks::DARK_OAK_LEAF,
+                    & Blocks::JUNGLE_LEAF,
+                    & Blocks::MANGROVE_LEAF,
+                    & Blocks::OAK_LEAF,
+                    & Blocks::SPRUCE_LEAF,
                 }
             },
             {
                 "Plant",
                 {
-                    &Blocks::GRASS,
-                    &Blocks::FERN,
-                    &Blocks::DANDELION,
-                    &Blocks::POPPY,
-                    &Blocks::BLUE_ORCHID,
-                    &Blocks::ALLIUM,
-                    &Blocks::AZURE,
-                    &Blocks::RED_TULIP,
-                    &Blocks::WHITE_TULIP,
-                    &Blocks::PINK_TULIP,
-                    &Blocks::OXEYE_DAISY,
-                    &Blocks::CORNFLOWER,
-                    &Blocks::LILY_OF_THE_VALLEY
+                    & Blocks::GRASS,
+                    & Blocks::FERN,
+                    & Blocks::DANDELION,
+                    & Blocks::POPPY,
+                    & Blocks::BLUE_ORCHID,
+                    & Blocks::ALLIUM,
+                    & Blocks::AZURE,
+                    & Blocks::RED_TULIP,
+                    & Blocks::WHITE_TULIP,
+                    & Blocks::PINK_TULIP,
+                    & Blocks::OXEYE_DAISY,
+                    & Blocks::CORNFLOWER,
+                    & Blocks::LILY_OF_THE_VALLEY
                 }
             },
             {
                 "Building",
                 {
-                    &Blocks::STONE_BRICK,
-                    &Blocks::OAK_FENCE.set<"east">(1).set<"west">(1),
-                    &Blocks::OAK_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH)
+                    & Blocks::STONE_BRICK,
+                    // wool
+                    & Blocks::YELLOW_WOOL,
+                    & Blocks::WHITE_WOOL,
+                    & Blocks::RED_WOOL,
+                    & Blocks::PURPLE_WOOL,
+                    & Blocks::PINK_WOOL,
+                    & Blocks::ORANGE_WOOL,
+                    & Blocks::MAGENTA_WOOL,
+                    & Blocks::LIME_WOOL,
+                    & Blocks::LIGHT_GRAY_WOOL,
+                    & Blocks::LIGHT_BLUE_WOOL,
+                    & Blocks::GREEN_WOOL,
+                    & Blocks::GRAY_WOOL,
+                    & Blocks::CYAN_WOOL,
+                    & Blocks::BROWN_WOOL,
+                    & Blocks::BLUE_WOOL,
+                    & Blocks::BLACK_WOOL,
+                    // concrete
+                    & Blocks::YELLOW_CONCRETE,
+                    & Blocks::WHITE_CONCRETE,
+                    & Blocks::RED_CONCRETE,
+                    & Blocks::PURPLE_CONCRETE,
+                    & Blocks::PINK_CONCRETE,
+                    & Blocks::ORANGE_CONCRETE,
+                    & Blocks::MAGENTA_CONCRETE,
+                    & Blocks::LIME_CONCRETE,
+                    & Blocks::LIGHT_GRAY_CONCRETE,
+                    & Blocks::LIGHT_BLUE_CONCRETE,
+                    & Blocks::GREEN_CONCRETE,
+                    & Blocks::GRAY_CONCRETE,
+                    & Blocks::CYAN_CONCRETE,
+                    & Blocks::BROWN_CONCRETE,
+                    & Blocks::BLUE_CONCRETE,
+                    & Blocks::BLACK_CONCRETE,
+                    // fence
+                    & Blocks::ACACIA_FENCE.set<"east">(1).set<"west">(1),
+                    & Blocks::BIRCH_FENCE.set<"east">(1).set<"west">(1),
+                    & Blocks::DARK_OAK_FENCE.set<"east">(1).set<"west">(1),
+                    & Blocks::JUNGLE_FENCE.set<"east">(1).set<"west">(1),
+                    & Blocks::MANGROVE_FENCE.set<"east">(1).set<"west">(1),
+                    & Blocks::OAK_FENCE.set<"east">(1).set<"west">(1),
+                    & Blocks::SPRUCE_FENCE.set<"east">(1).set<"west">(1),
+                    // fence gate
+                    & Blocks::ACACIA_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
+                    & Blocks::BIRCH_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
+                    & Blocks::DARK_OAK_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
+                    & Blocks::JUNGLE_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
+                    & Blocks::MANGROVE_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
+                    & Blocks::OAK_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
+                    & Blocks::SPRUCE_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
                 }
             }
         };
@@ -321,6 +352,9 @@ namespace cybrion
                                 inventory[currentSlot] = blocks[idx];
                                 currentSlot = (currentSlot + 1) % Player::INVENTORY_SIZE;
                             }
+
+                            if (ImGui::IsItemHovered())
+                                ImGui::SetTooltip("%s", blocks[idx]->getDisplayName().c_str());
                         }
 
                         ImGui::EndChildFrame();
@@ -371,6 +405,9 @@ namespace cybrion
                 {
                     if (renderBlock(inventory[idx]))
                         currentSlot = idx;
+
+                    if (ImGui::IsItemHovered())
+                        ImGui::SetTooltip("%s", inventory[idx]->getDisplayName().c_str());
                 }
                 else
                 {

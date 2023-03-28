@@ -18,7 +18,29 @@ namespace cybrion
         PLANT,
         TABLECLOTH,
         CHESS,
+        WOOL,
+        CONCRETE,
         ENUM_SIZE
+    };
+
+    enum class BlockColor
+    {
+        YELLOW     ,
+        WHITE      ,
+        RED        ,
+        PURPLE     ,
+        PINK       ,
+        ORANGE     ,
+        MAGENTA    ,
+        LIME       ,
+        LIGHT_GRAY ,
+        LIGHT_BLUE ,
+        GREEN      ,
+        GRAY       ,
+        CYAN       ,
+        BROWN      ,
+        BLUE       ,
+        BLACK      ,
     };
 
     enum class BlockShape

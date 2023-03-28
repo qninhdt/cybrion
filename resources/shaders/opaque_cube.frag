@@ -34,7 +34,7 @@ void main() {
 	
     color = texture(texures, vec3(uv, tex_id));
 	
-	if (color.w < 0.5)
+	if (color.w < 0.1)
 		discard;
 	
 	color = vec4(color.xyz * factor, color.w);

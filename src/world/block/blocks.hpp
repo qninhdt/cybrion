@@ -14,6 +14,8 @@
 #include "world/block/building/brick_block.hpp"
 #include "world/block/building/fence_block.hpp"
 #include "world/block/building/fence_gate_block.hpp"
+#include "world/block/building/wool_block.hpp"
+#include "world/block/building/concrete_block.hpp"
 
 #include "world/block/decoration/tablecloth_block.hpp"
 #include "world/block/decoration/chess_block.hpp"
@@ -37,19 +39,34 @@ namespace cybrion
         FenceGateBlock,
         PlantBlock,
         TableclothBlock,
-        ChessBlock
+        ChessBlock,
+        WoolBlock,
+        ConcreteBlock
     >
     {
     public:
 
         static AirBlock& AIR;
         static SoilBlock& DIRT;
+        static SoilBlock& CLAY;
         static SoilBlock& GRASS_BLOCK;
+        static LogBlock& ACACIA_LOG;
+        static LogBlock& BIRCH_LOG;
+        static LogBlock& DARK_OAK_LOG;
+        static LogBlock& JUNGLE_LOG;
+        static LogBlock& MANGROVE_LOG;
         static LogBlock& OAK_LOG;
+        static LogBlock& SPRUCE_LOG;
         static RockBlock& COBBLESTONE;
         static RockBlock& STONE;
         static SandBlock& SAND;
+        static LeafBlock& ACACIA_LEAF;
+        static LeafBlock& BIRCH_LEAF;
+        static LeafBlock& DARK_OAK_LEAF;
+        static LeafBlock& JUNGLE_LEAF;
+        static LeafBlock& MANGROVE_LEAF;
         static LeafBlock& OAK_LEAF;
+        static LeafBlock& SPRUCE_LEAF;
         static WaterBlock& WATER;
         static PlantBlock& GRASS;
         static PlantBlock& FERN;
@@ -66,8 +83,21 @@ namespace cybrion
         static PlantBlock& LILY_OF_THE_VALLEY;
 
         static BrickBlock& STONE_BRICK;
+
+        static FenceBlock& ACACIA_FENCE;
+        static FenceBlock& BIRCH_FENCE;
+        static FenceBlock& DARK_OAK_FENCE;
+        static FenceBlock& JUNGLE_FENCE;
+        static FenceBlock& MANGROVE_FENCE;
         static FenceBlock& OAK_FENCE;
+        static FenceBlock& SPRUCE_FENCE;
+        static FenceGateBlock& ACACIA_FENCE_GATE;
+        static FenceGateBlock& BIRCH_FENCE_GATE;
+        static FenceGateBlock& DARK_OAK_FENCE_GATE;
+        static FenceGateBlock& JUNGLE_FENCE_GATE;
+        static FenceGateBlock& MANGROVE_FENCE_GATE;
         static FenceGateBlock& OAK_FENCE_GATE;
+        static FenceGateBlock& SPRUCE_FENCE_GATE;
 
         static TableclothBlock& TABLECLOTH;
         static ChessBlock& WHITE_KING;
@@ -83,6 +113,40 @@ namespace cybrion
         static ChessBlock& BLACK_KNIGHT;
         static ChessBlock& BLACK_PAWN;
 
+        static WoolBlock& YELLOW_WOOL;
+        static WoolBlock& WHITE_WOOL;
+        static WoolBlock& RED_WOOL;
+        static WoolBlock& PURPLE_WOOL;
+        static WoolBlock& PINK_WOOL;
+        static WoolBlock& ORANGE_WOOL;
+        static WoolBlock& MAGENTA_WOOL;
+        static WoolBlock& LIME_WOOL;
+        static WoolBlock& LIGHT_GRAY_WOOL;
+        static WoolBlock& LIGHT_BLUE_WOOL;
+        static WoolBlock& GREEN_WOOL;
+        static WoolBlock& GRAY_WOOL;
+        static WoolBlock& CYAN_WOOL;
+        static WoolBlock& BROWN_WOOL;
+        static WoolBlock& BLUE_WOOL;
+        static WoolBlock& BLACK_WOOL;
+
+        static ConcreteBlock& YELLOW_CONCRETE;
+        static ConcreteBlock& WHITE_CONCRETE;
+        static ConcreteBlock& RED_CONCRETE;
+        static ConcreteBlock& PURPLE_CONCRETE;
+        static ConcreteBlock& PINK_CONCRETE;
+        static ConcreteBlock& ORANGE_CONCRETE;
+        static ConcreteBlock& MAGENTA_CONCRETE;
+        static ConcreteBlock& LIME_CONCRETE;
+        static ConcreteBlock& LIGHT_GRAY_CONCRETE;
+        static ConcreteBlock& LIGHT_BLUE_CONCRETE;
+        static ConcreteBlock& GREEN_CONCRETE;
+        static ConcreteBlock& GRAY_CONCRETE;
+        static ConcreteBlock& CYAN_CONCRETE;
+        static ConcreteBlock& BROWN_CONCRETE;
+        static ConcreteBlock& BLUE_CONCRETE;
+        static ConcreteBlock& BLACK_CONCRETE;
+
         static Blocks& Get();
     private:
         static RockBlock& ROCK;
@@ -94,6 +158,8 @@ namespace cybrion
         static FenceGateBlock& FENCE_GATE;
         static PlantBlock& PLANT;
         static ChessBlock& CHESS;
+        static WoolBlock& WOOL;
+        static ConcreteBlock& CONCRETE;
 
         static Blocks s_blocks;
     };

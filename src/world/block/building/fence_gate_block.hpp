@@ -8,7 +8,7 @@ namespace cybrion
         FenceGateBlock,
         BlockType::FENCE_GATE,
         block::bool_state<"open">,
-        block::state<WoodType, "type", 1>,
+        block::state<WoodType, "type", 7>,
         block::state<BlockHorizontalFace, "face", 4>
     >
     {

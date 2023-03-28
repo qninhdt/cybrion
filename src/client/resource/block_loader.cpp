@@ -62,7 +62,7 @@ namespace cybrion
 
     void BlockLoader::loadTextures()
     {
-        constexpr i32 BLOCK_TEXTURE_SIZE = 256;
+        constexpr i32 BLOCK_TEXTURE_SIZE = 32;
         string folderPath = Application::Get().getResourcePath("textures/blocks/");
 
         // count number of block textures
@@ -72,7 +72,7 @@ namespace cybrion
         }
 
         // init texture array
-        m_textureArray.init(BLOCK_TEXTURE_SIZE, BLOCK_TEXTURE_SIZE, layerCount, 4, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+        m_textureArray.init(BLOCK_TEXTURE_SIZE, BLOCK_TEXTURE_SIZE, layerCount, 0, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 
         // loading textures
         stbi_set_flip_vertically_on_load(true);
@@ -87,27 +87,40 @@ namespace cybrion
             CYBRION_CLIENT_TRACE("Loaded block texture: {}", name);
 
             i32 width, height, nchannels;
-            u8* data = stbi_load(path.c_str(), &width, &height, &nchannels, STBI_rgb_alpha);
+            u8* data = stbi_load(path.c_str(), &width, &height, &nchannels, 0);
 
             if ((width & (width - 1)) || (height & (height - 1)))
             {
                 CYBRION_CLIENT_ERROR("Incorrect texture size");
                 continue;
             }
+
+            if (nchannels == 3)
+            {
+                u8* new_data = (u8*)malloc(width * height * 4);
+                for (int i = 0; i < width * height; i++) {
+                    new_data[i * 4] = data[i * 3];
+                    new_data[i * 4 + 1] = data[i * 3 + 1];
+                    new_data[i * 4 + 2] = data[i * 3 + 2];
+                    new_data[i * 4 + 3] = 255;
+                }
+                free(data);
+                data = new_data;
+            }
             
             u32 id = name == "no_texture" ? 0 : m_textureIdMap.size() + (m_textureIdMap.count("no_texture") == 0);
             m_textureIdMap[name] = id;
 
-            u8* resizedData = (u8*)malloc(BLOCK_TEXTURE_SIZE * BLOCK_TEXTURE_SIZE * nchannels);
+            u8* resizedData = (u8*)malloc(BLOCK_TEXTURE_SIZE * BLOCK_TEXTURE_SIZE * 4);
 
             stbir_resize_uint8_generic(data, width, height, 0,
                 resizedData, BLOCK_TEXTURE_SIZE, BLOCK_TEXTURE_SIZE, 0,
-                nchannels, STBIR_FLAG_ALPHA_USES_COLORSPACE, -1, STBIR_EDGE_ZERO,
+                4, STBIR_FLAG_ALPHA_USES_COLORSPACE, -1, STBIR_EDGE_ZERO,
                 STBIR_FILTER_BOX, STBIR_COLORSPACE_LINEAR, NULL);
 
             m_textureArray.setSubImage(id, resizedData);
 
-            stbi_image_free(data);
+            free(data);
             free(resizedData);
         }
     }

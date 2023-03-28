@@ -1,0 +1,63 @@
+"[color=yellow]":
+  display_name: Yellow Concrete
+  all: yellow_concrete
+
+"[color=white]":
+  display_name: White Concrete
+  all: white_concrete
+
+"[color=red]":
+  display_name: Red Concrete
+  all: red_concrete
+
+"[color=purple]":
+  display_name: Purple Concrete
+  all: purple_concrete
+
+"[color=pink]":
+  display_name: Pink Concrete
+  all: pink_concrete
+
+"[color=orange]":
+  display_name: Orange Concrete
+  all: orange_concrete
+
+"[color=magenta]":
+  display_name: Yellow Concrete
+  all: magenta_concrete
+
+"[color=lime]":
+  display_name: Lime Concrete
+  all: lime_concrete
+
+"[color=light_gray]":
+  display_name: Light Gray Concrete
+  all: light_gray_concrete
+
+"[color=light_blue]":
+  display_name: Light Blue Concrete
+  all: light_blue_concrete
+
+"[color=green]":
+  display_name: Green Concrete
+  all: green_concrete
+
+"[color=gray]":
+  display_name: Gray Concrete
+  all: gray_concrete
+
+"[color=cyan]":
+  display_name: Cyan Concrete
+  all: cyan_concrete
+
+"[color=brown]":
+  display_name: Brown Concrete
+  all: brown_concrete
+
+"[color=blue]":
+  display_name: Blue Concrete
+  all: blue_concrete
+
+"[color=black]":
+  display_name: Black Concrete
+  all: black_concrete

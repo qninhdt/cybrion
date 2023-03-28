@@ -19,6 +19,26 @@ int main()
     RegisterEnum(BlockType::PLANT, "plant");
     RegisterEnum(BlockType::TABLECLOTH, "tablecloth");
     RegisterEnum(BlockType::CHESS, "chess");
+    RegisterEnum(BlockType::WOOL, "wool");
+    RegisterEnum(BlockType::CONCRETE, "concrete");
+
+    // block color
+    RegisterEnum(BlockColor::YELLOW     , "yellow");
+    RegisterEnum(BlockColor::WHITE      , "white");
+    RegisterEnum(BlockColor::RED        , "red");
+    RegisterEnum(BlockColor::PURPLE     , "purple");
+    RegisterEnum(BlockColor::PINK       , "pink");
+    RegisterEnum(BlockColor::ORANGE     , "orange");
+    RegisterEnum(BlockColor::MAGENTA    , "magenta");
+    RegisterEnum(BlockColor::LIME       , "lime");
+    RegisterEnum(BlockColor::LIGHT_GRAY , "light_gray");
+    RegisterEnum(BlockColor::LIGHT_BLUE , "light_blue");
+    RegisterEnum(BlockColor::GREEN      , "green");
+    RegisterEnum(BlockColor::GRAY       , "gray");
+    RegisterEnum(BlockColor::CYAN       , "cyan");
+    RegisterEnum(BlockColor::BROWN      , "brown");
+    RegisterEnum(BlockColor::BLUE       , "blue");
+    RegisterEnum(BlockColor::BLACK      , "black");
 
     // dirt type
     RegisterEnum(SoilType::DIRT   , "dirt");
@@ -77,8 +97,14 @@ int main()
     RegisterEnum(BlockHorizontalFace::NORTH, "north");
 
     // wood type
-    RegisterEnum(WoodType::OAK, "oak");
-    
+    RegisterEnum(WoodType::ACACIA   , "acacia");
+    RegisterEnum(WoodType::BIRCH    , "birch");
+    RegisterEnum(WoodType::DARK_OAK , "dark_oak");
+    RegisterEnum(WoodType::JUNGLE   , "jungle");
+    RegisterEnum(WoodType::MANGROVE , "mangrove");
+    RegisterEnum(WoodType::OAK      , "oak");
+    RegisterEnum(WoodType::SPRUCE   , "spruce");
+
     // plant type
     RegisterEnum(PlantType::GRASS       , "grass");
     RegisterEnum(PlantType::FERN        , "fern");

@@ -9,7 +9,7 @@ namespace cybrion
     class FenceBlock : public TBlock <
         FenceBlock,
         BlockType::FENCE,
-        block::state<WoodType, "type", 1>,
+        block::state<WoodType, "type", 7>,
         block::state<u32, "east"  , 2>,
         block::state<u32, "north" , 2>,
         block::state<u32, "west"  , 2>,

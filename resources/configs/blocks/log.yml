@@ -1,11 +1,47 @@
 "[]":
+  sound: wood
+
+"[type=acacia]":
+  display_name: Acacia Log
+  top: acacia_log_top
+  side: acacia_log
+  bottom: acacia_log_top
+
+"[type=birch]":
+  display_name: Birch Log
+  top: birch_log_top
+  side: birch_log
+  bottom: birch_log_top
+
+"[type=dark_oak]":
+  display_name: Dark Oak Log
+  top: dark_oak_log_top
+  side: dark_oak_log
+  bottom: dark_oak_log_top
+
+"[type=jungle]":
+  display_name: Jungle Log
+  top: jungle_log_top
+  side: jungle_log
+  bottom: jungle_log_top
+
+"[type=mangrove]":
+  display_name: Mangrove Log
+  top: mangrove_log_top
+  side: mangrove_log
+  bottom: mangrove_log_top
 
 "[type=oak]":
-  display_name: Oak
+  display_name: Oak Log
   top: oak_log_top
-  side: oak_log_side
+  side: oak_log
   bottom: oak_log_top
-  sound: wood
+
+"[type=spruce]":
+  display_name: Spruce Log
+  top: spruce_log_top
+  side: spruce_log
+  bottom: spruce_log_top
 
 "[axis=x]":
   rotate_z: 270

@@ -6,7 +6,13 @@ namespace cybrion
 {
     enum class WoodType
     {
-        OAK
+        ACACIA   ,
+        BIRCH    ,
+        DARK_OAK ,
+        JUNGLE   ,
+        MANGROVE ,
+        OAK      ,
+        SPRUCE   ,
     };
 
     enum class LogAxis
@@ -19,7 +25,7 @@ namespace cybrion
     class LogBlock : public TBlock<
         LogBlock,
         BlockType::LOG,
-        block::state<WoodType, "type", 1>,
+        block::state<WoodType, "type", 7>,
         block::state<LogAxis, "axis", 3>
     >
     {

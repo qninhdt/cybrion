@@ -11,6 +11,7 @@
   
 "[type=clay]":
   display_name: Clay
+  all: clay
   
 "[type=silt]":
   display_name: Silt

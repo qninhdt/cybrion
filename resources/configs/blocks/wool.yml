@@ -1,0 +1,63 @@
+"[color=yellow]":
+  display_name: Yellow Wool
+  all: yellow_wool
+
+"[color=white]":
+  display_name: White Wool
+  all: white_wool
+
+"[color=red]":
+  display_name: Red Wool
+  all: red_wool
+
+"[color=purple]":
+  display_name: Purple Wool
+  all: purple_wool
+
+"[color=pink]":
+  display_name: Pink Wool
+  all: pink_wool
+
+"[color=orange]":
+  display_name: Orange Wool
+  all: orange_wool
+
+"[color=magenta]":
+  display_name: Yellow Wool
+  all: magenta_wool
+
+"[color=lime]":
+  display_name: Lime Wool
+  all: lime_wool
+
+"[color=light_gray]":
+  display_name: Light Gray Wool
+  all: light_gray_wool
+
+"[color=light_blue]":
+  display_name: Light Blue Wool
+  all: light_blue_wool
+
+"[color=green]":
+  display_name: Green Wool
+  all: green_wool
+
+"[color=gray]":
+  display_name: Gray Wool
+  all: gray_wool
+
+"[color=cyan]":
+  display_name: Cyan Wool
+  all: cyan_wool
+
+"[color=brown]":
+  display_name: Brown Wool
+  all: brown_wool
+
+"[color=blue]":
+  display_name: Blue Wool
+  all: blue_wool
+
+"[color=black]":
+  display_name: Black Wool
+  all: black_wool

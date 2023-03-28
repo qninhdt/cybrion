@@ -22,6 +22,30 @@
   model: fence_gate
   collision: [0, 0.15625, 0, 1, 0.6875, 0.125]
 
+"[type=acacia]":
+  display_name: Acacia Fence Gate
+  model_tex: acacia_plank
+
+"[type=birch]":
+  display_name: Birch Fence Gate
+  model_tex: birch_plank
+
+"[type=dark_oak]":
+  display_name: Dark Oak Fence Gate
+  model_tex: dark_oak_plank
+
+"[type=jungle]":
+  display_name: Jungle Fence Gate
+  model_tex: jungle_plank
+
+"[type=mangrove]":
+  display_name: Mangrove Fence Gate
+  model_tex: mangrove_plank
+
 "[type=oak]":
   display_name: Oak Fence Gate
   model_tex: oak_plank
+
+"[type=spruce]":
+  display_name: Spruce Fence Gate
+  model_tex: spruce_plank

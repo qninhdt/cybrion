@@ -381,6 +381,19 @@ namespace cybrion
         config.set_float("player_y", playerEntity->getPos().y);
         config.set_float("player_z", playerEntity->getPos().z);
 
+        auto& inventory = player.getInventory();
+        jbt::tag inventoryTag(jbt::tag_type::LIST);
+
+        for (int i = 0; i < Player::INVENTORY_SIZE; ++i)
+        {
+            if (inventory[i])
+                inventoryTag.add_int(inventory[i]->getId());
+            else
+                inventoryTag.add_int(-1);
+        }
+
+        config.set_tag("player_inventory", inventoryTag);
+
         jbt::save_tag(config, path + "/world.jbt");
         
         for (auto& [pos, chunk] : m_chunkMap)
@@ -412,9 +425,6 @@ namespace cybrion
 
         auto tag = chunk->toJBT();
         region->write(localPos.x * 32 * 32 + localPos.y * 32 + localPos.z, tag);
-
-        /// BUG:FFSA
-        //delete[] tag.get_byte_array("blocks").data;
     }
 
     void World::syncRegionFiles()
@@ -434,6 +444,14 @@ namespace cybrion
         config.set_float("player_y", 80);
         config.set_float("player_z", 0);
 
+        jbt::tag inventoryTag(jbt::tag_type::LIST);
+        for (i32 i = 0; i < Player::INVENTORY_SIZE; ++i)
+        {
+            inventoryTag.add_int(-1);
+        }
+
+        config.set_tag("player_inventory", inventoryTag);
+
         string worldPath = Application::Get().getSavePath(name);
 
         // create world folder
@@ -451,12 +469,24 @@ namespace cybrion
         auto world = std::make_shared<World>(config.get_string("name"));
         world->m_savePath = path;
 
+        auto& player = Game::Get().getPlayer();
+
         // spawn player
-        Game::Get().getPlayer().setEntity(world->spawnEntity({
+        player.setEntity(world->spawnEntity({
             config.get_float("player_x"),
             config.get_float("player_y"),
             config.get_float("player_z")
         }));
+
+        auto& inventory = player.getInventory();
+        jbt::tag& inventoryTag = config.get_tag("player_inventory");
+        for (i32 i = 0; i < Player::INVENTORY_SIZE; ++i)
+        {
+            i32 blockId = inventoryTag.get_int(i);
+
+            if (blockId != -1)
+                inventory[i] = &Blocks::Get().getBlock(blockId);
+        }
 
         return world;
     }
