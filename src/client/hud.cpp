@@ -319,6 +319,7 @@ namespace cybrion
                             if (renderBlock(blocks[idx]))
                             {
                                 inventory[currentSlot] = blocks[idx];
+                                currentSlot = (currentSlot + 1) % Player::INVENTORY_SIZE;
                             }
                         }
 
