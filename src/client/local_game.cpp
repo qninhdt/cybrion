@@ -30,6 +30,8 @@ namespace cybrion
         BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.00f, { 1, 1, 1 });
 
         m_camera.setTarget(m_player.getEntity());
+
+        m_hud.load();
     }
 
     void LocalGame::tick()
@@ -47,6 +49,8 @@ namespace cybrion
             renderChunkBorder();
         
         renderSelecingBlock();
+
+        m_hud.render(Application::Get().getDeltaTime());
     }
 
     void LocalGame::renderChunkBorder()
@@ -176,6 +180,16 @@ namespace cybrion
             // close window
             case KeyCode::ESCAPE:
                 Application::Get().close();
+                break;
+            // toggle block menu
+            case KeyCode::E:
+                m_hud.showBlockMenu = !m_hud.showBlockMenu;
+
+                if (m_hud.showBlockMenu)
+                    Application::Get().enableCursor();
+                else
+                    Application::Get().disableCursor();
+
                 break;
             }
         }

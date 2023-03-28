@@ -1,4 +1,4 @@
 .vscode
 .vs
-.cjbt
+*.hjbt
 out

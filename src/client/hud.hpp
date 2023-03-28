@@ -16,7 +16,7 @@ namespace cybrion
         
         void renderInventory();
         void renderBlockMenu();
-        bool renderBlock(const Block& block);
+        bool renderBlock(Block* block);
 
         ~HUD();
 

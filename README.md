@@ -18,7 +18,7 @@
 - [x] Custom block model (.obj)
 - [x] Flower
 - [ ] Improve world generation
-- [ ] Inventory
+- [x] Inventory
 - [ ] Add sky
 - [x] Save system
 - [ ] Game gui

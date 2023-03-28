@@ -184,9 +184,6 @@ namespace cybrion
         // generate global Indexed Buffer Object
         GL::Mesh::GenerateGlobalIBO();
 
-        // load debug screen
-        m_hud.load();
-
         CYBRION_CLIENT_TRACE("Start loading resources ({})", getResourcePath(""));
         m_shaderManager.loadShaders();
     }
@@ -282,8 +279,6 @@ namespace cybrion
             if (m_game)
                 m_game->render(lerpFactor);
 
-            m_hud.render(deltaTime);
-          
             // update render
             glfwSwapBuffers(m_window);
             glfwPollEvents();

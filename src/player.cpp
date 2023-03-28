@@ -16,6 +16,7 @@ namespace cybrion
         m_inventory[3] = &Blocks::COBBLESTONE;
         m_inventory[4] = &Blocks::OAK_FENCE.set<"east">(1).set<"west">(1);
         m_inventory[5] = &Blocks::OAK_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH);
+        m_inventory[6] = &Blocks::CORNFLOWER;
     }
 
     ref<Entity> Player::getEntity() const

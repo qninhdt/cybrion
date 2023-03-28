@@ -14,7 +14,7 @@ namespace cybrion
     using OpaqueCubeShader = GL::Shader<"MVP", "enable_diffuse", "enable_ao">;
     using BlockModelShader = GL::Shader<"MVP">;
     using BasicShader = GL::Shader<"MVP">;
-    using BasicBlockShader = GL::Shader<"MVP">;
+    using BasicBlockShader = GL::Shader<"MVP", "use_light">;
 
     class WorldRenderer
     {

@@ -276,6 +276,9 @@ namespace cybrion
     {
         auto result = updateBlock(pos, block.getPlacedBlock(pos));
 
+        if (result.chunk == nullptr)
+            return result;
+
         if (result.chunk->m_hasStructure)
         {
            if (result.block == Blocks::AIR)

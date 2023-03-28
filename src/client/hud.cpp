@@ -16,7 +16,55 @@ namespace cybrion
                     &Blocks::COBBLESTONE,
                     &Blocks::SAND,
                     &Blocks::OAK_LOG,
-                    &Blocks::OAK_LEAF
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                    &Blocks::OAK_LEAF,
+                }
+            },
+            {
+                "Plant",
+                {
+                    &Blocks::GRASS,
+                    &Blocks::FERN,
+                    &Blocks::DANDELION,
+                    &Blocks::POPPY,
+                    &Blocks::BLUE_ORCHID,
+                    &Blocks::ALLIUM,
+                    &Blocks::AZURE,
+                    &Blocks::RED_TULIP,
+                    &Blocks::WHITE_TULIP,
+                    &Blocks::PINK_TULIP,
+                    &Blocks::OXEYE_DAISY,
+                    &Blocks::CORNFLOWER,
+                    &Blocks::LILY_OF_THE_VALLEY
                 }
             },
             {
@@ -123,8 +171,10 @@ namespace cybrion
 
         ImGui::End();
 
-        //renderInventory();
-        renderBlockMenu();
+        if (showBlockMenu)
+            renderBlockMenu();
+        else
+            renderInventory();
 
         // render everything to window
         ImGui::Render();
@@ -169,7 +219,7 @@ namespace cybrion
             ImGui::BeginChildFrame(idx + 240404, ImVec2(ITEM_FRAME_SIZE, ITEM_FRAME_SIZE), ImGuiWindowFlags_NoScrollbar);
 
             if (block)
-                renderBlock(*block);
+                renderBlock(block);
 
             ImGui::EndChildFrame();
             ImGui::SameLine();
@@ -200,6 +250,9 @@ namespace cybrion
 
     void HUD::renderBlockMenu()
     {
+        auto& player = LocalGame::Get().getPlayer();
+        auto& inventory = player.getInventory();
+
         // render black background
         ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
         ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
@@ -215,19 +268,34 @@ namespace cybrion
         ImGui::PopStyleColor();
 
         // render menu
+        static string currentTab = std::get<0>(m_blockMenu[0]);
+        static i32 currentSlot = 0;
+        
         ImGui::SetNextWindowBgAlpha(0.3);
         ImGui::SetNextWindowPos(ImVec2(m_io->DisplaySize.x * 0.5f, 50), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
+        ImGui::Begin("Block Menu Header", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
 
-        ImGui::Begin("Block Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
-
-        ImGui::BeginTabBar("Block Menu Tab");
-
-        static string currentTab = std::get<0>(m_blockMenu[0]);
-        static i32 selectedSlot = -1;
-
-        for (auto [name, blocks] : m_blockMenu)
-            if (ImGui::TabItemButton(name.c_str()))
+        for (auto& [name, blocks] : m_blockMenu)
+        {
+            if (ImGui::Button(name.c_str()))
+            {
                 currentTab = name;
+            }
+            ImGui::SameLine();
+        }
+
+        ImGui::End();
+
+        ImGui::SetNextWindowBgAlpha(0.3);
+        ImGui::SetNextWindowPos(ImVec2(m_io->DisplaySize.x * 0.5f, 100), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(-1, m_io->DisplaySize.y * 0.5), ImVec2(-1, m_io->DisplaySize.y * 0.5), nullptr);
+        ImGui::Begin("Block Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3);
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 1));
 
         for (auto [name, blocks] : m_blockMenu)
         {
@@ -237,49 +305,111 @@ namespace cybrion
                 i32 nrows = std::ceil(1.0f * blocks.size() / ncols);
 
                 i32 idx = 0;
-
-                ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-                ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3);
-                ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
-                ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 1));
-
+                
                 for (i32 i = 0; i < nrows; ++i)
                 {
                     for (i32 j = 0; j < ncols; ++j)
                     {
                         ImGui::SetNextWindowBgAlpha(0.2);
+                        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
                         ImGui::BeginChildFrame(idx + 140404, ImVec2(ITEM_FRAME_SIZE, ITEM_FRAME_SIZE), ImGuiWindowFlags_NoScrollbar);
 
                         if (idx < blocks.size())
-                            renderBlock(*blocks[idx]);
+                        {
+                            if (renderBlock(blocks[idx]))
+                            {
+                                inventory[currentSlot] = blocks[idx];
+                            }
+                        }
 
                         ImGui::EndChildFrame();
                         ImGui::SameLine();
 
                         idx += 1;
+
+                        ImGui::PopStyleVar();
                     }
                     ImGui::NewLine();
                 }
 
-                ImGui::PopStyleVar(3);
-                ImGui::PopStyleColor(2);
+                
             }
         }
 
-        ImGui::EndTabBar();    
+        ImGui::PopStyleVar(3);
+        ImGui::PopStyleColor(2);
+
+        ImGui::End();
+
+        i32 ncols = Player::DISPLAYED_INVENTORY_SIZE;
+        i32 nrows = Player::INVENTORY_SIZE / ncols;
+
+        ImGui::SetNextWindowBgAlpha(0.3);
+        ImGui::SetNextWindowPos(ImVec2(m_io->DisplaySize.x * 0.5f, m_io->DisplaySize.y - 20), ImGuiCond_Always, ImVec2(0.5f, 1));
+        ImGui::Begin("Inventory In Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
+
+        i32 idx = 0;
+
+        for (i32 i = 0; i < nrows; ++i)
+        {
+            for (i32 j = 0; j < ncols; ++j)
+            {
+                ImGui::SetNextWindowBgAlpha(0.2);
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+                ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3);
+                
+                if (idx == currentSlot)
+                    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.72f, 0.72f, 0.72f, 1));
+
+                ImGui::BeginChildFrame(idx + 140404, ImVec2(ITEM_FRAME_SIZE, ITEM_FRAME_SIZE), ImGuiWindowFlags_NoScrollbar);
+
+                if (idx == currentSlot)
+                    ImGui::PopStyleColor();
+
+                if (inventory[idx])
+                {
+                    if (renderBlock(inventory[idx]))
+                        currentSlot = idx;
+                }
+                else
+                {
+                    ImGui::PushID(1000 + idx);
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.1));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0.2));
+                    
+                    if (ImGui::Button("", ImVec2(ITEM_FRAME_SIZE, ITEM_FRAME_SIZE)))
+                        currentSlot = idx;
+
+                    ImGui::PopStyleColor(3);
+                    ImGui::PopID();
+                }
+
+                ImGui::EndChildFrame();
+                ImGui::SameLine();
+                ImGui::PopStyleVar(2);
+
+                idx += 1;
+            }
+            ImGui::NewLine();
+        }
+
         ImGui::End();
     }
 
-    bool HUD::renderBlock(const Block& block)
+    bool HUD::renderBlock(Block* block)
     {
-        if (m_itemFrameMap.find(block.getId()) == m_itemFrameMap.end())
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.1));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0.2));
+
+        if (m_itemFrameMap.find(block->getId()) == m_itemFrameMap.end())
         {
-            m_itemFrameMap[block.getId()] = std::make_shared<GL::Framebuffer>();
-            m_itemFrameMap[block.getId()]->alloc(ITEM_FRAME_SIZE, ITEM_FRAME_SIZE);
+            m_itemFrameMap[block->getId()] = std::make_shared<GL::Framebuffer>();
+            m_itemFrameMap[block->getId()]->alloc(ITEM_FRAME_SIZE, ITEM_FRAME_SIZE);
         }
 
-        auto itemFrame = m_itemFrameMap[block.getId()];
+        auto itemFrame = m_itemFrameMap[block->getId()];
 
         itemFrame->bind();
         glViewport(0, 0, ITEM_FRAME_SIZE, ITEM_FRAME_SIZE);
@@ -287,7 +417,7 @@ namespace cybrion
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        auto mesh = LocalGame::Get().getBlockRenderer(block.getId()).getMesh();
+        auto mesh = LocalGame::Get().getBlockRenderer(block->getId()).getMesh();
         auto shader = ShaderManager::Get().getShader<BasicBlockShader>("basic_block");
 
         mesh->setRot({ -pi / 6, -pi / 6, 0 });
@@ -295,15 +425,12 @@ namespace cybrion
 
         shader.use();
         shader.setUniform<"MVP">(mesh->getModelMat());
+        shader.setUniform<"use_light">(u32(block->getShape() == BlockShape::CUBE));
         BlockLoader::Get().bindTextureArray();
 
         mesh->drawTriangles();
 
         itemFrame->unbind();
-
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.1));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0.2));
 
         bool flag = ImGui::ImageButton(
             (ImTextureID)itemFrame->getTexture().getId(),

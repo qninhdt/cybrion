@@ -6,6 +6,7 @@
 #include "client/graphic/block_renderer.hpp"
 #include "client/key_code.hpp"
 #include "core/stopwatch.hpp"
+#include "client/hud.hpp"
 #include "client/graphic/world_renderer.hpp"
 
 namespace cybrion
@@ -62,6 +63,7 @@ namespace cybrion
         void createBlockRenderers();
 
         Camera m_camera;
+        HUD m_hud;
         
         bool m_showWireframe;
         bool m_showChunkBoder;

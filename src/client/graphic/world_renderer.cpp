@@ -115,8 +115,6 @@ namespace cybrion
         }
 
         m_blockModelShader.use(); 
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
         for (auto& renderer : renderChunks)
         {
             auto& modelMesh = renderer->modelMesh;
@@ -131,7 +129,6 @@ namespace cybrion
                 modelMesh.drawTriangles();
             }
         }
-        glDisable(GL_CULL_FACE);
 
         if (showEntityBorder)
         {

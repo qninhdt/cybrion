@@ -66,7 +66,6 @@ namespace cybrion
         string m_rootPath;
 
         FrameProfiler m_frameProfiler;
-        HUD m_hud;
         ShaderManager m_shaderManager;
         
         irrklang::ISoundEngine* m_soundEngine;

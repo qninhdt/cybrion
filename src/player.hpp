@@ -23,7 +23,7 @@ namespace cybrion
     class Player
     {
     public:
-        static constexpr i32 INVENTORY_SIZE = 16;
+        static constexpr i32 INVENTORY_SIZE = 18;
         static constexpr i32 DISPLAYED_INVENTORY_SIZE = 9;
 
         Player();
