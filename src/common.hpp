@@ -41,7 +41,7 @@
 #ifdef CYBRION_DEBUG
 #define CYBRION_ROOT_PATH "D:/github/cybrion/"
 #else
-#define CYBRION_ROOT_PATH "D:/github/cybrion/"
+#define CYBRION_ROOT_PATH
 #endif
 
 namespace cybrion

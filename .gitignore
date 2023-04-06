@@ -2,4 +2,5 @@
 .vs
 *.hjbt
 out
+build
 CMakeSettings.json
