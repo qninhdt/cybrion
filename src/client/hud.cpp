@@ -109,6 +109,7 @@ namespace cybrion
         };
 
         m_window = Application::Get().getWindow();
+        m_context = Application::Get().getContext();
 
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -116,7 +117,7 @@ namespace cybrion
 
         ImGui::StyleColorsDark();
 
-        ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+        ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
         ImGui_ImplOpenGL3_Init("#version 430");
 
         m_crosshairTex.load("hud/crosshair.png");
@@ -131,8 +132,11 @@ namespace cybrion
         auto& game = LocalGame::Get();
         auto& camera = game.getCamera();
 
+        if (!app.isCursorEnable())
+            ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+
         ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
         // render crosshair
@@ -209,9 +213,7 @@ namespace cybrion
 
         // render everything to window
         ImGui::Render();
-        int display_w, display_h;
-        glfwGetFramebufferSize(m_window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
+        glViewport(0, 0, Application::Get().getWidth(), Application::Get().getHeight());
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
@@ -484,7 +486,7 @@ namespace cybrion
     HUD::~HUD()
     {
         ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
     }
 }

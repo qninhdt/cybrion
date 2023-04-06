@@ -21,7 +21,8 @@ namespace cybrion
 
         void startGame();
 
-        GLFWwindow* getWindow() const;
+        SDL_Window* getWindow() const;
+        void* getContext() const;
 
         u32 getWidth() const;
         u32 getHeight() const;
@@ -29,9 +30,7 @@ namespace cybrion
         f32 getAspect() const;
         bool isClosed() const;
         bool isPlayingGame() const;
-        bool isKeyPressed(KeyCode key) const;
-        bool isRightMouseDown() const;
-        bool isLeftMouseDown() const;
+        bool isKeyPressed(SDL_Scancode key) const;
 
         void toggleCursor();
         void enableCursor();
@@ -40,8 +39,6 @@ namespace cybrion
         void playSound(const string& name);
 
         bool isCursorEnable() const;
-
-        vec2 getDeltaMousePos() const;
         
         ShaderManager& getShaderManager();
         string getResourcePath(const string& path) const;
@@ -55,11 +52,10 @@ namespace cybrion
         static Application& Get();
 
     private:
-        static void GlfwResizeCallback(GLFWwindow* window, int width, int height);
-        static void GlfwCloseCallback(GLFWwindow* window);
-        static void GlfwMouseMovedCallback(GLFWwindow* window, double x, double y);
-        static void GlfwKeyPressedCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-        static void GlfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+        void resizeCallback(i32 width, i32 height);
+        void closeCallback();
+        void keyPressedCallback(SDL_Scancode key, SDL_EventType type);
+        void scrollCallback(f64 xoffset, f64 yoffset);
 
         static Application* s_application;
 
@@ -75,12 +71,13 @@ namespace cybrion
         bool m_playingGame;
 
         // window
-        GLFWwindow* m_window;
+        SDL_Window* m_window;
+        SDL_GLContext m_context;
         u32 m_width;
         u32 m_height;
         uvec2 m_pos;
-        vec2 m_mousePos;
-        vec2 m_lastMousePos;
+        ivec2 m_mousePos;
+        ivec2 m_lastMousePos;
         string m_title;
         bool m_isClosed;
         bool m_enableCursor;

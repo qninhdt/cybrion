@@ -24,14 +24,15 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <robin_hood.h>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/hash.hpp>
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
-#include <imgui_impl_glfw.h>
+#include <imgui_impl_sdl2.h>
 #include <yaml-cpp/yaml.h>
 #include <entt/entt.hpp>
 #include <stb_image.h>

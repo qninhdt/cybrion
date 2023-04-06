@@ -25,7 +25,8 @@ namespace cybrion
     private:
         vector<tuple<string, vector<Block*>>> m_blockMenu;
         
-        GLFWwindow* m_window;
+        SDL_Window* m_window;
+        void* m_context;
         ImGuiIO* m_io;
         bool show_demo_window = true;
         bool show_another_window = false;

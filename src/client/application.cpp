@@ -105,14 +105,15 @@ namespace cybrion
     }
 
     Application::Application() :
-        m_width(1500),
-        m_height(800),
+        m_width(1000),
+        m_height(600),
         m_mousePos(0, 0),
         m_lastMousePos(0, 0),
         m_title("Cybrion v1.0"),
         m_isClosed(false),
         m_enableCursor(true),
         m_window(nullptr),
+        m_context(nullptr),
         m_pos(0, 0),
         m_game(nullptr),
         m_soundEngine(nullptr),
@@ -124,19 +125,26 @@ namespace cybrion
 
     bool Application::open()
     {
-        // init GLFW
-        if (!glfwInit())
+        // init SDL
+        if (SDL_Init(SDL_INIT_VIDEO) < 0)
         {
-            CYBRION_CLIENT_ERROR("Cannot initialize GLFW");
+            CYBRION_CLIENT_ERROR("Cannot initialize SDL");
             return false;
         }
 
-        glfwWindowHint(GLFW_SAMPLES, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        SDL_GL_LoadLibrary(nullptr);
 
-        m_window = glfwCreateWindow((i32)m_width, (i32)m_height, m_title.c_str(), nullptr, nullptr);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+        m_window = SDL_CreateWindow(
+            m_title.c_str(),
+            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+            m_width, m_height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+        );
 
         if (!m_window)
         {
@@ -144,10 +152,16 @@ namespace cybrion
             return false;
         }
 
-        glfwMakeContextCurrent(m_window);
+        m_context = SDL_GL_CreateContext(m_window);
+
+        if (!m_context)
+        {
+            CYBRION_CLIENT_ERROR("Cannot create OpenGL context");
+            return false;
+        }
 
         // load OpenGL
-        if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        if (gladLoadGLLoader(SDL_GL_GetProcAddress))
         {
             char* name = (char*) glGetString(GL_RENDERER);
             char* version = (char*) glGetString(GL_VERSION);
@@ -159,14 +173,6 @@ namespace cybrion
             CYBRION_CLIENT_ERROR("Cannot load OpenGL");
             return false;
         }
-
-        glfwSetWindowUserPointer(m_window, this);
-
-        glfwSetWindowSizeCallback(m_window, GlfwResizeCallback);
-        glfwSetWindowCloseCallback(m_window, GlfwCloseCallback);
-        glfwSetCursorPosCallback(m_window, GlfwMouseMovedCallback);
-        glfwSetKeyCallback(m_window, GlfwKeyPressedCallback);
-        glfwSetScrollCallback(m_window, GlfwScrollCallback);
 
         glClearColor(1, 1, 1, 1);
         glEnable(GL_DEPTH_TEST);
@@ -202,32 +208,81 @@ namespace cybrion
         stopwatch.reset();
         fpsStopwatch.reset();
 
+        SDL_Event event;
+        bool mouseFlag = true;
+
         while (!isClosed())
         {
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_WINDOWEVENT)
+                {
+                    if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+                    {
+                        resizeCallback(event.window.data1, event.window.data2);
+                    }
+                    if (event.window.event == SDL_WINDOWEVENT_CLOSE)
+                    {
+                        close();
+                    }
+                }
+                if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+                {
+                    keyPressedCallback(event.key.keysym.scancode, (SDL_EventType)event.type);
+                }
+                if (event.type == SDL_MOUSEWHEEL)
+                {
+                    scrollCallback(event.wheel.preciseX, event.wheel.preciseY);
+                }
+                if (event.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    if (!m_enableCursor)
+                    {
+                        if (event.button.button == SDL_BUTTON_RIGHT)
+                            input.rightClick = true;
+
+                        if (event.button.button == SDL_BUTTON_LEFT)
+                            input.leftClick = true;
+                    }
+                }
+                if (event.type == SDL_MOUSEBUTTONUP)
+                {
+                    if (!m_enableCursor)
+                    {
+                        if (event.button.button == SDL_BUTTON_RIGHT)
+                            input.rightClick = false;
+
+                        if (event.button.button == SDL_BUTTON_LEFT)
+                            input.leftClick = false;
+                    }
+                }
+
+                ImGui_ImplSDL2_ProcessEvent(&event);
+            }
+
+            if (isPlayingGame() && !m_enableCursor)
+            {
+                SDL_GetMouseState(&m_mousePos.x, &m_mousePos.y);
+
+                ivec2 delta = m_mousePos - ivec2(m_width / 2, m_height / 2);
+
+                if (delta != ivec2(0, 0))
+                {
+                    m_game->onMouseMoved(delta);
+                    SDL_WarpMouseInWindow(m_window, m_width / 2, m_height / 2);
+                }
+            }
+
             // input
             // --------------------------------------------
 
             Camera& camera = LocalGame::Get().getCamera();
 
-            if (!m_enableCursor)
-            {
-                if (isRightMouseDown())
-                {
-                    input.rightClick = true;
-                }
-
-                if (isLeftMouseDown())
-                {
-                    input.leftClick = true;
-                }
-            }
-
-            bool right = isKeyPressed(KeyCode::D);
-            bool forward = isKeyPressed(KeyCode::W);
-            bool up = isKeyPressed(KeyCode::SPACE);
-            bool left = !right && isKeyPressed(KeyCode::A);
-            bool backward = !forward && isKeyPressed(KeyCode::S);
-            bool down = !up && isKeyPressed(KeyCode::LEFT_SHIFT);
+            bool right = isKeyPressed(SDL_SCANCODE_D);
+            bool forward = isKeyPressed(SDL_SCANCODE_W);
+            bool up = isKeyPressed(SDL_SCANCODE_SPACE);
+            bool left = !right && isKeyPressed(SDL_SCANCODE_A);
+            bool backward = !forward && isKeyPressed(SDL_SCANCODE_S);
+            bool down = !up && isKeyPressed(SDL_SCANCODE_LSHIFT);
 
             if (right || left || forward || backward || up || down)
             {
@@ -245,8 +300,8 @@ namespace cybrion
                 input.isMoving = false;
             }
 
-            input.ctrl = isKeyPressed(KeyCode::LEFT_CONTROL);
-            input.shift = isKeyPressed(KeyCode::LEFT_SHIFT);
+            input.ctrl = isKeyPressed(SDL_SCANCODE_LCTRL);
+            input.shift = isKeyPressed(SDL_SCANCODE_LSHIFT);
 
             // game tick
             // --------------------------------------------
@@ -280,8 +335,7 @@ namespace cybrion
                 m_game->render(lerpFactor);
 
             // update render
-            glfwSwapBuffers(m_window);
-            glfwPollEvents();
+            SDL_GL_SwapWindow(m_window);
         }
     }
 
@@ -292,7 +346,9 @@ namespace cybrion
 
     void Application::closeImmediately()
     {
-        glfwTerminate();
+        SDL_GL_DeleteContext(m_context);
+        SDL_DestroyWindow(m_window);
+        SDL_Quit();
     }
 
     void Application::startGame()
@@ -304,9 +360,14 @@ namespace cybrion
         m_playingGame = true;
     }
 
-    GLFWwindow* Application::getWindow() const
+    SDL_Window* Application::getWindow() const
     {
         return m_window;
+    }
+
+    void* Application::getContext() const
+    {
+        return m_context;
     }
 
     ShaderManager& Application::getShaderManager()
@@ -339,62 +400,37 @@ namespace cybrion
         return *s_application;
     }
 
-    void Application::GlfwResizeCallback(GLFWwindow* window, int width, int height)
+    void Application::resizeCallback(int width, int height)
     {
-        Application& app = *(Application*)glfwGetWindowUserPointer(window);
-
-        app.m_height = height;
-        app.m_width = width;
+        m_height = height;
+        m_width = width;
 
         glViewport(0, 0, width, height);
 
-        if (app.isPlayingGame())
-            app.m_game->onWindowResized(width, height);
+        if (isPlayingGame())
+            m_game->onWindowResized(width, height);
     }
 
-    void Application::GlfwCloseCallback(GLFWwindow* window)
+    void Application::closeCallback()
     {
-        Application& app = *(Application*)glfwGetWindowUserPointer(window);
-        app.m_isClosed = true;
+        m_isClosed = true;
     }
 
-    void Application::GlfwMouseMovedCallback(GLFWwindow* window, double x, double y)
+    void Application::keyPressedCallback(SDL_Scancode key, SDL_EventType type)
     {
-        Application& app = *(Application*)glfwGetWindowUserPointer(window);
-
-        if (app.m_lastMousePos.x == 0 && app.m_lastMousePos.y == 0)
-            app.m_lastMousePos = app.m_mousePos = { f32(x), f32(y) };
-        else
+        if (isPlayingGame())
         {
-            app.m_lastMousePos = app.m_mousePos;
-            app.m_mousePos = { f32(x), f32(y) };
-        }
-
-        if (app.isPlayingGame())
-            app.m_game->onMouseMoved(app.m_mousePos - app.m_lastMousePos);
-    }
-
-    void Application::GlfwKeyPressedCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        Application& app = *(Application*)glfwGetWindowUserPointer(window);
-
-        if (app.isPlayingGame())
-        {
-            if (action == GLFW_PRESS)
-                app.m_game->onKeyPressed((KeyCode)key, false);
-            else if (action == GLFW_REPEAT)
-                app.m_game->onKeyPressed((KeyCode)key, true);
+            if (type == SDL_KEYDOWN)
+                m_game->onKeyPressed(key, false);
             else
-                app.m_game->onKeyReleased((KeyCode)key);
+                m_game->onKeyReleased(key);
         }
     }
 
-    void Application::GlfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+    void Application::scrollCallback(f64 xoffset, f64 yoffset)
     {
-        Application& app = *(Application*)glfwGetWindowUserPointer(window);
-        
-        if (app.isPlayingGame())
-            app.m_game->onMouseScrolled(yoffset);
+        if (isPlayingGame())
+            m_game->onMouseScrolled(yoffset);
     }
 
     u32 Application::getWidth() const
@@ -427,19 +463,9 @@ namespace cybrion
         return m_playingGame;
     }
 
-    bool Application::isKeyPressed(KeyCode key) const
+    bool Application::isKeyPressed(SDL_Scancode key) const
     {
-        return glfwGetKey(m_window, (i32)key) == GLFW_PRESS;
-    }
-
-    bool Application::isRightMouseDown() const
-    {
-        return glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
-    }
-
-    bool Application::isLeftMouseDown() const
-    {
-        return glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+        return SDL_GetKeyboardState(nullptr)[key];
     }
 
     void Application::toggleCursor()
@@ -453,13 +479,13 @@ namespace cybrion
     void Application::enableCursor()
     {
         m_enableCursor = true;
-        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        SDL_ShowCursor(SDL_ENABLE);
     }
 
     void Application::disableCursor()
     {
         m_enableCursor = false;
-        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        SDL_ShowCursor(SDL_DISABLE);
     }
 
     void Application::playSound(const string& name)
@@ -471,11 +497,6 @@ namespace cybrion
     bool Application::isCursorEnable() const
     {
         return m_enableCursor;
-    }
-
-    vec2 Application::getDeltaMousePos() const
-    {
-        return m_mousePos - m_lastMousePos;
     }
 
     Application::~Application()

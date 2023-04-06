@@ -73,7 +73,6 @@ namespace cybrion
 
                 m_blockInteractStopwatch.reset();
             }
-            m_input.rightClick = false;
         }
 
         if (m_input.leftClick)
@@ -83,7 +82,6 @@ namespace cybrion
                 Game::Get().getWorld().placeBlock(m_targetPos, Blocks::AIR);
                 m_blockInteractStopwatch.reset();
             }
-            m_input.leftClick = false;
         }
 
         // selecting block

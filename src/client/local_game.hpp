@@ -36,8 +36,8 @@ namespace cybrion
         void onPlaceBlock(const BlockModifyResult& result) override;
         void onPlaySound(const string& name) override;
 
-        void onKeyPressed(KeyCode key, bool isRepeated);
-        void onKeyReleased(KeyCode key);
+        void onKeyPressed(SDL_Scancode key, bool isRepeated);
+        void onKeyReleased(SDL_Scancode key);
         void onMouseMoved(const vec2& delta);
         void onWindowResized(u32 width, u32 height);
         void onMouseScrolled(f32 delta);

@@ -162,27 +162,23 @@ namespace cybrion
         return m_player;
     }
 
-    void LocalGame::onKeyPressed(KeyCode key, bool isRepeated)
+    void LocalGame::onKeyPressed(SDL_Scancode key, bool isRepeated)
     {
-        static int n = 7;
         if (!isRepeated)
         {
             switch (key)
             {
-            case KeyCode::N:
-                getWorld().loadChunk({ n++, 0, 0 });
-                break;
             // toggle cursor
-            case KeyCode::F1:
+            case SDL_SCANCODE_F1:
                 Application::Get().toggleCursor();
                 break;
 
             // close window
-            case KeyCode::ESCAPE:
+            case SDL_SCANCODE_ESCAPE:
                 Application::Get().close();
                 break;
-            // toggle block menu
-            case KeyCode::E:
+                // toggle block menu
+            case SDL_SCANCODE_E:
                 m_hud.showBlockMenu = !m_hud.showBlockMenu;
 
                 if (m_hud.showBlockMenu)
@@ -195,7 +191,7 @@ namespace cybrion
         }
     }
 
-    void LocalGame::onKeyReleased(KeyCode key)
+    void LocalGame::onKeyReleased(SDL_Scancode key)
     {
     }
 
@@ -203,7 +199,7 @@ namespace cybrion
     {
         if (!Application::Get().isCursorEnable())
         {
-            vec3 rot = m_camera.getRot() + vec3(-delta.y, -delta.x, 0) * Application::Get().getDeltaTime() * 75.0f * 0.003f;
+            vec3 rot = m_camera.getRot() + vec3(-delta.y, -delta.x, 0) * Application::Get().getDeltaTime() * 0.2f;
 
             f32 eps = 0.01f;
             if (rot.x > pi / 2 - eps && rot.x < pi * 3 / 2 + eps)

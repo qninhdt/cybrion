@@ -2,7 +2,7 @@
 
 using namespace cybrion;
 
-int main()
+i32 main(i32 argc, char* args[])
 {
     // block type
     RegisterEnum(BlockType::AIR  , "air");
