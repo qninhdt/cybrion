@@ -4,6 +4,9 @@
 
 ![Screenshot](./docs/screenshots/large_view.png)
 ![Screenshot](./docs/screenshots/flowers.png)
+![Screenshot](./docs/screenshots/wools.png)
+![Screenshot](./docs/screenshots/fences.png)
+![Screenshot](./docs/screenshots/chess.png)
 
 ## Todo list
 - [x] Render first chunk
