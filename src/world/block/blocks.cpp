@@ -26,6 +26,9 @@ namespace cybrion
 
     BrickBlock& Blocks::BRICK       = s_blocks.get<BrickBlock>();
     BrickBlock& Blocks::STONE_BRICK = BRICK.set<"type">(BrickType::STONE);
+    BrickBlock& Blocks::MOSSY_STONE_BRICK = BRICK.set<"type">(BrickType::MOSSY_STONE);
+    BrickBlock& Blocks::CLAY_BRICK = BRICK.set<"type">(BrickType::CLAY);
+    BrickBlock& Blocks::QUARTZ_BRICK = BRICK.set<"type">(BrickType::QUARTZ);
 
     SandBlock& Blocks::SAND = s_blocks.get<SandBlock>();
     
@@ -124,6 +127,14 @@ namespace cybrion
     ConcreteBlock& Blocks::BROWN_CONCRETE = CONCRETE.set<"color">(BlockColor::BROWN);
     ConcreteBlock& Blocks::BLUE_CONCRETE = CONCRETE.set<"color">(BlockColor::BLUE);
     ConcreteBlock& Blocks::BLACK_CONCRETE = CONCRETE.set<"color">(BlockColor::BLACK);
+
+    MineralBlock& Blocks::MINERAL = s_blocks.get<MineralBlock>();
+    MineralBlock& Blocks::COPPER_BLOCK = MINERAL.set<"type">(MineralType::COPPER);
+    MineralBlock& Blocks::IRON_BLOCK = MINERAL.set<"type">(MineralType::IRON);
+    MineralBlock& Blocks::LAPIS_BLOCK = MINERAL.set<"type">(MineralType::LAPIS);
+    MineralBlock& Blocks::EMERALD_BLOCK = MINERAL.set<"type">(MineralType::EMERALD);
+    MineralBlock& Blocks::GOLD_BLOCK = MINERAL.set<"type">(MineralType::GOLD);
+    MineralBlock& Blocks::DIAMOND_BLOCK = MINERAL.set<"type">(MineralType::DIAMOND);
 
     Blocks& Blocks::Get()
     {

@@ -14,41 +14,54 @@
 "[type=king]":
   model: king
 "[type=king,color=white]":
+  display_name: White King
   model_tex: white_king
 "[type=king,color=black]":
+  display_name: Black King
   model_tex: black_king
 
 "[type=queen]":
+  display_name: White Queen
   model: queen
 "[type=queen,color=white]":
+  display_name: White Queen
   model_tex: white_queen
 "[type=queen,color=black]":
+  display_name: Black Queen
   model_tex: black_queen
 
 "[type=rook]":
   model: rook
 "[type=rook,color=white]":
+  display_name: White Rook
   model_tex: white_rook
 "[type=rook,color=black]":
+  display_name: Black Rook
   model_tex: black_rook
 
 "[type=bishop]":
   model: bishop
 "[type=bishop,color=white]":
+  display_name: White Bishop
   model_tex: white_bishop
 "[type=bishop,color=black]":
+  display_name: Black Bishop
   model_tex: black_bishop
 
 "[type=knight]":
   model: knight
 "[type=knight,color=white]":
+  display_name: White Knight
   model_tex: white_knight
 "[type=knight,color=black]":
+  display_name: Black Knight
   model_tex: black_knight
 
 "[type=pawn]":
   model: pawn
 "[type=pawn,color=white]":
+  display_name: White Pawn
   model_tex: white_pawn
 "[type=pawn,color=black]":
+  display_name: Black Pawn
   model_tex: black_pawn

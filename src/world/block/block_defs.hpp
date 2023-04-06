@@ -20,6 +20,7 @@ namespace cybrion
         CHESS,
         WOOL,
         CONCRETE,
+        MINERAL,
         ENUM_SIZE
     };
 

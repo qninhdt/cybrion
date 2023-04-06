@@ -1,3 +1,12 @@
 "[type=stone]":
   display_name: Stone Brick
   all: stone_brick
+"[type=mossy_stone]":
+  display_name: Mossy Stone Brick
+  all: mossy_stone_brick
+"[type=quartz]":
+  display_name: Quartz Brick
+  all: quartz_brick
+"[type=clay]":
+  display_name: Clay Brick
+  all: clay_brick

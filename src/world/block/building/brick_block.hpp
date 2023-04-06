@@ -6,13 +6,16 @@ namespace cybrion
 {
     enum class BrickType
     {
-        STONE
+        CLAY,
+        STONE,
+        MOSSY_STONE,
+        QUARTZ
     };
 
     class BrickBlock : public TBlock<
         BrickBlock,
         BlockType::BRICK,
-        block::state<BrickType, "type", 1>
+        block::state<BrickType, "type", 4>
     >
     {
 

@@ -21,6 +21,7 @@ i32 main(i32 argc, char* args[])
     RegisterEnum(BlockType::CHESS, "chess");
     RegisterEnum(BlockType::WOOL, "wool");
     RegisterEnum(BlockType::CONCRETE, "concrete");
+    RegisterEnum(BlockType::MINERAL, "mineral");
 
     // block color
     RegisterEnum(BlockColor::YELLOW     , "yellow");
@@ -65,6 +66,17 @@ i32 main(i32 argc, char* args[])
 
     // brick type
     RegisterEnum(BrickType::STONE, "stone");
+    RegisterEnum(BrickType::MOSSY_STONE, "mossy_stone");
+    RegisterEnum(BrickType::CLAY, "clay");
+    RegisterEnum(BrickType::QUARTZ, "quartz");
+
+    // mineral type
+    RegisterEnum(MineralType::COPPER  , "copper");
+    RegisterEnum(MineralType::IRON    , "iron");
+    RegisterEnum(MineralType::LAPIS   , "lapis");
+    RegisterEnum(MineralType::EMERALD , "emerald");
+    RegisterEnum(MineralType::GOLD    , "gold");
+    RegisterEnum(MineralType::DIAMOND , "diamond");
 
     // block shape
     RegisterEnum(BlockShape::CUBE   , "cube");

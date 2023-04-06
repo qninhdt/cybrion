@@ -1,0 +1,18 @@
+"[type=copper]":
+  display_name: Copper Block
+  all: copper
+"[type=iron]":
+  display_name: Iron Block
+  all: iron
+"[type=lapis]":
+  display_name: Lapis Block
+  all: lapis
+"[type=emerald]":
+  display_name: Emerald Block
+  all: emerald
+"[type=gold]":
+  display_name: Gold Block
+  all: gold
+"[type=diamond]":
+  display_name: Diamond Block
+  all: diamond

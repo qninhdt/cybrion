@@ -53,7 +53,11 @@ namespace cybrion
             {
                 "Building",
                 {
+                    // brick
                     & Blocks::STONE_BRICK,
+                    & Blocks::MOSSY_STONE_BRICK,
+                    & Blocks::CLAY_BRICK,
+                    & Blocks::QUARTZ_BRICK,
                     // wool
                     & Blocks::YELLOW_WOOL,
                     & Blocks::WHITE_WOOL,
@@ -104,6 +108,32 @@ namespace cybrion
                     & Blocks::MANGROVE_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
                     & Blocks::OAK_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
                     & Blocks::SPRUCE_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
+                    // mineral
+                    & Blocks::COPPER_BLOCK,
+                    & Blocks::IRON_BLOCK,
+                    & Blocks::EMERALD_BLOCK,
+                    & Blocks::LAPIS_BLOCK,
+                    & Blocks::GOLD_BLOCK,
+                    & Blocks::DIAMOND_BLOCK,
+                }
+            },
+            {
+                "Decoration",
+                {
+                    & Blocks::TABLECLOTH,
+                    // chess
+                    & Blocks::WHITE_KING,
+                    & Blocks::WHITE_QUEEN,
+                    & Blocks::WHITE_BISHOP,
+                    & Blocks::WHITE_KNIGHT,
+                    & Blocks::WHITE_ROOK,
+                    & Blocks::WHITE_PAWN,
+                    & Blocks::BLACK_KING,
+                    & Blocks::BLACK_QUEEN,
+                    & Blocks::BLACK_BISHOP,
+                    & Blocks::BLACK_KNIGHT,
+                    & Blocks::BLACK_ROOK,
+                    & Blocks::BLACK_PAWN,
                 }
             }
         };

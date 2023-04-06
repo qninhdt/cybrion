@@ -16,6 +16,7 @@
 #include "world/block/building/fence_gate_block.hpp"
 #include "world/block/building/wool_block.hpp"
 #include "world/block/building/concrete_block.hpp"
+#include "world/block/building/mineral_block.hpp"
 
 #include "world/block/decoration/tablecloth_block.hpp"
 #include "world/block/decoration/chess_block.hpp"
@@ -41,7 +42,8 @@ namespace cybrion
         TableclothBlock,
         ChessBlock,
         WoolBlock,
-        ConcreteBlock
+        ConcreteBlock,
+        MineralBlock
     >
     {
     public:
@@ -83,6 +85,9 @@ namespace cybrion
         static PlantBlock& LILY_OF_THE_VALLEY;
 
         static BrickBlock& STONE_BRICK;
+        static BrickBlock& MOSSY_STONE_BRICK;
+        static BrickBlock& CLAY_BRICK;
+        static BrickBlock& QUARTZ_BRICK;
 
         static FenceBlock& ACACIA_FENCE;
         static FenceBlock& BIRCH_FENCE;
@@ -91,6 +96,7 @@ namespace cybrion
         static FenceBlock& MANGROVE_FENCE;
         static FenceBlock& OAK_FENCE;
         static FenceBlock& SPRUCE_FENCE;
+
         static FenceGateBlock& ACACIA_FENCE_GATE;
         static FenceGateBlock& BIRCH_FENCE_GATE;
         static FenceGateBlock& DARK_OAK_FENCE_GATE;
@@ -147,6 +153,13 @@ namespace cybrion
         static ConcreteBlock& BLUE_CONCRETE;
         static ConcreteBlock& BLACK_CONCRETE;
 
+        static MineralBlock& COPPER_BLOCK;
+        static MineralBlock& IRON_BLOCK;
+        static MineralBlock& LAPIS_BLOCK;
+        static MineralBlock& EMERALD_BLOCK;
+        static MineralBlock& GOLD_BLOCK;
+        static MineralBlock& DIAMOND_BLOCK;
+
         static Blocks& Get();
     private:
         static RockBlock& ROCK;
@@ -160,6 +173,7 @@ namespace cybrion
         static ChessBlock& CHESS;
         static WoolBlock& WOOL;
         static ConcreteBlock& CONCRETE;
+        static MineralBlock& MINERAL;
 
         static Blocks s_blocks;
     };
