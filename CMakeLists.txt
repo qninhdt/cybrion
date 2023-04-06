@@ -29,9 +29,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC jbt)
 find_package(robin_hood CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC robin_hood::robin_hood)
 
-find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
-
 find_package(glm CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
 

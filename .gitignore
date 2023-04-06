@@ -2,3 +2,4 @@
 .vs
 *.hjbt
 out
+CMakeSettings.json
