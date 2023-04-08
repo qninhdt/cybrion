@@ -2,6 +2,9 @@
 #include "core/pool.hpp"
 #include "client/GL/mesh.hpp"
 
+#include "client/ui/home_page.hpp"
+#include "client/ui/game_page.hpp"
+
 namespace cybrion
 {
     Application* Application::s_application = nullptr;
@@ -118,7 +121,8 @@ namespace cybrion
         m_game(nullptr),
         m_soundEngine(nullptr),
         m_rootPath(CYBRION_ROOT_PATH),
-        m_playingGame(false)
+        m_playingGame(false),
+        m_currentPage("")
     {
         s_application = this;
     }
@@ -182,6 +186,16 @@ namespace cybrion
 
         m_soundEngine = irrklang::createIrrKlangDevice();
 
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
+        ImGui_ImplOpenGL3_Init("#version 430");
+
+        m_pages["home"] = std::make_shared<ui::HomePage>();
+        m_pages["game"] = std::make_shared<ui::GamePage>();
+
         return true;
     }
 
@@ -196,20 +210,21 @@ namespace cybrion
 
     void Application::run()
     {
-        Stopwatch stopwatch;
         Stopwatch fpsStopwatch;
-
-        startGame();
-
-        auto& input = LocalGame::Get().getPlayer().getInput();
+        Stopwatch stopwatch;
 
         // main loop
         f32 deltaTime = 0;
-        stopwatch.reset();
         fpsStopwatch.reset();
+        stopwatch.reset();
 
         SDL_Event event;
         bool mouseFlag = true;
+
+        goToPage("home");
+
+        /*currentGame = "lmao";
+        goToPage("game");*/
 
         while (!isClosed())
         {
@@ -233,26 +248,31 @@ namespace cybrion
                 {
                     scrollCallback(event.wheel.preciseX, event.wheel.preciseY);
                 }
-                if (event.type == SDL_MOUSEBUTTONDOWN)
+                if (isPlayingGame())
                 {
-                    if (!m_enableCursor)
-                    {
-                        if (event.button.button == SDL_BUTTON_RIGHT)
-                            input.rightClick = true;
+                    auto& input = LocalGame::Get().getPlayer().getInput();
 
-                        if (event.button.button == SDL_BUTTON_LEFT)
-                            input.leftClick = true;
+                    if (event.type == SDL_MOUSEBUTTONDOWN)
+                    {
+                        if (!m_enableCursor)
+                        {
+                            if (event.button.button == SDL_BUTTON_RIGHT)
+                                input.rightClick = true;
+
+                            if (event.button.button == SDL_BUTTON_LEFT)
+                                input.leftClick = true;
+                        }
                     }
-                }
-                if (event.type == SDL_MOUSEBUTTONUP)
-                {
-                    if (!m_enableCursor)
+                    if (event.type == SDL_MOUSEBUTTONUP)
                     {
-                        if (event.button.button == SDL_BUTTON_RIGHT)
-                            input.rightClick = false;
+                        if (!m_enableCursor)
+                        {
+                            if (event.button.button == SDL_BUTTON_RIGHT)
+                                input.rightClick = false;
 
-                        if (event.button.button == SDL_BUTTON_LEFT)
-                            input.leftClick = false;
+                            if (event.button.button == SDL_BUTTON_LEFT)
+                                input.leftClick = false;
+                        }
                     }
                 }
 
@@ -284,34 +304,28 @@ namespace cybrion
             bool backward = !forward && isKeyPressed(SDL_SCANCODE_S);
             bool down = !up && isKeyPressed(SDL_SCANCODE_LSHIFT);
 
-            if (right || left || forward || backward || up || down)
+            if (isPlayingGame())
             {
-                vec3 dir = glm::normalize(
-                    f32(right - left) * camera.getRight() +
-                    f32(up - down) * camera.getUp() +
-                    f32(forward - backward) * camera.getForward()
-                );
+                auto& input = LocalGame::Get().getPlayer().getInput();
 
-                input.isMoving = true;
-                input.moveDir = dir;
-            }
-            else
-            {
-                input.isMoving = false;
-            }
-
-            input.ctrl = isKeyPressed(SDL_SCANCODE_LCTRL);
-            input.shift = isKeyPressed(SDL_SCANCODE_LSHIFT);
-
-            // game tick
-            // --------------------------------------------
-            if (m_game)
-            {
-                while (stopwatch.getDeltaTime() >= GAME_TICK)
+                if (right || left || forward || backward || up || down)
                 {
-                    m_game->tick();
-                    stopwatch.reduceDeltaTime(GAME_TICK);
+                    vec3 dir = glm::normalize(
+                        f32(right - left) * camera.getRight() +
+                        f32(up - down) * camera.getUp() +
+                        f32(forward - backward) * camera.getForward()
+                    );
+
+                    input.isMoving = true;
+                    input.moveDir = dir;
                 }
+                else
+                {
+                    input.isMoving = false;
+                }
+
+                input.ctrl = isKeyPressed(SDL_SCANCODE_LCTRL);
+                input.shift = isKeyPressed(SDL_SCANCODE_LSHIFT);
             }
 
             // tick
@@ -324,15 +338,40 @@ namespace cybrion
                 fpsStopwatch.reduceDeltaTime(25000);
             }
 
+            if (isPlayingGame())
+            {
+                while (stopwatch.getDeltaTime() >= GAME_TICK)
+                {
+                    m_game->tick();
+                    stopwatch.reduceDeltaTime(GAME_TICK);
+                }
+            }
+
             // render
             // --------------------------------------------
-            f32 lerpFactor = 1.0f * stopwatch.getDeltaTime() / GAME_TICK;
 
             glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            if (m_game)
+            if (!isCursorEnable())
+                ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+
+            if (isPlayingGame())
+            { 
+                f32 lerpFactor = 1.0f * stopwatch.getDeltaTime() / GAME_TICK;
                 m_game->render(lerpFactor);
+            }
+
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplSDL2_NewFrame();
+            ImGui::NewFrame();
+
+            m_pages[m_currentPage]->onRender();
+
+            ImGui::Render();
+            glViewport(0, 0, m_width, m_height);
+
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
             // update render
             SDL_GL_SwapWindow(m_window);
@@ -353,11 +392,33 @@ namespace cybrion
 
     void Application::startGame()
     {
-        //World::createNewWorld("lmao");
-        m_game = new LocalGame(getSavePath("lmao"));
+        m_game = new LocalGame(getSavePath(currentGame));
         m_game->load();
 
         m_playingGame = true;
+    }
+
+    void Application::exitGame()
+    {
+        CYBRION_CLIENT_TRACE("Saving world");
+        m_game->stop();
+        delete m_game;
+        m_game = nullptr;
+
+        m_playingGame = false;
+    }
+
+    ref<ui::Page> Application::getCurrentPage()
+    {
+        return m_pages[m_currentPage];
+    }
+
+    void Application::goToPage(const string& name)
+    {
+        if (m_currentPage != "")
+            m_pages[m_currentPage]->onClose();
+        m_currentPage = name;
+        m_pages[m_currentPage]->onOpen();
     }
 
     SDL_Window* Application::getWindow() const
@@ -508,9 +569,7 @@ namespace cybrion
 
         if (m_game)
         {
-            CYBRION_CLIENT_TRACE("Saving world");
-            m_game->stop();
-            delete m_game;
+            m_pages[m_currentPage]->onClose();
         }   
 
         if (!m_isClosed)

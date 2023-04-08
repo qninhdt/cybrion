@@ -3,6 +3,7 @@
 #include "client/application.hpp"
 #include "client/GL/mesh.hpp"
 #include "client/graphic/basic_mesh_generator.hpp"
+#include "client/ui/game_page.hpp"
 
 namespace cybrion
 {
@@ -30,8 +31,6 @@ namespace cybrion
         BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.00f, { 1, 1, 1 });
 
         m_camera.setTarget(m_player.getEntity());
-
-        m_hud.load();
     }
 
     void LocalGame::tick()
@@ -49,8 +48,6 @@ namespace cybrion
             renderChunkBorder();
         
         renderSelecingBlock();
-
-        m_hud.render(Application::Get().getDeltaTime());
     }
 
     void LocalGame::renderChunkBorder()
@@ -179,9 +176,11 @@ namespace cybrion
                 break;
                 // toggle block menu
             case SDL_SCANCODE_E:
-                m_hud.showBlockMenu = !m_hud.showBlockMenu;
+                auto page = (ui::GamePage*) Application::Get().getCurrentPage().get();
 
-                if (m_hud.showBlockMenu)
+                page->showBlockMenu = !page->showBlockMenu;
+
+                if (page->showBlockMenu)
                     Application::Get().enableCursor();
                 else
                     Application::Get().disableCursor();

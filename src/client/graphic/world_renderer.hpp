@@ -9,6 +9,11 @@
 #include "client/graphic/entity_renderer.hpp"
 #include <readerwriterqueue/readerwriterqueue.h>
 
+namespace cybrion::ui
+{
+    class GamePage;
+}
+
 namespace cybrion
 {
     using OpaqueCubeShader = GL::Shader<"MVP", "enable_diffuse", "enable_ao">;
@@ -40,7 +45,7 @@ namespace cybrion
 
     private:
 
-        friend class HUD;
+        friend class ui::GamePage;
 
         World& m_world;
 

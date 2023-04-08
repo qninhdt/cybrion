@@ -3,8 +3,8 @@
 #include "client/key_code.hpp"
 #include "client/frame_profiler.hpp"
 #include "client/resource/shader_manager.hpp"
-#include "client/hud.hpp"
 #include "client/local_game.hpp"
+#include "client/ui/page.hpp"
 
 namespace cybrion
 {
@@ -20,6 +20,10 @@ namespace cybrion
         void closeImmediately();
 
         void startGame();
+        void exitGame();
+
+        ref<ui::Page> getCurrentPage();
+        void goToPage(const string& name);
 
         SDL_Window* getWindow() const;
         void* getContext() const;
@@ -50,6 +54,8 @@ namespace cybrion
         ~Application();
 
         static Application& Get();
+
+        string currentGame = "";
 
     private:
         void resizeCallback(i32 width, i32 height);
@@ -82,5 +88,8 @@ namespace cybrion
         bool m_isClosed;
         bool m_enableCursor;
 
+        // ui
+        umap<string, ref<ui::Page>> m_pages;
+        string m_currentPage;
     };
 }

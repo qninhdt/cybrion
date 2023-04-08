@@ -1,6 +1,7 @@
 .vscode
 .vs
 *.hjbt
+*.rar
 out
 build
 CMakeSettings.json

@@ -13,7 +13,7 @@ namespace cybrion::GL
         string realPath = Application::Get().getResourcePath("textures/" + path);
 
         i32 width, height, nChannels;
-        u8* data = stbi_load(realPath.c_str(), &height, &width, &nChannels, STBI_rgb_alpha);
+        u8* data = stbi_load(realPath.c_str(), &height, &width, &nChannels, 4);
 
         if (!data)
         {
