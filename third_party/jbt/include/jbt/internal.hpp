@@ -4,24 +4,29 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
+#include <cstring>
 #include <map>
 #include <vector>
 
-namespace jbt {
+namespace jbt
+{
 
 	class tag;
 
 	using object_t = std::map<std::string, tag>;
 	using list_t = std::vector<tag>;
 
-	struct byte_array_t {
+	struct byte_array_t
+	{
 		std::shared_ptr<std::int8_t[]> data;
 		uint32_t size;
 		bool is_owner;
 	};
 
-	enum class tag_type : uint8_t {
+	enum class tag_type : uint8_t
+	{
 		NONE,
 		BOOL,
 		LIST,

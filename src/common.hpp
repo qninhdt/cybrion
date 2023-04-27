@@ -2,36 +2,19 @@
 
 #include "core/log.hpp"
 
-#ifdef _MSC_VER
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(NDEBUG)
 #define CYBRION_DEBUG
 #endif
-#endif
-
-#ifdef _WIN32
-#ifdef _WIN64
-#define CYBRION_PLATFORM_WINDOWS
-#else
-#error "x86 Builds are not supported!"
-#endif
-#endif
 
 #ifdef CYBRION_DEBUG
-#ifdef CYBRION_PLATFORM_WINDOWS
-#define CYBRION_DEBUGBREAK() __debugbreak()
-#else
-#error "Platform doesn't support debugbreak yet!"
-#endif
-#endif
-
-#ifdef CYBRION_DEBUG
-#define CYBRION_ASSERT(b, m) \
-    do { \
-        if (!(b)) { \
+#define CYBRION_ASSERT(b, m)                       \
+    do                                             \
+    {                                              \
+        if (!(b))                                  \
+        {                                          \
             CYBRION_ERROR("Assert failed: {}", m); \
-            CYBRION_DEBUGBREAK(); \
-        } \
-    } while(0);
+        }                                          \
+    } while (0);
 #else
 #define CYBRION_ASSERT(b, m)
 #endif
@@ -39,9 +22,9 @@
 #define CYBRION_STATIC_ERROR(message) static_assert(cybrion::detail::always_false<T> && message);
 
 #ifdef CYBRION_DEBUG
-#define CYBRION_ROOT_PATH "D:/github/cybrion/"
+#define CYBRION_ROOT_PATH "/home/qninhdt/github/cybrion/"
 #else
-#define CYBRION_ROOT_PATH
+#define CYBRION_ROOT_PATH "/home/qninhdt/github/cybrion/"
 #endif
 
 namespace cybrion

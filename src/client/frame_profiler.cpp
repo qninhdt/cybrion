@@ -4,10 +4,9 @@ using namespace std::chrono;
 
 namespace cybrion
 {
-    FrameProfiler::FrameProfiler():
-        m_fps(0),
-        m_deltaTime(0),
-        m_totalTime(0)
+    FrameProfiler::FrameProfiler() : m_fps(0),
+                                     m_deltaTime(0),
+                                     m_totalTime(0)
     {
         m_time = high_resolution_clock::now();
         m_lastTime = high_resolution_clock::now();
@@ -28,7 +27,7 @@ namespace cybrion
         }
 
         m_deltaTime = m_totalTime / m_timeQueue.size();
-        m_fps = 1/ m_deltaTime;
+        m_fps = 1 / m_deltaTime;
     }
 
     f32 FrameProfiler::getFPS() const

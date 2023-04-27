@@ -3,14 +3,17 @@
 
 #include "jbt/internal.hpp"
 #include "jbt/io.hpp"
+#include "jbt/serializer.hpp"
 
-namespace jbt {
+namespace jbt
+{
 
-    class compression_util {
+    class compression_util
+    {
     public:
-        static std::uint32_t compress_tag(serializer& ser, const tag& src, omem_stream& dst);
-        static std::uint32_t compress_tag(serializer& ser, const tag& src, std::ostream& dst);
-        static void decompress_tag(serializer& ser, std::istream& src, tag& dst);
+        static std::uint32_t compress_tag(serializer &ser, const tag &src, omem_stream &dst);
+        static std::uint32_t compress_tag(serializer &ser, const tag &src, std::ostream &dst);
+        static void decompress_tag(serializer &ser, std::istream &src, tag &dst);
     };
 }
 

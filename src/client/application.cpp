@@ -7,17 +7,18 @@
 
 namespace cybrion
 {
-    Application* Application::s_application = nullptr;
+    Application *Application::s_application = nullptr;
 
     void APIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id,
-        GLenum severity, GLsizei length,
-        const GLchar* msg, const void* data)
+                                         GLenum severity, GLsizei length,
+                                         const GLchar *msg, const void *data)
     {
         string _source;
         string _type;
         string _severity;
 
-        switch (source) {
+        switch (source)
+        {
         case GL_DEBUG_SOURCE_API:
             _source = "API";
             break;
@@ -47,7 +48,8 @@ namespace cybrion
             break;
         }
 
-        switch (type) {
+        switch (type)
+        {
         case GL_DEBUG_TYPE_ERROR:
             _type = "ERROR";
             break;
@@ -81,7 +83,8 @@ namespace cybrion
             break;
         }
 
-        switch (severity) {
+        switch (severity)
+        {
         case GL_DEBUG_SEVERITY_HIGH:
             _severity = "HIGH";
             break;
@@ -104,25 +107,24 @@ namespace cybrion
         }
 
         printf("%d: %s of %s severity, raised from %s: %s\n",
-            id, _type.c_str(), _severity.c_str(), _source.c_str(), msg);
+               id, _type.c_str(), _severity.c_str(), _source.c_str(), msg);
     }
 
-    Application::Application() :
-        m_width(1000),
-        m_height(600),
-        m_mousePos(0, 0),
-        m_lastMousePos(0, 0),
-        m_title("Cybrion v1.0"),
-        m_isClosed(false),
-        m_enableCursor(true),
-        m_window(nullptr),
-        m_context(nullptr),
-        m_pos(0, 0),
-        m_game(nullptr),
-        m_soundEngine(nullptr),
-        m_rootPath(CYBRION_ROOT_PATH),
-        m_playingGame(false),
-        m_currentPage("")
+    Application::Application() : m_width(1000),
+                                 m_height(600),
+                                 m_mousePos(0, 0),
+                                 m_lastMousePos(0, 0),
+                                 m_title("Cybrion v1.0"),
+                                 m_isClosed(false),
+                                 m_enableCursor(true),
+                                 m_window(nullptr),
+                                 m_context(nullptr),
+                                 m_pos(0, 0),
+                                 m_game(nullptr),
+                                 m_soundEngine(nullptr),
+                                 m_rootPath(CYBRION_ROOT_PATH),
+                                 m_playingGame(false),
+                                 m_currentPage("")
     {
         s_application = this;
     }
@@ -147,8 +149,7 @@ namespace cybrion
         m_window = SDL_CreateWindow(
             m_title.c_str(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            m_width, m_height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-        );
+            m_width, m_height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
         if (!m_window)
         {
@@ -167,8 +168,8 @@ namespace cybrion
         // load OpenGL
         if (gladLoadGLLoader(SDL_GL_GetProcAddress))
         {
-            char* name = (char*) glGetString(GL_RENDERER);
-            char* version = (char*) glGetString(GL_VERSION);
+            char *name = (char *)glGetString(GL_RENDERER);
+            char *version = (char *)glGetString(GL_VERSION);
             CYBRION_CLIENT_INFO("Loaded OpenGL {}", version);
             CYBRION_CLIENT_TRACE("Graphic card: [{}]", name);
         }
@@ -181,7 +182,7 @@ namespace cybrion
         glClearColor(1, 1, 1, 1);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        
+
         glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
         m_soundEngine = irrklang::createIrrKlangDevice();
@@ -228,7 +229,8 @@ namespace cybrion
 
         while (!isClosed())
         {
-            while (SDL_PollEvent(&event)) {
+            while (SDL_PollEvent(&event))
+            {
                 if (event.type == SDL_WINDOWEVENT)
                 {
                     if (event.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -250,7 +252,7 @@ namespace cybrion
                 }
                 if (isPlayingGame())
                 {
-                    auto& input = LocalGame::Get().getPlayer().getInput();
+                    auto &input = LocalGame::Get().getPlayer().getInput();
 
                     if (event.type == SDL_MOUSEBUTTONDOWN)
                     {
@@ -295,7 +297,7 @@ namespace cybrion
             // input
             // --------------------------------------------
 
-            Camera& camera = LocalGame::Get().getCamera();
+            Camera &camera = LocalGame::Get().getCamera();
 
             bool right = isKeyPressed(SDL_SCANCODE_D);
             bool forward = isKeyPressed(SDL_SCANCODE_W);
@@ -306,15 +308,14 @@ namespace cybrion
 
             if (isPlayingGame())
             {
-                auto& input = LocalGame::Get().getPlayer().getInput();
+                auto &input = LocalGame::Get().getPlayer().getInput();
 
                 if (right || left || forward || backward || up || down)
                 {
                     vec3 dir = glm::normalize(
                         f32(right - left) * camera.getRight() +
                         f32(up - down) * camera.getUp() +
-                        f32(forward - backward) * camera.getForward()
-                    );
+                        f32(forward - backward) * camera.getForward());
 
                     input.isMoving = true;
                     input.moveDir = dir;
@@ -357,7 +358,7 @@ namespace cybrion
                 ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 
             if (isPlayingGame())
-            { 
+            {
                 f32 lerpFactor = 1.0f * stopwatch.getDeltaTime() / GAME_TICK;
                 m_game->render(lerpFactor);
             }
@@ -413,7 +414,7 @@ namespace cybrion
         return m_pages[m_currentPage];
     }
 
-    void Application::goToPage(const string& name)
+    void Application::goToPage(const string &name)
     {
         if (m_currentPage != "")
             m_pages[m_currentPage]->onClose();
@@ -421,27 +422,27 @@ namespace cybrion
         m_pages[m_currentPage]->onOpen();
     }
 
-    SDL_Window* Application::getWindow() const
+    SDL_Window *Application::getWindow() const
     {
         return m_window;
     }
 
-    void* Application::getContext() const
+    void *Application::getContext() const
     {
         return m_context;
     }
 
-    ShaderManager& Application::getShaderManager()
+    ShaderManager &Application::getShaderManager()
     {
         return m_shaderManager;
     }
 
-    string Application::getResourcePath(const string& path) const
+    string Application::getResourcePath(const string &path) const
     {
         return m_rootPath + "resources/" + path;
     }
 
-    string Application::getSavePath(const string& path) const
+    string Application::getSavePath(const string &path) const
     {
         return m_rootPath + "saves/" + path;
     }
@@ -456,7 +457,7 @@ namespace cybrion
         return m_frameProfiler.getDeltaTime();
     }
 
-    Application& Application::Get()
+    Application &Application::Get()
     {
         return *s_application;
     }
@@ -549,7 +550,7 @@ namespace cybrion
         SDL_ShowCursor(SDL_DISABLE);
     }
 
-    void Application::playSound(const string& name)
+    void Application::playSound(const string &name)
     {
         string soundPath = getResourcePath("sounds/" + name + ".ogg");
         m_soundEngine->play2D(soundPath.c_str());
@@ -570,7 +571,7 @@ namespace cybrion
         if (m_game)
         {
             m_pages[m_currentPage]->onClose();
-        }   
+        }
 
         if (!m_isClosed)
             closeImmediately();

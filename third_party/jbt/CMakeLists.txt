@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.20)
+﻿cmake_minimum_required (VERSION 3.26)
 
 project(jbt)
 
@@ -28,14 +28,11 @@ add_library(jbt
 	${JBT_SOURCES}
 )
 
+set_property(TARGET jbt PROPERTY CXX_STANDARD 20)
+
 target_include_directories(jbt PUBLIC "include")
 
 find_package(lz4 CONFIG REQUIRED)
 target_link_libraries(jbt PUBLIC lz4::lz4)
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET jbt PROPERTY CXX_STANDARD 20)
-endif()
-
-add_subdirectory(examples)
+# add_subdirectory(examples)
 

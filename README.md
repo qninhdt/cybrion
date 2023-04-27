@@ -26,3 +26,14 @@
 - [x] Save system
 - [ ] Game gui
 - [ ] End
+
+## Libraries
+- glm
+- lz4
+- robin-hood-hashing
+- spdlog
+- bshoshany-thread-pool
+- yaml-cpp
+- sdl2
+- imgui[opengl3-binding,sdl2-binding]
+- 

@@ -18,6 +18,6 @@ namespace cybrion
         f32 m_deltaTime;
         f64 m_totalTime;
         std::queue<f32> m_timeQueue;
-        std::chrono::steady_clock::time_point m_lastTime, m_time;
+        std::chrono::system_clock::time_point m_lastTime, m_time;
     };
 }

@@ -5,7 +5,7 @@ namespace cybrion::ui
 {
     void HomePage::onOpen()
     {
-        m_backgroundTexture.load("ui/background.png");
+        m_backgroundTexture.load("ui/background.jpg");
     }
 
     void HomePage::onRender()
@@ -16,17 +16,15 @@ namespace cybrion::ui
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
         ImGui::Begin("Home Page Background", NULL,
-            ImGuiWindowFlags_NoDecoration |
-            ImGuiWindowFlags_NoScrollbar |
-            ImGuiWindowFlags_NoBringToFrontOnFocus |
-            ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoScrollWithMouse
-        );
+                     ImGuiWindowFlags_NoDecoration |
+                         ImGuiWindowFlags_NoScrollbar |
+                         ImGuiWindowFlags_NoBringToFrontOnFocus |
+                         ImGuiWindowFlags_NoResize |
+                         ImGuiWindowFlags_NoScrollWithMouse);
 
         i32 bgSize = std::max(m_io.DisplaySize.x, m_io.DisplaySize.y);
         ImGui::Image((ImTextureID)m_backgroundTexture.getId(),
-            ImVec2(bgSize, bgSize)
-        );
+                     ImVec2(bgSize, bgSize));
 
         ImGui::PopStyleVar(2);
         ImGui::End();
@@ -35,11 +33,10 @@ namespace cybrion::ui
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
         ImGui::Begin("Home Page Menu", NULL,
-            ImGuiWindowFlags_NoTitleBar |
-            ImGuiWindowFlags_NoScrollbar |
-            ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_AlwaysAutoResize
-        );
+                     ImGuiWindowFlags_NoTitleBar |
+                         ImGuiWindowFlags_NoScrollbar |
+                         ImGuiWindowFlags_NoResize |
+                         ImGuiWindowFlags_AlwaysAutoResize);
 
         if (ImGui::Button("Play"))
         {

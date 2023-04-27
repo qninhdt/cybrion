@@ -24,22 +24,22 @@ namespace cybrion
         using BlockStorage = LinearPalette<Blocks::StateCount(), CHUNK_VOLUME>;
         using Chunk3x3x3 = array<array<array<ref<Chunk>, 3>, 3>, 3>;
 
-        Chunk(const ivec3& chunkPos);
+        Chunk(const ivec3 &chunkPos);
 
-        Block& getBlock(const ivec3& pos) const;
-        Block* tryGetBlock(const ivec3& pos) const;
-        tuple<Block*, ref<Chunk>> tryGetBlockMaybeOutside(const ivec3& pos) const;
+        Block &getBlock(const ivec3 &pos) const;
+        Block *tryGetBlock(const ivec3 &pos) const;
+        tuple<Block *, ref<Chunk>> tryGetBlockMaybeOutside(const ivec3 &pos) const;
         ref<Chunk> getNeighbor(i32 dx, i32 dy, i32 dz) const;
-        void setBlock(const ivec3& pos, Block& block);
+        void setBlock(const ivec3 &pos, Block &block);
         vec3 getPos() const;
         ivec3 getChunkPos() const;
-        void getBlockAndNeighbors(const ivec3& pos, Block::Block3x3x3& blocks);
-        void getBlockAndNeighborsMaybeOutside(const ivec3& pos, Block::Block3x3x3& blocks);
-        void setNeighbor(const ivec3& dir, const ref<Chunk>& chunk);
+        void getBlockAndNeighbors(const ivec3 &pos, Block::Block3x3x3 &blocks);
+        void getBlockAndNeighborsMaybeOutside(const ivec3 &pos, Block::Block3x3x3 &blocks);
+        void setNeighbor(const ivec3 &dir, const ref<Chunk> &chunk);
 
-        void eachNeighbors(const std::function<void(ref<Chunk>&, const ivec3&)>& callback);
-        void eachBlocks(const std::function<void(Block&, const ivec3&)>& callback);
-        void eachBlockAndNeighbors(const ivec3& pos, const std::function<void(Block*&, ref<Chunk>&, const ivec3& dir)>& callback);
+        void eachNeighbors(const std::function<void(ref<Chunk> &, const ivec3 &)> &callback);
+        void eachBlocks(const std::function<void(Block &, const ivec3 &)> &callback);
+        void eachBlockAndNeighbors(const ivec3 &pos, const std::function<void(Block *&, ref<Chunk> &, const ivec3 &dir)> &callback);
 
         bool areAllNeighborsReady();
         bool isNewChunk();
@@ -55,19 +55,18 @@ namespace cybrion
 
         void setDirty(bool dirty);
 
-        void fromJBT(const jbt::tag& tag);
+        void fromJBT(const jbt::tag &tag);
         jbt::tag toJBT();
 
         ~Chunk();
 
-        static i32 posToIndex(const ivec3& pos);
-        static ivec3 posToLocalPos(const ivec3& pos);
-        static ivec3 posToChunkPos(const ivec3& pos);
-        static bool isInBorder(const ivec3& pos);
-        static bool isInside(const ivec3& pos);
+        static i32 posToIndex(const ivec3 &pos);
+        static ivec3 posToLocalPos(const ivec3 &pos);
+        static ivec3 posToChunkPos(const ivec3 &pos);
+        static bool isInBorder(const ivec3 &pos);
+        static bool isInside(const ivec3 &pos);
 
     private:
-
         friend class World;
         friend class WorldGenerator;
 
@@ -86,7 +85,7 @@ namespace cybrion
         Chunk3x3x3 m_neighbors;
         vec3 m_pos;
         ivec3 m_chunkPos;
-        
+
         u32 m_id;
     };
 }

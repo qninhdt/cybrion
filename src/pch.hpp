@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <stack>
 #include <queue>
 #include <iostream>
@@ -34,7 +35,6 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
 #include <yaml-cpp/yaml.h>
-#include <entt/entt.hpp>
 #include <stb_image.h>
 #include <stb_image_resize.h>
 #include <BS_thread_pool.hpp>
@@ -44,4 +44,4 @@
 #include <jbt/hjbt.hpp>
 
 // common files
-#include "common.hpp""
+#include "common.hpp"

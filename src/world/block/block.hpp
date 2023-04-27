@@ -28,11 +28,10 @@ namespace cybrion
     class Block
     {
     public:
+        using Block3x3x3 = array<array<array<Block *, 3>, 3>, 3>;
 
-        using Block3x3x3 = array<array<array<Block*, 3>, 3>, 3>;
-
-        Block(const BlockType& type);
-        Block(const Block& block) = delete;
+        Block(const BlockType &type);
+        Block(const Block &block) = delete;
 
         u32 getId() const;
         BlockType getType() const;
@@ -46,37 +45,37 @@ namespace cybrion
         BlockRotation getRotationY() const;
         BlockRotation getRotationZ() const;
         AABB getBound() const;
-        vector<ref<BlockMesh>>& getMeshes();
-        vector<AABB>& getCollisionBounds();
+        vector<ref<BlockMesh>> &getMeshes();
+        vector<AABB> &getCollisionBounds();
         u32 getModelTexture(u32 index) const;
         bool isInteractive() const;
 
-        template<typename B>
-        B& as()
+        template <typename B>
+        B &as()
         {
-            return (B&)*this;
+            return (B &)*this;
         }
-        
-        bool operator == (const Block& other) const;
 
-        static BlockFace GetFaceFromDirection(const ivec3& dir);
-        static BlockFace GetOppositeFace(const BlockFace& face);
-        static BlockHorizontalFace GetOppositeHorizontalFace(const BlockHorizontalFace& face);
-        static ivec3 GetDirectionFromFace(const BlockFace& face);
+        bool operator==(const Block &other) const;
+
+        static BlockFace GetFaceFromDirection(const ivec3 &dir);
+        static BlockFace GetOppositeFace(const BlockFace &face);
+        static BlockHorizontalFace GetOppositeHorizontalFace(const BlockHorizontalFace &face);
+        static ivec3 GetDirectionFromFace(const BlockFace &face);
 
         virtual string toString() const = 0;
 
-        virtual Block& getPlacedBlock(const ivec3& pos);
-        virtual bool beforePlace(const ivec3& pos);
-        virtual void onPlaced(const ivec3& pos);
-        virtual void onBroken(const ivec3& pos);
-        virtual void onTick(const ivec3& pos);
-        virtual void onInteract(const ivec3& pos);
+        virtual Block &getPlacedBlock(const ivec3 &pos);
+        virtual bool beforePlace(const ivec3 &pos);
+        virtual void onPlaced(const ivec3 &pos);
+        virtual void onBroken(const ivec3 &pos);
+        virtual void onTick(const ivec3 &pos);
+        virtual void onInteract(const ivec3 &pos);
 
         static array<tuple<ivec3, BlockFace>, 6> Directions;
 
     protected:
-        virtual bool checkQuery(const umap<string, string>& query) const = 0;
+        virtual bool checkQuery(const umap<string, string> &query) const = 0;
 
     private:
         friend class BlockLoader;
@@ -86,40 +85,39 @@ namespace cybrion
 
         void rotateBlock()
         {
-            auto& f = m_toLocalFace;
+            auto &f = m_toLocalFace;
             cycleFace(f[1], f[2], f[4], f[5], (u32)m_rotationX);
             cycleFace(f[2], f[0], f[5], f[3], (u32)m_rotationY);
             cycleFace(f[0], f[1], f[3], f[4], (u32)m_rotationZ);
-            
+
             for (u32 i = 0; i < 6; ++i)
                 m_toWorldFace[m_toLocalFace[i]] = i;
 
             mat4 rotateMat = glm::eulerAngleXYZ(
                 u32(m_rotationX) * pi / 2,
                 u32(m_rotationY) * pi / 2,
-                u32(m_rotationZ) * pi / 2
-            );
+                u32(m_rotationZ) * pi / 2);
 
-            m_bound.rotate({ (u32)m_rotationX, (u32)m_rotationY, (u32)m_rotationZ });
+            m_bound.rotate({(u32)m_rotationX, (u32)m_rotationY, (u32)m_rotationZ});
 
-            for (auto& bound : m_collisionBounds)
-                bound.rotate({ (u32)m_rotationX, (u32)m_rotationY, (u32)m_rotationZ });
+            for (auto &bound : m_collisionBounds)
+                bound.rotate({(u32)m_rotationX, (u32)m_rotationY, (u32)m_rotationZ});
 
             if (m_shape == BlockShape::CUSTOM)
             {
-                for (auto& mesh : m_meshes)
+                for (auto &mesh : m_meshes)
                 {
                     auto temp = mesh;
                     mesh = std::make_shared<BlockMesh>();
                     mesh->vertices = temp->vertices;
 
-                    for (auto& vert : mesh->vertices)
+                    for (auto &vert : mesh->vertices)
                         vert.pos = rotateMat * vec4(vert.pos, 1);
                 }
             }
         }
 
-        void cycleFace(u32& f1, u32& f2, u32& f3, u32& f4, u32 n)
+        void cycleFace(u32 &f1, u32 &f2, u32 &f3, u32 &f4, u32 n)
         {
             while (n--)
             {
@@ -168,7 +166,6 @@ namespace cybrion
 
         u32 m_toWorldFace[6];
         u32 m_toLocalFace[6];
-        
     };
 
     template <typename B, BlockType type, typename... S>
@@ -190,21 +187,25 @@ namespace cybrion
         }
 
         template <const_string name>
-        auto& get() const
+        auto &get() const
         {
             return block::state_holder<S...>::template get<name>();
         }
 
         template <const_string name>
-        B& set(const auto& value);
+        B &set(const auto &value);
 
-    private:
-        template <typename... B>
-        friend class detail::BaseBlocks;
-
+        // static constexpr u32 num_states()
+        // {
+        //     return block::state_holder<S...>::num_states();
+        // }
         static constexpr BlockType Type = type;
 
-        bool checkQuery(const umap<string, string>& query) const override
+    private:
+        template <typename...>
+        friend class detail::BaseBlocks;
+
+        bool checkQuery(const umap<string, string> &query) const override
         {
             return block::state_holder<S...>::check_query(query);
         }
@@ -220,7 +221,7 @@ namespace cybrion
         };
 
         template <typename... B>
-        class BaseBlocks : private detail::block_registry<B> ...
+        class BaseBlocks : private detail::block_registry<B>...
         {
         public:
             BaseBlocks()
@@ -228,28 +229,28 @@ namespace cybrion
                 registerImpl<B...>(0);
             }
 
-            void queryBlocks(BlockType type, const umap<string, string>& query, vector<Block*>& result)
+            void queryBlocks(BlockType type, const umap<string, string> &query, vector<Block *> &result)
             {
-                auto& [from, to] = m_typeToRange[u32(type)];
+                auto &[from, to] = m_typeToRange[u32(type)];
 
                 for (u32 i = from; i < to; ++i)
                     if (m_idToBlock[i]->checkQuery(query))
                         result.push_back(m_idToBlock[i]);
             }
 
-            template <typename B>
-            B& get()
+            template <typename BB>
+            BB &get()
             {
-                return (B&)getBlock(B::Type);
+                return (BB &)getBlock(BB::Type);
             }
 
-            Block& getBlock(BlockType type)
+            Block &getBlock(BlockType type)
             {
                 // return first block state of this type (all states are 0)
                 return getBlock(m_typeToRange[u32(type)].first);
             }
 
-            Block& getBlock(u32 id)
+            Block &getBlock(u32 id)
             {
                 if (id >= StateCount())
                     return *m_idToBlock[0];
@@ -271,8 +272,7 @@ namespace cybrion
             }
 
         private:
-
-            template <typename T, typename ...R>
+            template <typename T, typename... R>
             static constexpr u32 StateCountImpl()
             {
                 if constexpr (sizeof...(R) == 0)
@@ -284,25 +284,25 @@ namespace cybrion
             template <typename T, typename... R>
             void registerImpl(u32 index)
             {
-                auto& self = (detail::block_registry<T>&) * this;
+                auto &self = (detail::block_registry<T> &)*this;
                 BlockType type = T::Type;
 
                 T block;
                 u32 idx = 0;
-                T::each_possible_values(block, [&] {
+                T::each_possible_values(block, [&]
+                                        {
                     self.blocks[idx] = block;
                     self.blocks[idx].m_id = idx + index;
                     m_idToBlock[idx + index] = &self.blocks[idx];
-                    idx += 1;
-                });
+                    idx += 1; });
 
-                m_typeToRange[u32(type)] = { index, index + idx };
+                m_typeToRange[u32(type)] = {index, index + idx};
 
                 if constexpr (sizeof...(R) > 0)
                     registerImpl<R...>(index + idx);
             }
 
-            Block* m_idToBlock[StateCount()];
+            Block *m_idToBlock[StateCount()];
             std::pair<u32, u32> m_typeToRange[u32(BlockType::ENUM_SIZE)];
         };
     }

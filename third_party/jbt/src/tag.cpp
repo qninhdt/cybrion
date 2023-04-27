@@ -3,61 +3,74 @@
 #include <iomanip>
 
 #define TYPE_CHECK(tag, correct_type) \
-	assert(tag##.type == tag_type::##correct_type && "Wrong tag type")
+	assert(tag.type == tag_type::correct_type && "Wrong tag type")
 
 #define STRING_CHECK(value) \
 	assert(value.size() <= 65535 && "Maximum length of string is 65535")
 
 #define JBT_TAG_METHOD_IMPL(name_, type_, enum_type)                   \
-	tag::tag(const type_& value): type(tag_type::##enum_type) {\
-		data.v_##name_ = value;                                          \
-	}\
-	type_& tag::get_##name_(const std::string& name) const {               \
-		TYPE_CHECK((*this), OBJECT);\
-		tag& a_tag = get_tag(name);                                               \
-		return a_tag.as_##name_();                    \
-	}                                                                           \
-	void tag::set_##name_(const std::string& name, const type_& value) {  \
-		TYPE_CHECK((*this), OBJECT);\
-		set_tag(name, { value });                                  \
-	}                     \
-	type_& tag::get_##name_(const uint32_t& index) const {                    \
-		TYPE_CHECK((*this), LIST);\
-		tag& a_tag = get_tag(index);                                              \
-		return a_tag.as_##name_();                      \
-	}                                                                           \
-	void tag::set_##name_(const uint32_t& index, const type_& value) {       \
-		TYPE_CHECK((*this), LIST);\
-		set_tag(index, { value });                                  \
-	}                                                                           \
-	void tag::add_##name_(const type_& value) {                              \
-		TYPE_CHECK((*this), LIST);\
-		add_tag({ value });                                         \
-	} \
-	type_& tag::as_##name_() {\
-		TYPE_CHECK((*this), enum_type);\
-		return data.v_##name_;\
+	tag::tag(const type_ &value) : type(tag_type::enum_type)           \
+	{                                                                  \
+		data.v_##name_ = value;                                        \
+	}                                                                  \
+	type_ &tag::get_##name_(const std::string &name) const             \
+	{                                                                  \
+		TYPE_CHECK((*this), OBJECT);                                   \
+		tag &a_tag = get_tag(name);                                    \
+		return a_tag.as_##name_();                                     \
+	}                                                                  \
+	void tag::set_##name_(const std::string &name, const type_ &value) \
+	{                                                                  \
+		TYPE_CHECK((*this), OBJECT);                                   \
+		set_tag(name, {value});                                        \
+	}                                                                  \
+	type_ &tag::get_##name_(const uint32_t &index) const               \
+	{                                                                  \
+		TYPE_CHECK((*this), LIST);                                     \
+		tag &a_tag = get_tag(index);                                   \
+		return a_tag.as_##name_();                                     \
+	}                                                                  \
+	void tag::set_##name_(const uint32_t &index, const type_ &value)   \
+	{                                                                  \
+		TYPE_CHECK((*this), LIST);                                     \
+		set_tag(index, {value});                                       \
+	}                                                                  \
+	void tag::add_##name_(const type_ &value)                          \
+	{                                                                  \
+		TYPE_CHECK((*this), LIST);                                     \
+		add_tag({value});                                              \
+	}                                                                  \
+	type_ &tag::as_##name_()                                           \
+	{                                                                  \
+		TYPE_CHECK((*this), enum_type);                                \
+		return data.v_##name_;                                         \
 	}
 
-namespace jbt {
+namespace jbt
+{
 
-	tag::tag(): type(tag_type::NONE) {
+	tag::tag() : type(tag_type::NONE)
+	{
 		data.v_long = 0;
 	}
 
-	tag::tag(const tag_type& type): type(type) {
+	tag::tag(const tag_type &type) : type(type)
+	{
 		setup_data();
 	}
 
-	tag::tag(tag_type&& type)
-		:type(type) {
+	tag::tag(tag_type &&type)
+		: type(type)
+	{
 		setup_data();
 	}
 
-	tag& tag::operator=(const tag& other) {
+	tag &tag::operator=(const tag &other)
+	{
 		type = other.type;
 
-		switch (other.type) {
+		switch (other.type)
+		{
 		case tag_type::LIST:
 			data.v_list = new list_t(*other.data.v_list);
 			break;
@@ -76,7 +89,8 @@ namespace jbt {
 		return *this;
 	}
 
-	tag& tag::operator=(tag&& other) noexcept {
+	tag &tag::operator=(tag &&other) noexcept
+	{
 		data = other.data;
 		type = other.type;
 		other.data.v_long = 0;
@@ -84,8 +98,10 @@ namespace jbt {
 		return *this;
 	}
 
-	void tag::setup_data() {
-		switch (type) {
+	void tag::setup_data()
+	{
+		switch (type)
+		{
 		case tag_type::LIST:
 			data.v_list = new list_t();
 			break;
@@ -103,14 +119,17 @@ namespace jbt {
 		}
 	}
 
-	tag_type tag::get_type() const {
+	tag_type tag::get_type() const
+	{
 		return type;
 	}
 
-	tag::tag(const tag& other) {
+	tag::tag(const tag &other)
+	{
 		type = other.type;
 
-		switch (other.type) {
+		switch (other.type)
+		{
 		case tag_type::LIST:
 			data.v_list = new list_t(*other.data.v_list);
 			break;
@@ -125,76 +144,89 @@ namespace jbt {
 		}
 	}
 
-	tag::tag(tag&& other) noexcept : data(other.data), type(other.type) {
+	tag::tag(tag &&other) noexcept : data(other.data), type(other.type)
+	{
 		other.data.v_long = 0;
 		other.type = tag_type::NONE;
 	}
 
-	tag::tag(const std::string& value) : type(tag_type::STRING) {
+	tag::tag(const std::string &value) : type(tag_type::STRING)
+	{
 		data.v_string = new std::string(value);
 	}
 
-	tag::tag(std::string&& value) noexcept : type(tag_type::STRING) {
+	tag::tag(std::string &&value) noexcept : type(tag_type::STRING)
+	{
 		data.v_string = new std::string(std::move(value));
 	}
 
-	tag::tag(const byte_array_t& value) : type(tag_type::BYTE_ARRAY) {
+	tag::tag(const byte_array_t &value) : type(tag_type::BYTE_ARRAY)
+	{
 		data.v_byte_array = new byte_array_t(value);
 	}
 
-	tag& tag::get_tag(const std::string& name) const {
+	tag &tag::get_tag(const std::string &name) const
+	{
 		TYPE_CHECK((*this), OBJECT);
-		auto&& it = data.v_object->find(name);
+		auto &&it = data.v_object->find(name);
 		assert(it != data.v_object->end() && "Tag not found");
 		return it->second;
 	}
 
-	void tag::set_tag(const std::string& name, const tag& value) {
+	void tag::set_tag(const std::string &name, const tag &value)
+	{
 		TYPE_CHECK((*this), OBJECT);
 		assert(name.size() <= 255 && "Maximum name length is 255");
 		assert(!name.empty() && "Empty name is not allowed");
 		(*(data.v_object))[name] = value;
 	}
 
-	void tag::set_tag(const std::string& name, tag&& value) {
+	void tag::set_tag(const std::string &name, tag &&value)
+	{
 		TYPE_CHECK((*this), OBJECT);
 		assert(name.size() <= 255 && "Maximum name length is 255");
 		assert(!name.empty() && "Empty name is not allowed");
 		(*(data.v_object))[name] = std::move(value);
 	}
 
-	std::string& tag::get_string(const std::string& name) const {
+	std::string &tag::get_string(const std::string &name) const
+	{
 		TYPE_CHECK((*this), OBJECT);
-		tag& a_tag = get_tag(name);
+		tag &a_tag = get_tag(name);
 		TYPE_CHECK(a_tag, STRING);
 		return a_tag.as_string();
 	}
 
-	std::string& tag::as_string() {
+	std::string &tag::as_string()
+	{
 		TYPE_CHECK((*this), STRING);
 		return *data.v_string;
-	 }
+	}
 
-	void tag::set_string(const std::string& name, const std::string& value) {
+	void tag::set_string(const std::string &name, const std::string &value)
+	{
 		TYPE_CHECK((*this), OBJECT);
 		assert(value.size() <= 65535 && "Maximum length of string is 65535");
 		set_tag(name, tag(value));
 	}
 
-	void tag::set_string(const std::string& name, std::string&& value) {
+	void tag::set_string(const std::string &name, std::string &&value)
+	{
 		TYPE_CHECK((*this), OBJECT);
 		assert(value.size() <= 65535 && "Maximum length of string is 65535");
 		set_tag(name, tag(std::move(value)));
 	}
 
-	byte_array_t& tag::get_byte_array(const std::string& name) const {
+	byte_array_t &tag::get_byte_array(const std::string &name) const
+	{
 		TYPE_CHECK((*this), OBJECT);
-		tag& a_tag = get_tag(name);
+		tag &a_tag = get_tag(name);
 		TYPE_CHECK(a_tag, BYTE_ARRAY);
 		return a_tag.as_byte_array();
 	}
 
-	void tag::set_byte_array(const std::string& name, const byte_array_t& value) {
+	void tag::set_byte_array(const std::string &name, const byte_array_t &value)
+	{
 		TYPE_CHECK((*this), OBJECT);
 		set_tag(name, tag(value));
 	}
@@ -211,26 +243,31 @@ namespace jbt {
 	JBT_TAG_METHOD_IMPL(float, float, FLOAT)
 	JBT_TAG_METHOD_IMPL(double, double, DOUBLE)
 
-	tag& tag::get_tag(const uint32_t& index) const {
+	tag &tag::get_tag(const uint32_t &index) const
+	{
 		TYPE_CHECK((*this), LIST);
 		assert(index < data.v_list->size() && "Out of bounds");
 		return (*data.v_list)[index];
 	}
-	
-	void tag::set_tag(const uint32_t& index, const tag& value) {
+
+	void tag::set_tag(const uint32_t &index, const tag &value)
+	{
 		TYPE_CHECK((*this), LIST);
 		assert(index < data.v_list->size() && "Out of bounds");
 		(*data.v_list)[index] = value;
 	}
 
-	void tag::set_tag(const uint32_t& index, tag&& value) {
+	void tag::set_tag(const uint32_t &index, tag &&value)
+	{
 		TYPE_CHECK((*this), LIST);
 		assert(index < data.v_list->size() && "Out of bounds");
 		(*data.v_list)[index] = std::move(value);
 	}
-	
-	uint32_t tag::size() const {
-		switch (type) {
+
+	uint32_t tag::size() const
+	{
+		switch (type)
+		{
 		case jbt::tag_type::LIST:
 			return data.v_list->size();
 		case jbt::tag_type::STRING:
@@ -243,81 +280,96 @@ namespace jbt {
 		}
 	}
 
-	void tag::reserve(const uint32_t& size) {
+	void tag::reserve(const uint32_t &size)
+	{
 		TYPE_CHECK((*this), LIST);
 		data.v_list->reserve(size);
 	}
 
-	void tag::resize(const uint32_t& size) {
+	void tag::resize(const uint32_t &size)
+	{
 		TYPE_CHECK((*this), LIST);
 		data.v_list->resize(size);
 	}
 
-	void tag::set_string(const uint32_t& index, const std::string& value) {
+	void tag::set_string(const uint32_t &index, const std::string &value)
+	{
 		TYPE_CHECK((*this), LIST);
 		STRING_CHECK(value);
 		set_tag(index, new tag(value));
 	}
 
-	void tag::set_string(const uint32_t& index, std::string&& value) {
+	void tag::set_string(const uint32_t &index, std::string &&value)
+	{
 		TYPE_CHECK((*this), LIST);
 		STRING_CHECK(value);
 		set_tag(index, new tag(std::move(value)));
 	}
 
-	std::string& tag::get_string(const uint32_t& index) const {
+	std::string &tag::get_string(const uint32_t &index) const
+	{
 		TYPE_CHECK((*this), LIST);
-		tag& a_tag = get_tag(index);
+		tag &a_tag = get_tag(index);
 		assert(index < data.v_list->size() && "Out of bounds");
 		return a_tag.as_string();
 	}
 
-	void tag::set_byte_array(const uint32_t& index, const byte_array_t& value) {
+	void tag::set_byte_array(const uint32_t &index, const byte_array_t &value)
+	{
 		TYPE_CHECK((*this), LIST);
 		set_tag(index, new tag(value));
 	}
 
-	byte_array_t& tag::get_byte_array(const uint32_t& index) const {
+	byte_array_t &tag::get_byte_array(const uint32_t &index) const
+	{
 		TYPE_CHECK((*this), LIST);
-		tag& a_tag = get_tag(index);
+		tag &a_tag = get_tag(index);
 		assert(index < data.v_list->size() && "Out of bounds");
 		return a_tag.as_byte_array();
 	}
 
-	void tag::add_tag(const tag& value) {
+	void tag::add_tag(const tag &value)
+	{
 		TYPE_CHECK((*this), LIST);
 		data.v_list->push_back(value);
 	}
 
-	void tag::add_tag(tag&& value) {
+	void tag::add_tag(tag &&value)
+	{
 		TYPE_CHECK((*this), LIST);
 		data.v_list->push_back(std::move(value));
 	}
 
-	void tag::add_string(const std::string& value) {
+	void tag::add_string(const std::string &value)
+	{
 		TYPE_CHECK((*this), LIST);
 		STRING_CHECK(value);
-		add_tag({ value });
+		add_tag({value});
 	}
 
-	void tag::add_string(std::string&& value) {
+	void tag::add_string(std::string &&value)
+	{
 		TYPE_CHECK((*this), LIST);
 		STRING_CHECK(value);
-		add_tag({ std::move(value) });
+		add_tag({std::move(value)});
 	}
 
-	void tag::add_byte_array(const byte_array_t& value) {
+	void tag::add_byte_array(const byte_array_t &value)
+	{
 		TYPE_CHECK((*this), LIST);
 		add_tag(tag(value));
 	}
 
-	byte_array_t& tag::as_byte_array() {
+	byte_array_t &tag::as_byte_array()
+	{
 		TYPE_CHECK((*this), BYTE_ARRAY);
 		return *data.v_byte_array;
 	}
 
-	tag::~tag() {
-		switch (type) {
+	tag::~tag()
+	{
+		switch (type)
+		{
 		case tag_type::LIST:
 			delete data.v_list;
 			break;
@@ -334,24 +386,29 @@ namespace jbt {
 		}
 	}
 
-	void tag::to_string(std::ostream& out) const {
+	void tag::to_string(std::ostream &out) const
+	{
 		to_string(out, 0);
 	}
 
-	void tag::to_string(std::ostream& out, const int32_t& tabs) const {
+	void tag::to_string(std::ostream &out, const int32_t &tabs) const
+	{
 		std::string tab = "";
-		for (int i=0;i<tabs;++i) tab += "    ";
+		for (int i = 0; i < tabs; ++i)
+			tab += "    ";
 		std::string tab1 = tab + "    ";
 
 		int i = 0;
 
-		switch (type) {
+		switch (type)
+		{
 		case jbt::tag_type::BOOL:
 			out << (data.v_bool ? "true" : "false");
 			break;
 		case jbt::tag_type::LIST:
 			out << "[\n";
-			for (int i = 0; i < data.v_list->size(); ++i) {
+			for (int i = 0; i < data.v_list->size(); ++i)
+			{
 				out << tab1;
 				(*data.v_list)[i].to_string(out, tabs + 1);
 				out << ((i == data.v_list->size() - 1) ? "\n" : ",\n");
@@ -364,7 +421,8 @@ namespace jbt {
 		case jbt::tag_type::OBJECT:
 			out << "{\n";
 
-			for (auto& [name, a_tag] : *data.v_object) {
+			for (auto &[name, a_tag] : *data.v_object)
+			{
 				out << tab1 << name << ": ";
 				a_tag.to_string(out, tabs + 1);
 				out << ((i == data.v_object->size() - 1) ? "\n" : ",\n");
@@ -410,12 +468,14 @@ namespace jbt {
 		}
 	}
 
-	std::ostream& operator<<(std::ostream& os, const tag_type& type) {
-		
+	std::ostream &operator<<(std::ostream &os, const tag_type &type)
+	{
+
 		return os;
 	}
 
-	std::ostream& operator<<(std::ostream& os, const tag& a_tag) {
+	std::ostream &operator<<(std::ostream &os, const tag &a_tag)
+	{
 		a_tag.to_string(os);
 		return os;
 	}

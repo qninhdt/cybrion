@@ -12,24 +12,24 @@ namespace cybrion
         struct state
         {
             using type = T;
-            static constexpr const_string name = pname;
+            static constexpr const_string name{pname};
             static constexpr u32 num_values = pnum_values;
             static constexpr u32 num_bits = util::ceilLog2(num_values);
             static constexpr u32 name_length = name.length();
 
             T value = (T)0;
 
-            bool runtime_has(const string& name)
+            bool runtime_has(const string &name)
             {
-                return name == string((const char*)pname);
+                return name == string((const char *)pname);
             }
 
-            u32 runtime_get(const string& name)
+            u32 runtime_get(const string &name)
             {
                 return (u32)value;
             }
 
-            string runtime_get_as_string(const string& name) const
+            string runtime_get_as_string(const string &name) const
             {
                 return to_string();
             }
@@ -62,31 +62,31 @@ namespace cybrion
                 else
                     return num_states_impl<S...>();
             }
-        protected:
 
+        protected:
             template <const_string name>
-            auto& get() const
+            auto &get() const
             {
                 return get_impl<name, S...>();
             }
 
             template <const_string name>
-            i32 set(const auto& value)
+            i32 set(const auto &value)
             {
                 return set_impl<name, 1, S...>(value);
             }
 
             template <const_string name, i32 n, typename T, typename... R>
-            i32 set_impl(const auto& value)
+            i32 set_impl(const auto &value)
             {
                 constexpr u32 m = num_states() / n / T::num_values;
-                if constexpr (T::name == name)
+                if constexpr (std::strcmp(T::name.value, name.value) == 0)
                 {
-                    auto& self = *(T*)this;
+                    auto &self = *(T *)this;
                     return m * (i32(value) - i32(self.value));
                 }
                 else if (sizeof...(R) > 0)
-                    return set_impl<name, n* T::num_values, R...>(value);
+                    return set_impl<name, n * T::num_values, R...>(value);
             }
 
             string to_string() const
@@ -95,14 +95,14 @@ namespace cybrion
                     return "";
                 else
                 {
-                    string str = ((S::name.to_string() + "=" + ((S&)*this).to_string() + ',') + ...);
+                    string str = ((S::name.to_string() + "=" + ((S &)*this).to_string() + ',') + ...);
                     str.erase(str.end() - 1);
                     return str;
                 }
             }
 
             template <typename H>
-            static void each_possible_values(H& holder, auto callback)
+            static void each_possible_values(H &holder, auto callback)
             {
                 if constexpr (sizeof...(S) == 0)
                     callback();
@@ -110,44 +110,46 @@ namespace cybrion
                     each_possible_values_impl<S...>(holder, callback);
             }
 
-            u32 runtime_get(const string& name)
+            u32 runtime_get(const string &name)
             {
                 u32 result = 0;
-                ([&] {
+                ([&]
+                 {
                     S& self = *(S*)this;
                     if (self.runtime_has(name))
                     {
                         result = self.runtime_get(name);
                         return true;
                     }
-                    return false;
-                }() || ...);
+                    return false; }() ||
+                 ...);
                 return result;
             }
 
-            string runtime_get_as_string(const string& name)
+            string runtime_get_as_string(const string &name)
             {
                 string result = "";
-                ([&] {
+                ([&]
+                 {
                     S& self = *(S*)this;
                     if (self.runtime_has(name))
                     {
                         result = self.runtime_get_as_string(name);
                         return true;
                     }
-                    return false;
-                }() || ...);
+                    return false; }() ||
+                 ...);
                 return result;
             }
 
-            bool runtime_has(const string& name)
+            bool runtime_has(const string &name)
             {
-                return (((S&)*this).runtime_has(name) || ...);
+                return (((S &)*this).runtime_has(name) || ...);
             }
 
-            bool check_query(const umap<string, string>& query) const
+            bool check_query(const umap<string, string> &query) const
             {
-                for (auto& [key, value] : query)
+                for (auto &[key, value] : query)
                     if (!check_query_impl(key, value))
                         return false;
 
@@ -155,8 +157,7 @@ namespace cybrion
             }
 
         private:
-
-            template <typename T, typename ...R>
+            template <typename T, typename... R>
             static constexpr u32 num_states_impl()
             {
                 if constexpr (sizeof...(R) == 0)
@@ -165,22 +166,24 @@ namespace cybrion
                     return T::num_values * num_states_impl<R...>();
             }
 
-            bool check_query_impl(const string& key, const string& value) const
+            bool check_query_impl(const string &key, const string &value) const
             {
-                return ([&] {
+                return ([&]
+                        {
                     S& self = *(S*)this;
                     if (self.runtime_has(key) && self.runtime_get_as_string(key) == value)
                         return true;
-                    return false;
-                }() || ...);
+                    return false; }() ||
+                        ...);
             }
 
             template <typename T, typename... R>
-            static void each_possible_values_impl(auto& holder, auto callback)
+            static void each_possible_values_impl(auto &holder, auto callback)
             {
                 for (u32 i = 0; i < T::num_values; ++i)
                 {
-                    *(u32*)&(holder.get<T::name>()) = i;
+                    auto x = (u32 *)&(holder.template get<T::name>());
+                    *x = i;
 
                     if constexpr (sizeof...(R) == 0)
                         callback();
@@ -190,10 +193,10 @@ namespace cybrion
             }
 
             template <const_string name, typename T, typename... R>
-            auto& get_impl() const
+            auto &get_impl() const
             {
-                if constexpr (T::name == name)
-                    return ((T*)this)->value;
+                if constexpr (std::strcmp(T::name.value, name.value) == 0)
+                    return ((T *)this)->value;
                 else
                 {
                     static_assert(sizeof...(R) > 0);

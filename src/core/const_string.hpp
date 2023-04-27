@@ -6,19 +6,17 @@ namespace cybrion
     struct const_string
     {
         char value[N + 1]{};
-        constexpr const_string(char const* s)
+        constexpr const_string(char const *str)
         {
             for (unsigned i = 0; i != N; ++i)
-                value[i] = s[i];
+                value[i] = str[i];
         }
 
         constexpr u32 length() const { return N; }
 
-        constexpr operator char const* () const { return value; }
+        constexpr operator char const *() const { return value; }
 
-        constexpr string to_string() const { return string((const char*)value); }
-
-        constexpr bool operator==(const const_string&) const = default;
+        constexpr string to_string() const { return string((const char *)value); }
     };
 
     template <u32 N>
