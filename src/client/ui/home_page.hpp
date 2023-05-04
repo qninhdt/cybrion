@@ -11,7 +11,12 @@ namespace cybrion::ui
         void onOpen() override;
         void onRender() override;
         void onClose() override;
+
     private:
         GL::Texture m_backgroundTexture;
+        GL::Texture m_playTexture;
+        GL::Texture m_hoveredPlayTexture;
+        GL::Texture m_quitTexture;
+        GL::Texture m_hoveredQuitTexture;
     };
 }

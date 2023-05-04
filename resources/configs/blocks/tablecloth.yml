@@ -4,5 +4,5 @@
   model_tex:
     - oak_plank
     - white_wool
-"[dir=1]":
+"[face=1]":
   rotate_y: 90

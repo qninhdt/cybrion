@@ -72,6 +72,8 @@ namespace cybrion
 
         irrklang::ISoundEngine *m_soundEngine;
 
+        ImFont *m_font;
+
         // game
         LocalGame *m_game;
         bool m_playingGame;

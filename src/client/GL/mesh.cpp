@@ -4,14 +4,13 @@ namespace cybrion::GL
 {
     GLuint Mesh::s_globalIBO = 0;
 
-    Mesh::Mesh(bool useGlobalIBO):
-        m_vao(0),
-        m_vbo(0),
-        m_ibo(0),
-        m_drawCount(0),
-        m_maxBufferSize(0),
-        m_maxIndicesCount(0),
-        m_useGlobalIBO(useGlobalIBO)
+    Mesh::Mesh(bool useGlobalIBO) : m_vao(0),
+                                    m_vbo(0),
+                                    m_ibo(0),
+                                    m_drawCount(0),
+                                    m_maxBufferSize(0),
+                                    m_maxIndicesCount(0),
+                                    m_useGlobalIBO(useGlobalIBO)
     {
         glGenVertexArrays(1, &m_vao);
         glBindVertexArray(m_vao);
@@ -30,7 +29,7 @@ namespace cybrion::GL
         }
     }
 
-    Mesh::Mesh(Mesh&& other) noexcept : Mesh(other) // like copy constructor
+    Mesh::Mesh(Mesh &&other) noexcept : Mesh(other) // like copy constructor
     {
         other.m_vao = 0;
         other.m_ibo = 0;
@@ -46,7 +45,7 @@ namespace cybrion::GL
         glDeleteVertexArrays(1, &m_vao);
     }
 
-    void Mesh::setVerticesData(void* data, u32 size)
+    void Mesh::setVerticesData(void *data, u32 size)
     {
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
@@ -69,13 +68,13 @@ namespace cybrion::GL
     void Mesh::drawTriangles() const
     {
         glBindVertexArray(m_vao);
-        glDrawElements(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, (void*)0);
+        glDrawElements(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, (void *)0);
     }
 
     void Mesh::drawLines() const
     {
         glBindVertexArray(m_vao);
-        glDrawElements(GL_LINES, m_drawCount, GL_UNSIGNED_INT, (void*)0);
+        glDrawElements(GL_LINES, m_drawCount, GL_UNSIGNED_INT, (void *)0);
     }
 
     void Mesh::setAttributes(std::initializer_list<MeshAttribute> attributes)
@@ -84,13 +83,13 @@ namespace cybrion::GL
         u32 offset = 0;
         u32 stride = 0;
 
-        for (auto& attr : attributes)
+        for (auto &attr : attributes)
             stride += GetTypeSize(attr.type);
 
         glBindVertexArray(m_vao);
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
-        for (auto& attr : attributes)
+        for (auto &attr : attributes)
         {
             u32 elementCount = GetElementCount(attr.type);
             u32 size = GetTypeSize(attr.type);
@@ -102,7 +101,7 @@ namespace cybrion::GL
             case Type::INT:
             case Type::UINT:
             {
-                glVertexAttribIPointer(index, elementCount, glType, stride, (void*)offset);
+                glVertexAttribIPointer(index, elementCount, glType, stride, (void *)(intptr_t)offset);
                 break;
             }
             case Type::VEC4:
@@ -110,7 +109,7 @@ namespace cybrion::GL
             case Type::VEC2:
             case Type::FLOAT:
             {
-                glVertexAttribPointer(index, elementCount, glType, GL_FALSE, stride, (void*)offset);
+                glVertexAttribPointer(index, elementCount, glType, GL_FALSE, stride, (void *)(intptr_t)offset);
                 break;
             }
             default:
@@ -126,7 +125,7 @@ namespace cybrion::GL
         return m_drawCount;
     }
 
-    void Mesh::setIndices(u32* indices, u32 count)
+    void Mesh::setIndices(u32 *indices, u32 count)
     {
         if (m_useGlobalIBO)
             return;
@@ -212,9 +211,13 @@ namespace cybrion::GL
         {
             u32 j = i * 4;
             indices.insert(indices.end(), {
-                j + 0, j + 1, j + 2,
-                j + 0, j + 2, j + 3,
-            });
+                                              j + 0,
+                                              j + 1,
+                                              j + 2,
+                                              j + 0,
+                                              j + 2,
+                                              j + 3,
+                                          });
         }
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_globalIBO);

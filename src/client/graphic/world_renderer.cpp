@@ -10,11 +10,10 @@
 
 namespace cybrion
 {
-    WorldRenderer::WorldRenderer(World& world):
-        m_world(world),
-        m_enableAO(true),
-        m_enableDiffuse(true),
-        m_chunkMeshResults()
+    WorldRenderer::WorldRenderer(World &world) : m_world(world),
+                                                 m_enableAO(true),
+                                                 m_enableDiffuse(true),
+                                                 m_chunkMeshResults()
     {
         m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
         m_opaqueCubeShader = ShaderManager::Get().getShader<OpaqueCubeShader>("opaque_cube");
@@ -53,12 +52,12 @@ namespace cybrion
 
         {
             vector<u32> removeList;
-            for (auto& [id, renderer] : m_chunkRenderers)
+            for (auto &[id, renderer] : m_chunkRenderers)
             {
                 if (renderer->m_chunk->isUnloaded() && renderer.use_count() == 1)
                     removeList.push_back(id);
             }
-            for (auto& id : removeList)
+            for (auto &id : removeList)
                 m_chunkRenderers.erase(id);
         }
 
@@ -69,28 +68,26 @@ namespace cybrion
         m_opaqueCubeShader.setUniform<"enable_ao">((u32)m_enableAO);
 
         vector<ref<ChunkRenderer>> renderChunks;
-        for (auto& [id, renderer] : m_chunkRenderers)
+        for (auto &[id, renderer] : m_chunkRenderers)
         {
-            if (!renderer->m_hasBuilt) {
+            if (!renderer->m_hasBuilt)
+            {
                 continue;
             }
             renderChunks.push_back(renderer);
         }
 
         vec3 cameraPos = LocalGame::Get().getCamera().getPos();
-        std::sort(renderChunks.begin(), renderChunks.end(), [&](ref<ChunkRenderer>& x, ref<ChunkRenderer>& y) {
-            return glm::distance(cameraPos, x->m_chunk->getPos()) > glm::distance(cameraPos, y->m_chunk->getPos());
-        });
+        std::sort(renderChunks.begin(), renderChunks.end(), [&](ref<ChunkRenderer> &x, ref<ChunkRenderer> &y)
+                  { return glm::distance(cameraPos, x->m_chunk->getPos()) > glm::distance(cameraPos, y->m_chunk->getPos()); });
 
-        for (auto& renderer: renderChunks)
+        for (auto &renderer : renderChunks)
         {
-            auto& opaqueMesh = renderer->opaqueMesh;
-            auto& transparentMesh = renderer->transparentMesh;
+            auto &opaqueMesh = renderer->opaqueMesh;
+            auto &transparentMesh = renderer->transparentMesh;
 
             m_opaqueCubeShader.setUniform<"MVP">(
-                LocalGame::Get().getCamera().getProjViewMat()
-                * opaqueMesh.getModelMat()
-            ); 
+                LocalGame::Get().getCamera().getProjViewMat() * opaqueMesh.getModelMat());
 
             // OPAQUE
 
@@ -114,15 +111,13 @@ namespace cybrion
             }
         }
 
-        m_blockModelShader.use(); 
-        for (auto& renderer : renderChunks)
+        m_blockModelShader.use();
+        for (auto &renderer : renderChunks)
         {
-            auto& modelMesh = renderer->modelMesh;
+            auto &modelMesh = renderer->modelMesh;
 
             m_blockModelShader.setUniform<"MVP">(
-                LocalGame::Get().getCamera().getProjViewMat()
-                * modelMesh.getModelMat()
-            );
+                LocalGame::Get().getCamera().getProjViewMat() * modelMesh.getModelMat());
 
             if (modelMesh.getDrawCount() > 0)
             {
@@ -133,19 +128,17 @@ namespace cybrion
         if (showEntityBorder)
         {
             m_basicShader.use();
-            for (auto& [_, renderer]: m_entityRenderers)
+            for (auto &[_, renderer] : m_entityRenderers)
             {
-                auto& aabbMesh = renderer->aabbMesh;
+                auto &aabbMesh = renderer->aabbMesh;
                 m_basicShader.setUniform<"MVP">(
-                    LocalGame::Get().getCamera().getProjViewMat()
-                    * aabbMesh.getModelMat()
-                );
+                    LocalGame::Get().getCamera().getProjViewMat() * aabbMesh.getModelMat());
                 aabbMesh.drawLines();
             }
         }
     }
 
-    void WorldRenderer::addChunk(const ref<Chunk>& chunk)
+    void WorldRenderer::addChunk(const ref<Chunk> &chunk)
     {
         if (chunk->isUnloaded())
             return;
@@ -154,40 +147,40 @@ namespace cybrion
         m_chunkRenderers[chunk->getId()] = renderer;
         prepareRebuild(renderer);
 
-        chunk->eachNeighbors([this](ref<Chunk>& neighbor, const ivec3&) {
+        chunk->eachNeighbors([this](ref<Chunk> &neighbor, const ivec3 &)
+                             {
             if (neighbor && neighbor->hasStructure())
             {
                 auto renderer = getChunkRenderer(neighbor);
 
                 if (renderer)
                     prepareRebuild(renderer);
-            }
-        });
+            } });
     }
 
-    void WorldRenderer::removeChunk(const ref<Chunk>& chunk)
+    void WorldRenderer::removeChunk(const ref<Chunk> &chunk)
     {
     }
 
-    void WorldRenderer::addEntity(const ref<Entity>& entity)
+    void WorldRenderer::addEntity(const ref<Entity> &entity)
     {
         auto renderer = std::make_shared<EntityRenderer>(entity);
         m_entityRenderers[entity->getId()] = renderer;
     }
 
-    ref<ChunkRenderer> WorldRenderer::getChunkRenderer(const ref<Chunk>& chunk) const
+    ref<ChunkRenderer> WorldRenderer::getChunkRenderer(const ref<Chunk> &chunk) const
     {
         auto it = m_chunkRenderers.find(chunk->getId());
         return it == m_chunkRenderers.end() ? nullptr : it->second;
     }
 
-    ref<EntityRenderer> WorldRenderer::getEntityRenderer(const ref<Entity>& entity) const
+    ref<EntityRenderer> WorldRenderer::getEntityRenderer(const ref<Entity> &entity) const
     {
         auto it = m_entityRenderers.find(entity->getId());
         return it == m_entityRenderers.end() ? nullptr : it->second;
     }
 
-    void WorldRenderer::prepareRebuild(const ref<ChunkRenderer>& renderer)
+    void WorldRenderer::prepareRebuild(const ref<ChunkRenderer> &renderer)
     {
         if (renderer->m_chunk->isUnloaded())
             return;
@@ -200,29 +193,30 @@ namespace cybrion
 
         u32 version = renderer->m_version;
 
-        GetPool().submit([this, renderer, version] {
-            renderer->m_inBuildQueue = false;
+        std::ignore = GetPool().submit(
+            [this, renderer, version]
+            {
+                renderer->m_inBuildQueue = false;
 
-            if (renderer->m_chunk->isUnloaded())
-                return;
+                if (renderer->m_chunk->isUnloaded())
+                    return;
 
-            auto result = renderer->buildChunkMesh();
-            result->renderer = renderer;
-            result->version = version;
+                auto result = renderer->buildChunkMesh();
+                result->renderer = renderer;
+                result->version = version;
 
-            if (renderer->m_chunk->isUnloaded())
-                return;
+                if (renderer->m_chunk->isUnloaded())
+                    return;
 
-            // allow to install if version is still latest after building
-            if (version == renderer->m_version)
-                m_chunkMeshResults.enqueue(result);
-        });
-
+                // allow to install if version is still latest after building
+                if (version == renderer->m_version)
+                    m_chunkMeshResults.enqueue(result);
+            });
     }
 
-    void WorldRenderer::updateBlock(const BlockModifyResult& result)
+    void WorldRenderer::updateBlock(const BlockModifyResult &result)
     {
-        /*result.chunk->eachBlockAndNeighbors(Chunk::posToLocalPos(result.pos), [&](Block* block, ref<Chunk>& chunk, const ivec3& dir) 
+        /*result.chunk->eachBlockAndNeighbors(Chunk::posToLocalPos(result.pos), [&](Block* block, ref<Chunk>& chunk, const ivec3& dir)
         {
             if (!block) return;
 
@@ -230,7 +224,7 @@ namespace cybrion
 
             if (renderer == nullptr)
                 return;
-                
+
             ivec3 pos = result.pos + dir;
             ivec3 localPos = Chunk::posToLocalPos(pos);
 
@@ -264,7 +258,7 @@ namespace cybrion
        });*/
     }
 
-    void WorldRenderer::updateChunk(const ref<Chunk>& chunk)
+    void WorldRenderer::updateChunk(const ref<Chunk> &chunk)
     {
         auto renderer = getChunkRenderer(chunk);
 
@@ -277,7 +271,7 @@ namespace cybrion
 
     void WorldRenderer::updateEntityRenderers(f32 delta)
     {
-        for (auto& [_, renderer ]: m_entityRenderers)
+        for (auto &[_, renderer] : m_entityRenderers)
             renderer->tick(delta);
     }
 }

@@ -110,8 +110,8 @@ namespace cybrion
                id, _type.c_str(), _severity.c_str(), _source.c_str(), msg);
     }
 
-    Application::Application() : m_width(1000),
-                                 m_height(600),
+    Application::Application() : m_width(1600),
+                                 m_height(800),
                                  m_mousePos(0, 0),
                                  m_lastMousePos(0, 0),
                                  m_title("Cybrion v1.0"),
@@ -186,10 +186,12 @@ namespace cybrion
         glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
         m_soundEngine = irrklang::createIrrKlangDevice();
+        m_soundEngine->setSoundVolume(1.0f);
 
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
-        ImGui::StyleColorsDark();
+        ImGui::GetIO().Fonts->AddFontDefault();
+        m_font = ImGui::GetIO().Fonts->AddFontFromFileTTF(getResourcePath("font.ttf").c_str(), 16);
 
         ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
         ImGui_ImplOpenGL3_Init("#version 430");
@@ -367,7 +369,9 @@ namespace cybrion
             ImGui_ImplSDL2_NewFrame();
             ImGui::NewFrame();
 
+            ImGui::PushFont(m_font);
             m_pages[m_currentPage]->onRender();
+            ImGui::PopFont();
 
             ImGui::Render();
             glViewport(0, 0, m_width, m_height);

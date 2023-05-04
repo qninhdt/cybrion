@@ -10,7 +10,7 @@ namespace cybrion
     LocalGame *LocalGame::s_LocalGame = nullptr;
 
     LocalGame::LocalGame(const string &worldPath) : Game(worldPath),
-                                                    m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.001f, 1500.0f),
+                                                    m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.0001f, 1500.0f),
                                                     m_showWireframe(false),
                                                     m_showEntityBorder(false),
                                                     m_showChunkBoder(false),
