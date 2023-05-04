@@ -23,10 +23,10 @@ namespace cybrion
         void exitGame();
 
         ref<ui::Page> getCurrentPage();
-        void goToPage(const string& name);
+        void goToPage(const string &name);
 
-        SDL_Window* getWindow() const;
-        void* getContext() const;
+        SDL_Window *getWindow() const;
+        void *getContext() const;
 
         u32 getWidth() const;
         u32 getHeight() const;
@@ -40,20 +40,20 @@ namespace cybrion
         void enableCursor();
         void disableCursor();
 
-        void playSound(const string& name);
+        void playSound(const string &name);
 
         bool isCursorEnable() const;
-        
-        ShaderManager& getShaderManager();
-        string getResourcePath(const string& path) const;
-        string getSavePath(const string& path) const;
+
+        ShaderManager &getShaderManager();
+        string getResourcePath(const string &path) const;
+        string getSavePath(const string &path) const;
 
         f32 getFPS() const;
         f32 getDeltaTime() const;
 
         ~Application();
 
-        static Application& Get();
+        static Application &Get();
 
         string currentGame = "";
 
@@ -63,21 +63,21 @@ namespace cybrion
         void keyPressedCallback(SDL_Scancode key, SDL_EventType type);
         void scrollCallback(f64 xoffset, f64 yoffset);
 
-        static Application* s_application;
+        static Application *s_application;
 
         string m_rootPath;
 
         FrameProfiler m_frameProfiler;
         ShaderManager m_shaderManager;
-        
-        irrklang::ISoundEngine* m_soundEngine;
+
+        irrklang::ISoundEngine *m_soundEngine;
 
         // game
-        LocalGame* m_game;
+        LocalGame *m_game;
         bool m_playingGame;
 
         // window
-        SDL_Window* m_window;
+        SDL_Window *m_window;
         SDL_GLContext m_context;
         u32 m_width;
         u32 m_height;

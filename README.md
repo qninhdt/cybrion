@@ -36,4 +36,4 @@
 - yaml-cpp
 - sdl2
 - imgui[opengl3-binding,sdl2-binding]
-- 
+- concurrentqueue

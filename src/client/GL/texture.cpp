@@ -5,15 +5,14 @@ namespace cybrion::GL
 {
     Texture::Texture()
     {
-       
     }
 
-    void Texture::load(const string& path)
+    void Texture::load(const string &path)
     {
         string realPath = Application::Get().getResourcePath("textures/" + path);
 
         i32 width, height, nChannels;
-        u8* data = stbi_load(realPath.c_str(), &height, &width, &nChannels, 4);
+        u8 *data = stbi_load(realPath.c_str(), &width, &height, &nChannels, STBI_default);
 
         if (!data)
         {
@@ -27,7 +26,8 @@ namespace cybrion::GL
 
         create();
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        GLint type = nChannels == 4 ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, type, width, height, 0, type, GL_UNSIGNED_BYTE, data);
         stbi_image_free(data);
     }
 

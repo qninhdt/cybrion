@@ -7,15 +7,16 @@
 
 namespace cybrion
 {
-    LocalGame* LocalGame::s_LocalGame = nullptr;
+    LocalGame *LocalGame::s_LocalGame = nullptr;
 
-    LocalGame::LocalGame(const string& worldPath):
-        Game(worldPath),
-        m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.001f, 1500.0f),
-        m_showWireframe(false),
-        m_showEntityBorder(false),
-        m_showChunkBoder(false),
-        m_worldRenderer(getWorld())
+    LocalGame::LocalGame(const string &worldPath) : Game(worldPath),
+                                                    m_camera(Application::Get().getAspect(), glm::radians(50.0f), 0.001f, 1500.0f),
+                                                    m_showWireframe(false),
+                                                    m_showEntityBorder(false),
+                                                    m_showChunkBoder(false),
+                                                    m_showDebugUI(false),
+                                                    m_showUI(true),
+                                                    m_worldRenderer(getWorld())
     {
         s_LocalGame = this;
     }
@@ -27,8 +28,8 @@ namespace cybrion
 
         m_basicShader = ShaderManager::Get().getShader<BasicShader>("basic");
 
-        BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, { 1, 0, 0 });
-        BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.00f, { 1, 1, 1 });
+        BasicMeshGenerator::LineCubeMesh(m_chunkBorderMesh, Chunk::CHUNK_SIZE, {1, 0, 0});
+        BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.00f, {1, 1, 1});
 
         m_camera.setTarget(m_player.getEntity());
     }
@@ -46,7 +47,7 @@ namespace cybrion
 
         if (m_showChunkBoder)
             renderChunkBorder();
-        
+
         renderSelecingBlock();
     }
 
@@ -57,8 +58,7 @@ namespace cybrion
         m_basicShader.use();
         m_basicShader.setUniform<"MVP">(
             m_camera.getProjViewMat() *
-            m_chunkBorderMesh.getModelMat()
-        );
+            m_chunkBorderMesh.getModelMat());
 
         m_chunkBorderMesh.drawLines();
     }
@@ -71,65 +71,63 @@ namespace cybrion
         if (m_player.getTargetBlock() != nullptr)
         {
             ivec3 pos = m_player.getTargetPos();
-            Block& block = m_world->getBlock(pos);
+            Block &block = m_world->getBlock(pos);
             AABB bound = block.getBound();
 
             m_targetBlockMesh.setPos(vec3(pos) + bound.getPos() + vec3(0.5f, 0.5f, 0.5f));
-            //std::cout << bound.getSize().x << ' ' << bound.getSize().y << ' ' << bound.getSize().z << '\n';
+            // std::cout << bound.getSize().x << ' ' << bound.getSize().y << ' ' << bound.getSize().z << '\n';
             m_targetBlockMesh.setScale(bound.getSize());
             m_targetBlockMesh.updateModelMat();
 
             m_basicShader.use();
             m_basicShader.setUniform<"MVP">(
-                LocalGame::Get().getCamera().getProjViewMat()
-                * m_targetBlockMesh.getModelMat()
-            );
+                LocalGame::Get().getCamera().getProjViewMat() * m_targetBlockMesh.getModelMat());
 
             m_targetBlockMesh.drawLines();
         }
     }
 
-    void LocalGame::onChunkLoaded(const ref<Chunk>& chunk)
+    void LocalGame::onChunkLoaded(const ref<Chunk> &chunk)
     {
         m_worldRenderer.addChunk(chunk);
     }
 
-    void LocalGame::onChunkUnloaded(const ref<Chunk>& chunk)
+    void LocalGame::onChunkUnloaded(const ref<Chunk> &chunk)
     {
         m_worldRenderer.removeChunk(chunk);
     }
 
-    void LocalGame::onEntitySpawned(const ref<Entity>& entity)
+    void LocalGame::onEntitySpawned(const ref<Entity> &entity)
     {
         m_worldRenderer.addEntity(entity);
     }
 
-    void LocalGame::onChunkChanged(const ref<Chunk>& chunk)
+    void LocalGame::onChunkChanged(const ref<Chunk> &chunk)
     {
         m_worldRenderer.updateChunk(chunk);
     }
 
-    void LocalGame::onPlaceBlock(const BlockModifyResult& result)
+    void LocalGame::onPlaceBlock(const BlockModifyResult &result)
     {
         Application::Get().playSound("blocks/" + result.block.getSound());
     }
 
-    void LocalGame::onPlaySound(const string& name)
+    void LocalGame::onPlaySound(const string &name)
     {
         Application::Get().playSound(name);
     }
 
-    void LocalGame::onBreakBlock(const BlockModifyResult& result)
+    void LocalGame::onBreakBlock(const BlockModifyResult &result)
     {
         Application::Get().playSound("blocks/" + result.oldBlock.getSound());
     }
 
-    Camera& LocalGame::getCamera()
+    Camera &LocalGame::getCamera()
     {
         return m_camera;
     }
 
-    BlockRenderer& LocalGame::getBlockRenderer(u32 id)
+    BlockRenderer &LocalGame::getBlockRenderer(u32 id)
     {
         return m_blockRenderers[id];
     }
@@ -154,7 +152,7 @@ namespace cybrion
         return m_showChunkBoder;
     }
 
-    Player& LocalGame::getPlayer()
+    Player &LocalGame::getPlayer()
     {
         return m_player;
     }
@@ -170,13 +168,21 @@ namespace cybrion
                 Application::Get().toggleCursor();
                 break;
 
+            case SDL_SCANCODE_F2:
+                m_showUI = !m_showUI;
+                break;
+
+            case SDL_SCANCODE_F3:
+                m_showDebugUI = !m_showDebugUI;
+                break;
+
             // close window
             case SDL_SCANCODE_ESCAPE:
                 Application::Get().close();
                 break;
                 // toggle block menu
             case SDL_SCANCODE_E:
-                auto page = (ui::GamePage*) Application::Get().getCurrentPage().get();
+                auto page = (ui::GamePage *)Application::Get().getCurrentPage().get();
 
                 page->showBlockMenu = !page->showBlockMenu;
 
@@ -194,7 +200,7 @@ namespace cybrion
     {
     }
 
-    void LocalGame::onMouseMoved(const vec2& delta)
+    void LocalGame::onMouseMoved(const vec2 &delta)
     {
         if (!Application::Get().isCursorEnable())
         {
@@ -218,7 +224,8 @@ namespace cybrion
 
     void LocalGame::onWindowResized(u32 width, u32 height)
     {
-        if (width == 0 || height == 0) return;
+        if (width == 0 || height == 0)
+            return;
 
         m_camera.setAspect(width * 1.0f / height);
         m_camera.updateProjMat();
@@ -229,7 +236,7 @@ namespace cybrion
         m_player.getInput().scroll = delta;
     }
 
-    LocalGame& LocalGame::Get()
+    LocalGame &LocalGame::Get()
     {
         return *s_LocalGame;
     }
@@ -238,7 +245,7 @@ namespace cybrion
     {
         for (u32 i = 0; i < Blocks::StateCount(); ++i)
         {
-            Block& block = Blocks::Get().getBlock(i);
+            Block &block = Blocks::Get().getBlock(i);
             m_blockRenderers[block.getId()].m_block = &block;
             m_blockRenderers[block.getId()].generateCubeTexture();
         }
