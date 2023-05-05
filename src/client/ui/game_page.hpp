@@ -12,19 +12,25 @@ namespace cybrion::ui
     public:
         static constexpr i32 ITEM_FRAME_SIZE = 64;
 
+        GamePage();
         void onOpen() override;
         void onRender() override;
         void onClose() override;
 
         void InventoryWidget();
         void BlockMenuWidget();
-        bool BlockButton(Block* block);
+        void PausePopup();
+        bool BlockButton(Block *block);
 
         bool showBlockMenu = false;
 
     private:
         GL::Texture m_crosshairTex;
+        GL::Texture m_resumeTexture;
+        GL::Texture m_hoveredResumeTexture;
+        GL::Texture m_exitTexture;
+        GL::Texture m_hoveredExitTexture;
         umap<i32, ref<GL::Framebuffer>> m_itemFrameMap;
-        vector<tuple<string, vector<Block*>>> m_blockMenu;
+        vector<tuple<string, vector<Block *>>> m_blockMenu;
     };
 }

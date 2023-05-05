@@ -16,6 +16,7 @@ namespace cybrion
                                                     m_showChunkBoder(false),
                                                     m_showDebugUI(false),
                                                     m_showUI(true),
+                                                    m_isFirstMouseMoved(true),
                                                     m_worldRenderer(getWorld())
     {
         s_LocalGame = this;
@@ -32,6 +33,7 @@ namespace cybrion
         BasicMeshGenerator::LineCubeMesh(m_targetBlockMesh, 1.00f, {1, 1, 1});
 
         m_camera.setTarget(m_player.getEntity());
+        m_camera.setRot(m_player.getEntity()->getRot());
     }
 
     void LocalGame::tick()
@@ -210,8 +212,15 @@ namespace cybrion
 
     void LocalGame::onMouseMoved(const vec2 &delta)
     {
+        // ignore first mouse moved event
         if (!Application::Get().isCursorEnable())
         {
+            if (m_isFirstMouseMoved)
+            {
+                m_isFirstMouseMoved = false;
+                return;
+            }
+
             vec3 rot = m_camera.getRot() + vec3(-delta.y, -delta.x, 0) * Application::Get().getDeltaTime() * 0.2f;
 
             f32 eps = 0.01f;

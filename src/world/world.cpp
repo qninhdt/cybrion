@@ -10,9 +10,9 @@ namespace cybrion
     {
     }
 
-    ref<Entity> World::spawnEntity(const vec3 &pos)
+    ref<Entity> World::spawnEntity(const vec3 &pos, const vec3 &rot)
     {
-        auto entity = std::make_shared<Entity>(pos);
+        auto entity = std::make_shared<Entity>(pos, rot);
         m_entities.push_back(entity);
 
         Game::Get().onEntitySpawned(entity);
@@ -48,6 +48,9 @@ namespace cybrion
         {
             std::ignore = GetPool().submit([this, chunk]
                                            {
+                if (!Application::Get().isPlayingGame())
+                    return;   
+
                 if (chunk->isUnloaded())
                     return;
 
@@ -56,6 +59,8 @@ namespace cybrion
                 if (chunk->isUnloaded())
                     return;
 
+                if (!Application::Get().isPlayingGame())
+                    return;
                 m_loadChunkResults.enqueue(chunk); });
         }
     }
@@ -149,11 +154,18 @@ namespace cybrion
 
         ivec3 ppos = Game::Get().getPlayer().getEntity()->getChunkPos();
 
+        vector<ivec3> loadList;
         for (i32 x = -d; x < d; ++x)
             for (i32 y = -2; y <= 6; ++y)
                 for (i32 z = -d; z < d; ++z)
                     if (x * x + z * z <= d * d)
-                        loadChunk({x + ppos.x, y, z + ppos.z});
+                        loadList.push_back({x + ppos.x, y, z + ppos.z});
+
+        std::sort(loadList.begin(), loadList.end(), [ppos](ivec3 a, ivec3 b)
+                  { return glm::distance(vec3(a), vec3(ppos)) < glm::distance(vec3(b), vec3(ppos)); });
+
+        for (auto &pos : loadList)
+            loadChunk(pos);
 
         vector<ivec3> unloadLists;
         for (auto &[pos, chunk] : m_chunkMap)
@@ -383,6 +395,10 @@ namespace cybrion
         config.set_float("player_y", playerEntity->getPos().y);
         config.set_float("player_z", playerEntity->getPos().z);
 
+        config.set_float("player_rot_x", playerEntity->getRot().x);
+        config.set_float("player_rot_y", playerEntity->getRot().y);
+        config.set_float("player_rot_z", playerEntity->getRot().z);
+
         auto &inventory = player.getInventory();
         jbt::tag inventoryTag(jbt::tag_type::LIST);
 
@@ -446,8 +462,12 @@ namespace cybrion
         config.set_int("seed", std::rand());
 
         config.set_float("player_x", 0);
-        config.set_float("player_y", 80);
+        config.set_float("player_y", 60);
         config.set_float("player_z", 0);
+
+        config.set_float("player_rot_x", 0);
+        config.set_float("player_rot_y", 0);
+        config.set_float("player_rot_z", 0);
 
         jbt::tag inventoryTag(jbt::tag_type::LIST);
         for (i32 i = 0; i < Player::INVENTORY_SIZE; ++i)
@@ -472,16 +492,20 @@ namespace cybrion
     {
         jbt::tag config;
         jbt::open_tag(config, path + "/world.jbt");
-
+        std::cout << config << '\n';
         auto world = std::make_shared<World>(config.get_string("name"), config.get_int("seed"));
         world->m_savePath = path;
 
         auto &player = Game::Get().getPlayer();
 
         // spawn player
-        player.setEntity(world->spawnEntity({config.get_float("player_x"),
-                                             config.get_float("player_y"),
-                                             config.get_float("player_z")}));
+        player.setEntity(world->spawnEntity(
+            {config.get_float("player_x"),
+             config.get_float("player_y"),
+             config.get_float("player_z")},
+            {config.get_float("player_rot_x"),
+             config.get_float("player_rot_y"),
+             config.get_float("player_rot_z")}));
 
         auto &inventory = player.getInventory();
         jbt::tag &inventoryTag = config.get_tag("player_inventory");

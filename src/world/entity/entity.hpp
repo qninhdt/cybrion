@@ -8,9 +8,8 @@ namespace cybrion
     class Entity : public BasicTransform
     {
     public:
-
         Entity();
-        Entity(const vec3& pos);
+        Entity(const vec3 &pos, const vec3 &rot);
 
         u32 getId() const;
 
@@ -21,7 +20,7 @@ namespace cybrion
         vec3 lerpRot(f32 delta) const;
 
         vec3 getVelocity() const;
-        void setVelocity(const vec3& velocity);
+        void setVelocity(const vec3 &velocity);
 
         AABB getLocalBB() const;
         AABB getBB() const;
@@ -34,12 +33,11 @@ namespace cybrion
         virtual void tick();
 
     private:
-
         static std::atomic<u32> s_idN;
 
         vec3 m_rotO;
         vec3 m_posO;
-        
+
         f32 m_mass;
         vec3 m_velocity;
         AABB m_localBB;

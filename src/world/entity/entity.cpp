@@ -6,13 +6,14 @@ namespace cybrion
 {
     std::atomic<u32> Entity::s_idN = 0;
 
-    Entity::Entity(): Entity({ 0, 0, 0 })
+    Entity::Entity() : Entity({0, 0, 0}, {0, 0, 0})
     {
     }
 
-    Entity::Entity(const vec3& pos): m_velocity(0), m_id(s_idN++), m_localBB({ 0, -0.8, 0 }, { 0.5, 1.8, 0.5 })
+    Entity::Entity(const vec3 &pos, const vec3 &rot) : m_velocity(0), m_id(s_idN++), m_localBB({0, -0.8, 0}, {0.5, 1.8, 0.5})
     {
         m_pos = pos;
+        m_rot = rot;
         m_posO = m_pos;
         m_rotO = m_rot;
     }
@@ -32,8 +33,7 @@ namespace cybrion
         return {
             std::floor(m_pos.x),
             std::floor(m_pos.y),
-            std::floor(m_pos.z)
-        };
+            std::floor(m_pos.z)};
     }
 
     vec3 Entity::lerpPos(f32 delta) const
@@ -51,7 +51,7 @@ namespace cybrion
         return m_velocity;
     }
 
-    void Entity::setVelocity(const vec3& velocity)
+    void Entity::setVelocity(const vec3 &velocity)
     {
         m_velocity = velocity;
     }
@@ -63,12 +63,12 @@ namespace cybrion
 
     AABB Entity::getBB() const
     {
-        return { m_localBB.getPos() + m_pos, m_localBB.getSize() };
+        return {m_localBB.getPos() + m_pos, m_localBB.getSize()};
     }
 
     AABB Entity::getOldBB() const
     {
-        return { m_localBB.getPos() + m_posO, m_localBB.getSize() };
+        return {m_localBB.getPos() + m_posO, m_localBB.getSize()};
     }
 
     void Entity::setOldPosAndRot()
@@ -79,6 +79,5 @@ namespace cybrion
 
     void Entity::tick()
     {
-        
     }
 }

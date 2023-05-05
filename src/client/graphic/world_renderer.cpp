@@ -7,6 +7,7 @@
 #include "world/entity/entity.hpp"
 #include "client/graphic/basic_mesh_generator.hpp"
 #include "core/pool.hpp"
+#include "client/application.hpp"
 
 namespace cybrion
 {
@@ -196,6 +197,9 @@ namespace cybrion
         std::ignore = GetPool().submit(
             [this, renderer, version]
             {
+                if (!Application::Get().isPlayingGame())
+                    return;
+
                 renderer->m_inBuildQueue = false;
 
                 if (renderer->m_chunk->isUnloaded())
@@ -206,6 +210,9 @@ namespace cybrion
                 result->version = version;
 
                 if (renderer->m_chunk->isUnloaded())
+                    return;
+
+                if (!Application::Get().isPlayingGame())
                     return;
 
                 // allow to install if version is still latest after building

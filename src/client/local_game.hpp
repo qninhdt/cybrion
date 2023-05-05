@@ -68,6 +68,8 @@ namespace cybrion
         bool m_showUI;
         bool m_showDebugUI;
 
+        bool m_isFirstMouseMoved;
+
         Stopwatch m_stopwatch;
 
         BasicShader m_basicShader;

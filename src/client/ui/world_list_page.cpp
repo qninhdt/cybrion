@@ -10,6 +10,7 @@ namespace cybrion::ui
 
     void WorldListPage::onOpen()
     {
+        std::strcpy(m_worldInput, "");
         loadWorldList();
     }
 

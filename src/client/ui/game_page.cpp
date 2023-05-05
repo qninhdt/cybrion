@@ -1,13 +1,12 @@
 #include "client/ui/game_page.hpp"
 #include "client/application.hpp"
+#include "client/ui/controls.hpp"
+#include "core/pool.hpp"
 
 namespace cybrion::ui
 {
-    void GamePage::onOpen()
+    GamePage::GamePage()
     {
-        Application::Get().startGame();
-        Application::Get().disableCursor();
-
         m_blockMenu = {
             {"Nature",
              {
@@ -128,7 +127,45 @@ namespace cybrion::ui
                  &Blocks::BLACK_ROOK,
                  &Blocks::BLACK_PAWN,
              }}};
+
         m_crosshairTex.load("ui/crosshair.png");
+
+        m_resumeTexture.load("ui/resume_button.png");
+        m_hoveredResumeTexture.load("ui/hovered_resume_button.png");
+
+        m_exitTexture.load("ui/exit_button.png");
+        m_hoveredExitTexture.load("ui/hovered_exit_button.png");
+    }
+
+    void GamePage::onOpen()
+    {
+        Application::Get().startGame();
+        Application::Get().disableCursor();
+    }
+
+    void GamePage::PausePopup()
+    {
+        ImGui::SetNextWindowBgAlpha(0.3);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(50, 30));
+        ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, m_io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+        ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
+
+        static bool resumeButton = false;
+        if (HoverableImageButton(m_resumeTexture, m_hoveredResumeTexture, 400, 100, resumeButton))
+        {
+            LocalGame::Get().resume();
+            Application::Get().disableCursor();
+        }
+
+        static bool exitButton = false;
+        if (HoverableImageButton(m_exitTexture, m_hoveredExitTexture, 400, 100, exitButton))
+        {
+            Application::Get().goToPage("home");
+        }
+
+        ImGui::End();
+        ImGui::PopStyleVar(2);
     }
 
     void GamePage::onRender()
@@ -212,6 +249,9 @@ namespace cybrion::ui
             BlockMenuWidget();
         else
             InventoryWidget();
+
+        if (LocalGame::Get().isPaused())
+            PausePopup();
     }
 
     void GamePage::onClose()

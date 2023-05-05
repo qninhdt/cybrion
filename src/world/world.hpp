@@ -18,7 +18,7 @@ namespace cybrion
     public:
         World(const string &name, i32 seed);
 
-        ref<Entity> spawnEntity(const vec3 &pos);
+        ref<Entity> spawnEntity(const vec3 &pos, const vec3 &rot);
         void loadChunk(const ivec3 &pos);
         void unloadChunk(const ivec3 &pos);
         ref<Chunk> getChunk(const ivec3 &pos);

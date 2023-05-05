@@ -228,8 +228,8 @@ namespace cybrion
 
         goToPage("home");
 
-        /*currentGame = "lmao";
-        goToPage("game");*/
+        // currentGame = "1";
+        // goToPage("game");
 
         while (!isClosed())
         {
@@ -347,8 +347,7 @@ namespace cybrion
             {
                 while (stopwatch.getDeltaTime() >= GAME_TICK)
                 {
-                    if (!m_game->isPaused())
-                        m_game->tick();
+                    m_game->tick();
                     stopwatch.reduceDeltaTime(GAME_TICK);
                 }
             }
@@ -410,6 +409,8 @@ namespace cybrion
     {
         CYBRION_CLIENT_TRACE("Saving world");
         m_game->stop();
+        CYBRION_CLIENT_TRACE("Finish saving world");
+
         delete m_game;
         m_game = nullptr;
 
