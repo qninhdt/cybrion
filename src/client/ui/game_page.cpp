@@ -195,7 +195,7 @@ namespace cybrion::ui
         ImGui::End();
         ImGui::PopStyleVar();
 
-        if (!game.m_showDebugUI)
+        if (game.m_showDebugUI)
         {
             // render debug info
             ImGui::SetNextWindowPos(ImVec2(0, 0));

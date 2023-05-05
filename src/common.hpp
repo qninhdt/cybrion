@@ -67,10 +67,10 @@ namespace cybrion
     using string = std::string;
 
     template <typename K, typename V>
-    using umap = robin_hood::unordered_map<K, V>;
+    using umap = std::unordered_map<K, V>;
 
     template <typename V>
-    using uset = robin_hood::unordered_set<V>;
+    using uset = std::unordered_set<V>;
 
     template <typename V, u32 size>
     using array = std::array<V, size>;

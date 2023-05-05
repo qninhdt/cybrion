@@ -5,6 +5,7 @@
 namespace cybrion
 {
     Game *Game::s_game = nullptr;
+    bool Game::s_isFirstGame = true;
 
     Game::Game(const string &worldPath) : m_worldPath(worldPath), m_isPaused(false)
     {
@@ -21,11 +22,19 @@ namespace cybrion
 
         m_world = World::loadWorld(m_worldPath);
 
-        // load block configs
-        m_blockLoader.load();
+        m_blockLoader.loadTextures();
+        m_blockLoader.loadModels();
 
-        // precompute some block properties
-        Blocks::Get().computeRotation();
+        if (s_isFirstGame)
+        {
+            // load block configs
+            m_blockLoader.loadConfigFiles();
+
+            // precompute some block properties
+            Blocks::Get().computeRotation();
+
+            s_isFirstGame = false;
+        }
     }
 
     void Game::tick()

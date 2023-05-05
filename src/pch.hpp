@@ -10,6 +10,8 @@
 #include <queue>
 #include <iostream>
 #include <filesystem>
+#include <unordered_map>
+#include <unordered_set>
 #include <iomanip>
 #include <algorithm>
 #include <array>
@@ -23,7 +25,6 @@
 #include <irrKlang.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <robin_hood.h>
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>

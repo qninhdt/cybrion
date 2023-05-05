@@ -11,7 +11,9 @@ namespace cybrion
 
         BlockLoader();
 
-        void load();
+        void loadConfigFiles();
+        void loadTextures();
+        void loadModels();
 
         u32 getTextureId(const string& name);
 
@@ -24,9 +26,7 @@ namespace cybrion
     private:
         static BlockLoader* s_blockLoader;
 
-        void loadConfigFiles();
-        void loadTextures();
-        void loadModels();
+        
 
         ref<BlockMesh> loadObjFile(const string& path);
 

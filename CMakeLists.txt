@@ -26,9 +26,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC FastNoiseLite)
 add_subdirectory(third_party/jbt)
 target_link_libraries(${PROJECT_NAME} PUBLIC jbt)
 
-find_package(robin_hood CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC robin_hood::robin_hood)
-
 find_package(glm CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
 
@@ -36,24 +33,26 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC OpenGL::GL)
 
 find_package(imgui CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
+target_link_libraries(${PROJECT_NAME} PUBLIC imgui::imgui)
 
 find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog spdlog::spdlog_header_only)
+target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog spdlog::spdlog_header_only)
 
 find_package(yaml-cpp CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp)
+target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
 
 find_path(BSHOSHANY_THREAD_POOL_INCLUDE_DIRS "BS_thread_pool.hpp")
-target_include_directories(${PROJECT_NAME} PRIVATE ${BSHOSHANY_THREAD_POOL_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${BSHOSHANY_THREAD_POOL_INCLUDE_DIRS})
 
 find_package(unofficial-concurrentqueue CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE unofficial::concurrentqueue::concurrentqueue)
+target_link_libraries(${PROJECT_NAME} PUBLIC unofficial::concurrentqueue::concurrentqueue)
 
 find_package(SDL2 CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
+target_link_libraries(${PROJECT_NAME} PUBLIC SDL2::SDL2)
 
-# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#         "${CMAKE_SOURCE_DIR}/third_party/irrKlang/bin/irrKlang.os"
-#         $<TARGET_FILE_DIR:${PROJECT_NAME}>)         
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/third_party/irrKlang/bin/irrKlang.os"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>)     
+endif()    

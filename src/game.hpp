@@ -34,6 +34,7 @@ namespace cybrion
 
     protected:
         static Game *s_game;
+        static bool s_isFirstGame;
 
         BlockLoader m_blockLoader;
         ref<World> m_world;

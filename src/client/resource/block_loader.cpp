@@ -40,12 +40,12 @@ namespace cybrion
         return *s_blockLoader;
     }
 
-    void BlockLoader::load()
-    {
-        loadTextures();
-        loadModels();
-        loadConfigFiles();
-    }
+    // void BlockLoader::load()
+    // {
+    //     loadTextures();
+    //     loadModels();
+    //     loadConfigFiles();
+    // }
 
     u32 BlockLoader::getTextureId(const string &name)
     {
