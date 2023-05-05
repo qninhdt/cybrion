@@ -9,46 +9,45 @@ namespace cybrion
     {
         ref<Chunk> chunk;
         ivec3 pos;
-        Block& oldBlock;
-        Block& block;
+        Block &oldBlock;
+        Block &block;
     };
 
     class World
     {
     public:
+        World(const string &name, i32 seed);
 
-        World(const string& name);
-
-        ref<Entity> spawnEntity(const vec3& pos);
-        void loadChunk(const ivec3& pos);
-        void unloadChunk(const ivec3& pos);
-        ref<Chunk> getChunk(const ivec3& pos);
+        ref<Entity> spawnEntity(const vec3 &pos);
+        void loadChunk(const ivec3 &pos);
+        void unloadChunk(const ivec3 &pos);
+        ref<Chunk> getChunk(const ivec3 &pos);
 
         void tick();
 
-        void playSound(const string& name);
+        void playSound(const string &name);
 
-        Block& getBlock(const ivec3& pos);
-        Block* tryGetBlock(const ivec3& pos);
-        BlockModifyResult setBlock(const ivec3& pos, Block& block);
-        BlockModifyResult updateBlock(const ivec3& pos, Block& block);
-        BlockModifyResult placeBlock(const ivec3& pos, Block& block);
+        Block &getBlock(const ivec3 &pos);
+        Block *tryGetBlock(const ivec3 &pos);
+        BlockModifyResult setBlock(const ivec3 &pos, Block &block);
+        BlockModifyResult updateBlock(const ivec3 &pos, Block &block);
+        BlockModifyResult placeBlock(const ivec3 &pos, Block &block);
 
         string getName() const;
 
         void updateEntityTransforms();
 
-        void loadRegion(const ivec3& pos);
-        void save(const string& path);
-        void saveChunk(const ivec3& pos, const ref<Chunk>& chunk);
+        void loadRegion(const ivec3 &pos);
+        void save(const string &path);
+        void saveChunk(const ivec3 &pos, const ref<Chunk> &chunk);
         void syncRegionFiles();
 
-        static void createNewWorld(const string& name);
-        static ref<World> loadWorld(const string& path);
+        static void createNewWorld(const string &name);
+        static ref<World> loadWorld(const string &path);
 
-        static ivec3 ToRegionPos(const ivec3& pos);
-        static ivec3 ToLocalRegionPos(const ivec3& pos);
-        static string GetRegionFilename(const ivec3& pos);
+        static ivec3 ToRegionPos(const ivec3 &pos);
+        static ivec3 ToLocalRegionPos(const ivec3 &pos);
+        static string GetRegionFilename(const ivec3 &pos);
 
     private:
         u32 chunkId = 0;

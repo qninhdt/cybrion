@@ -45,10 +45,13 @@ namespace cybrion
 
         m_worldRenderer.render(delta, m_showEntityBorder);
 
-        if (m_showChunkBoder)
-            renderChunkBorder();
+        if (m_showUI)
+        {
+            if (m_showChunkBoder)
+                renderChunkBorder();
 
-        renderSelecingBlock();
+            renderSelecingBlock();
+        }
     }
 
     void LocalGame::renderChunkBorder()
@@ -165,10 +168,6 @@ namespace cybrion
             {
             // toggle cursor
             case SDL_SCANCODE_F1:
-                Application::Get().toggleCursor();
-                break;
-
-            case SDL_SCANCODE_F2:
                 m_showUI = !m_showUI;
                 break;
 
@@ -178,7 +177,16 @@ namespace cybrion
 
             // close window
             case SDL_SCANCODE_ESCAPE:
-                Application::Get().close();
+                if (isPaused())
+                {
+                    resume();
+                    Application::Get().disableCursor();
+                }
+                else
+                {
+                    pause();
+                    Application::Get().enableCursor();
+                }
                 break;
                 // toggle block menu
             case SDL_SCANCODE_E:

@@ -4,10 +4,9 @@
 
 namespace cybrion
 {
-    Game* Game::s_game = nullptr;
+    Game *Game::s_game = nullptr;
 
-    Game::Game(const string& worldPath):
-        m_worldPath(worldPath)
+    Game::Game(const string &worldPath) : m_worldPath(worldPath), m_isPaused(false)
     {
         s_game = this;
     }
@@ -27,7 +26,6 @@ namespace cybrion
 
         // precompute some block properties
         Blocks::Get().computeRotation();
-
     }
 
     void Game::tick()
@@ -41,18 +39,33 @@ namespace cybrion
         m_world->save(m_worldPath);
     }
 
-    World& Game::getWorld()
+    World &Game::getWorld()
     {
         return *m_world;
     }
 
-    Player& Game::getPlayer()
+    Player &Game::getPlayer()
     {
         return m_player;
     }
 
-    Game& Game::Get()
+    Game &Game::Get()
     {
         return *s_game;
+    }
+
+    void Game::pause()
+    {
+        m_isPaused = true;
+    }
+
+    void Game::resume()
+    {
+        m_isPaused = false;
+    }
+
+    bool Game::isPaused()
+    {
+        return m_isPaused;
     }
 }

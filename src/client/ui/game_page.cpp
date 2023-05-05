@@ -6,6 +6,7 @@ namespace cybrion::ui
     void GamePage::onOpen()
     {
         Application::Get().startGame();
+        Application::Get().disableCursor();
 
         m_blockMenu = {
             {"Nature",
@@ -216,6 +217,8 @@ namespace cybrion::ui
     void GamePage::onClose()
     {
         Application::Get().exitGame();
+        Application::Get().currentGame = "";
+        Application::Get().enableCursor();
     }
 
     void GamePage::InventoryWidget()
@@ -332,7 +335,7 @@ namespace cybrion::ui
         {
             if (name == currentTab)
             {
-                i32 ncols = Player::DISPLAYED_INVENTORY_SIZE / 2;
+                i32 ncols = 6;
                 i32 nrows = std::ceil(1.0f * blocks.size() / ncols);
 
                 i32 idx = 0;
@@ -469,7 +472,7 @@ namespace cybrion::ui
         itemFrame->unbind();
 
         bool flag = ImGui::ImageButton(
-            (ImTextureID)itemFrame->getTexture().getId(),
+            (ImTextureID)(intptr_t)itemFrame->getTexture().getId(),
             ImVec2(ITEM_FRAME_SIZE, ITEM_FRAME_SIZE),
             ImVec2(0, 1), ImVec2(1, 0));
 

@@ -4,6 +4,7 @@
 
 #include "client/ui/home_page.hpp"
 #include "client/ui/game_page.hpp"
+#include "client/ui/world_list_page.hpp"
 
 namespace cybrion
 {
@@ -198,6 +199,7 @@ namespace cybrion
 
         m_pages["home"] = std::make_shared<ui::HomePage>();
         m_pages["game"] = std::make_shared<ui::GamePage>();
+        m_pages["world_list"] = std::make_shared<ui::WorldListPage>();
 
         return true;
     }
@@ -252,7 +254,7 @@ namespace cybrion
                 {
                     scrollCallback(event.wheel.preciseX, event.wheel.preciseY);
                 }
-                if (isPlayingGame())
+                if (isPlayingGame() && !LocalGame::Get().isPaused())
                 {
                     auto &input = LocalGame::Get().getPlayer().getInput();
 
@@ -283,7 +285,7 @@ namespace cybrion
                 ImGui_ImplSDL2_ProcessEvent(&event);
             }
 
-            if (isPlayingGame() && !m_enableCursor)
+            if (isPlayingGame() && !m_enableCursor && !LocalGame::Get().isPaused())
             {
                 SDL_GetMouseState(&m_mousePos.x, &m_mousePos.y);
 
@@ -308,7 +310,7 @@ namespace cybrion
             bool backward = !forward && isKeyPressed(SDL_SCANCODE_S);
             bool down = !up && isKeyPressed(SDL_SCANCODE_LSHIFT);
 
-            if (isPlayingGame())
+            if (isPlayingGame() && !LocalGame::Get().isPaused())
             {
                 auto &input = LocalGame::Get().getPlayer().getInput();
 
@@ -345,7 +347,8 @@ namespace cybrion
             {
                 while (stopwatch.getDeltaTime() >= GAME_TICK)
                 {
-                    m_game->tick();
+                    if (!m_game->isPaused())
+                        m_game->tick();
                     stopwatch.reduceDeltaTime(GAME_TICK);
                 }
             }

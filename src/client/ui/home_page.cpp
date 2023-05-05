@@ -4,15 +4,21 @@
 
 namespace cybrion::ui
 {
-    void HomePage::onOpen()
+    HomePage::HomePage()
     {
         m_backgroundTexture.load("ui/background.png");
+
+        m_titleTexture.load("ui/title.png");
 
         m_playTexture.load("ui/play_button.png");
         m_hoveredPlayTexture.load("ui/hovered_play_button.png");
 
         m_quitTexture.load("ui/quit_button.png");
         m_hoveredQuitTexture.load("ui/hovered_quit_button.png");
+    }
+
+    void HomePage::onOpen()
+    {
     }
 
     void HomePage::onRender()
@@ -37,6 +43,18 @@ namespace cybrion::ui
         ImGui::PopStyleVar(2);
         ImGui::End();
 
+        ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, m_io.DisplaySize.y * 0.1 + 50), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 15));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+        ImGui::Begin("Home Title", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize);
+
+        ImGui::Image((ImTextureID)(intptr_t)m_titleTexture.getId(), ImVec2(900, 900 / 4));
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(1);
+        ImGui::End();
+
         ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, m_io.DisplaySize.y * 0.9f - 100), ImGuiCond_Always, ImVec2(0.5f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.5f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 15));
@@ -48,8 +66,7 @@ namespace cybrion::ui
         static bool playButton = false;
         if (HoverableImageButton(m_playTexture, m_hoveredPlayTexture, 400, 100, playButton))
         {
-            Application::Get().currentGame = "lmao";
-            Application::Get().goToPage("game");
+            Application::Get().goToPage("world_list");
         }
 
         static bool quitButton = false;

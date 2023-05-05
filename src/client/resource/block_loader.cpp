@@ -70,9 +70,7 @@ namespace cybrion
         {
             string path = entry.path().string();
 
-            if (loadConfigFile(path))
-                CYBRION_GAME_TRACE("Loaded file {}", path);
-            else
+            if (!loadConfigFile(path))
                 CYBRION_GAME_WARN("Cannot load file {}", path);
         }
     }
@@ -102,7 +100,7 @@ namespace cybrion
             if (entry.path().extension() != ".png")
                 continue;
 
-            CYBRION_CLIENT_TRACE("Loaded block texture: {}", name);
+            // CYBRION_CLIENT_TRACE("Loaded block texture: {}", name);
 
             i32 width, height, nchannels;
             u8 *data = stbi_load(path.c_str(), &width, &height, &nchannels, 0);
@@ -156,7 +154,7 @@ namespace cybrion
             if (entry.path().extension() != ".obj")
                 continue;
 
-            CYBRION_CLIENT_TRACE("Loaded block model: {}", name);
+            // CYBRION_CLIENT_TRACE("Loaded block model: {}", name);
 
             auto model = loadObjFile(path);
             m_meshMap[name] = model;
