@@ -11,7 +11,7 @@ namespace cybrion
     class Application
     {
     public:
-        Application();
+        Application(const string &rootPath);
 
         bool open();
         void load();

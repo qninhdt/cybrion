@@ -4,7 +4,6 @@ using namespace cybrion;
 
 i32 main(i32 argc, char *args[])
 {
-    SoilBlock::Type;
     // block type
     RegisterEnum(BlockType::AIR, "air");
     RegisterEnum(BlockType::SOIL, "soil");
@@ -141,7 +140,11 @@ i32 main(i32 argc, char *args[])
     Log::Init();
     jbt::init();
 
-    Application app;
+    string rootPath{args[0]};
+    const size_t last_slash_idx = rootPath.rfind('/');
+    rootPath = rootPath.substr(0, last_slash_idx);
+
+    Application app(rootPath);
 
     if (app.open())
         CYBRION_CLIENT_TRACE("Main window is opened ({} x {})", app.getWidth(), app.getHeight());
@@ -151,6 +154,5 @@ i32 main(i32 argc, char *args[])
     app.load();
 
     app.run();
-
     return EXIT_SUCCESS;
 }

@@ -111,21 +111,21 @@ namespace cybrion
                id, _type.c_str(), _severity.c_str(), _source.c_str(), msg);
     }
 
-    Application::Application() : m_width(1600),
-                                 m_height(800),
-                                 m_mousePos(0, 0),
-                                 m_lastMousePos(0, 0),
-                                 m_title("Cybrion v1.0"),
-                                 m_isClosed(false),
-                                 m_enableCursor(true),
-                                 m_window(nullptr),
-                                 m_context(nullptr),
-                                 m_pos(0, 0),
-                                 m_game(nullptr),
-                                 m_soundEngine(nullptr),
-                                 m_rootPath(CYBRION_ROOT_PATH),
-                                 m_playingGame(false),
-                                 m_currentPage("")
+    Application::Application(const string &rootPath) : m_width(1600),
+                                                       m_height(800),
+                                                       m_mousePos(0, 0),
+                                                       m_lastMousePos(0, 0),
+                                                       m_title("Cybrion v1.0"),
+                                                       m_isClosed(false),
+                                                       m_enableCursor(true),
+                                                       m_window(nullptr),
+                                                       m_context(nullptr),
+                                                       m_pos(0, 0),
+                                                       m_game(nullptr),
+                                                       m_soundEngine(nullptr),
+                                                       m_rootPath(rootPath),
+                                                       m_playingGame(false),
+                                                       m_currentPage("")
     {
         s_application = this;
     }
@@ -192,10 +192,13 @@ namespace cybrion
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGui::GetIO().Fonts->AddFontDefault();
+        ImGui::GetIO().IniFilename = nullptr;
         m_font = ImGui::GetIO().Fonts->AddFontFromFileTTF(getResourcePath("font.ttf").c_str(), 16);
 
         ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
         ImGui_ImplOpenGL3_Init("#version 430");
+
+        std::filesystem::create_directory(getSavePath(""));
 
         m_pages["home"] = std::make_shared<ui::HomePage>();
         m_pages["game"] = std::make_shared<ui::GamePage>();
@@ -447,12 +450,12 @@ namespace cybrion
 
     string Application::getResourcePath(const string &path) const
     {
-        return m_rootPath + "resources/" + path;
+        return m_rootPath + "/resources/" + path;
     }
 
     string Application::getSavePath(const string &path) const
     {
-        return m_rootPath + "saves/" + path;
+        return m_rootPath + "/saves/" + path;
     }
 
     f32 Application::getFPS() const

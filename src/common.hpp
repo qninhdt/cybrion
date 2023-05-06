@@ -21,12 +21,6 @@
 
 #define CYBRION_STATIC_ERROR(message) static_assert(cybrion::detail::always_false<T> && message);
 
-#ifdef CYBRION_DEBUG
-#define CYBRION_ROOT_PATH "/home/qninhdt/github/cybrion/"
-#else
-#define CYBRION_ROOT_PATH "/home/qninhdt/github/cybrion/"
-#endif
-
 namespace cybrion
 {
     namespace detail

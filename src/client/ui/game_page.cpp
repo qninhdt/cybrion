@@ -227,6 +227,7 @@ namespace cybrion::ui
             ImGui::End();
 
             // render toolbox
+            ImGui::SetNextWindowPos(ImVec2(0, 200));
             ImGui::Begin("Toolbox");
 
             if (ImGui::Button("Reload shader"))
@@ -236,9 +237,7 @@ namespace cybrion::ui
             if (ImGui::Checkbox("Wireframe", &_))
                 LocalGame::Get().toggleWireframe();
 
-            ImGui::Checkbox("Chunk border", &game.m_showChunkBoder);
             ImGui::Checkbox("Entity border", &game.m_showEntityBorder);
-
             ImGui::Checkbox("Enable diffuse", &game.m_worldRenderer.m_enableDiffuse);
             ImGui::Checkbox("Enable AO", &game.m_worldRenderer.m_enableAO);
 

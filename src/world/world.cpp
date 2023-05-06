@@ -138,8 +138,6 @@ namespace cybrion
                     m_generator.generateStructure(chunk);
                 Game::Get().onChunkLoaded(chunk);
             }
-
-            // std::cout << chunk->toJBT() << '\n';
         }
 
         for (auto &entity : m_entities)
@@ -179,12 +177,7 @@ namespace cybrion
         for (auto &pos : unloadLists)
             unloadChunk(pos);
 
-#ifdef CYBRION_DEBUG
-        const i32 SAVED_CHUNK_PER_TICK = 2;
-#else
         const i32 SAVED_CHUNK_PER_TICK = 8;
-#endif
-
         i32 cnt = 0;
         while (cnt < SAVED_CHUNK_PER_TICK && !m_saveChunkQueue.empty())
         {
@@ -492,7 +485,7 @@ namespace cybrion
     {
         jbt::tag config;
         jbt::open_tag(config, path + "/world.jbt");
-        std::cout << config << '\n';
+
         auto world = std::make_shared<World>(config.get_string("name"), config.get_int("seed"));
         world->m_savePath = path;
 

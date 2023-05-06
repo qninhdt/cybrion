@@ -4,4 +4,5 @@
 *.rar
 out
 build
+tools/vcpkg
 CMakeSettings.json
