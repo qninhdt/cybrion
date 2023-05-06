@@ -44,6 +44,7 @@ namespace cybrion
     void LocalGame::render(f32 delta)
     {
         m_camera.tick(delta);
+        m_skyRenderer.render();
 
         m_worldRenderer.render(delta, m_showEntityBorder);
 
@@ -80,7 +81,6 @@ namespace cybrion
             AABB bound = block.getBound();
 
             m_targetBlockMesh.setPos(vec3(pos) + bound.getPos() + vec3(0.5f, 0.5f, 0.5f));
-            // std::cout << bound.getSize().x << ' ' << bound.getSize().y << ' ' << bound.getSize().z << '\n';
             m_targetBlockMesh.setScale(bound.getSize());
             m_targetBlockMesh.updateModelMat();
 

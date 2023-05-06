@@ -50,6 +50,7 @@ cmake --build out
 mkdir -p build
 
 # copy resources
+rm -rf ${BUILD_DIR}/resources
 cp -r resources ${BUILD_DIR}/resources
 
 # copy execute file

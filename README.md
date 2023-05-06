@@ -22,9 +22,9 @@
 - [x] Flower
 - [ ] Improve world generation
 - [x] Inventory
-- [ ] Add sky
+- [x] Add sky
 - [x] Save system
-- [ ] Game gui
+- [x] Game gui
 - [ ] End
 
 ## Libraries

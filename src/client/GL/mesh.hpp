@@ -24,32 +24,34 @@ namespace cybrion::GL
     public:
         Mesh(bool useGlobalIBO = false);
 
-        Mesh(const Mesh&) = default;
+        Mesh(const Mesh &) = default;
 
-        Mesh(Mesh&&) noexcept;
+        Mesh(Mesh &&) noexcept;
 
-        Mesh& operator = (const Mesh&) {
+        Mesh &operator=(const Mesh &)
+        {
             assert(false && "Cannot assign");
             return *this;
         }
 
         ~Mesh();
 
-        void setVerticesData(void* data, u32 size);
+        void setVerticesData(void *data, u32 size);
 
         template <typename T>
-        void setVertices(T* vertices, u32 count)
+        void setVertices(T *vertices, u32 count)
         {
             setVerticesData(vertices, count * sizeof(T));
         }
 
         u32 getDrawCount() const;
 
-        void setIndices(u32* indices, u32 count);
+        void setIndices(u32 *indices, u32 count);
         void setAttributes(std::initializer_list<MeshAttribute> attributes);
         void drawTriangles() const;
         void drawLines() const;
         void setDrawCount(u32 drawCount);
+        void bind();
 
         static void GenerateGlobalIBO();
 

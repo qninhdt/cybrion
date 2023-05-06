@@ -224,4 +224,9 @@ namespace cybrion::GL
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(u32), indices.data(), GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
+
+    void Mesh::bind()
+    {
+        glBindVertexArray(m_vao);
+    }
 }

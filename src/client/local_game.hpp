@@ -7,6 +7,7 @@
 #include "client/key_code.hpp"
 #include "core/stopwatch.hpp"
 #include "client/graphic/world_renderer.hpp"
+#include "client/graphic/sky_renderer.hpp"
 
 namespace cybrion
 {
@@ -77,6 +78,7 @@ namespace cybrion
         GL::Mesh m_targetBlockMesh;
 
         WorldRenderer m_worldRenderer;
+        SkyRenderer m_skyRenderer;
         BlockRenderer m_blockRenderers[Blocks::StateCount()];
     };
 }

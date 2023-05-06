@@ -2,8 +2,10 @@ shader_list:
   - name: basic
     reload: true
   - name: opaque_cube
-    reload: true 
+    reload: true
   - name: block_model
     reload: true
   - name: basic_block
+    reload: true
+  - name: sky
     reload: true
