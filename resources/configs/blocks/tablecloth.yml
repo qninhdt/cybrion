@@ -1,6 +1,7 @@
 "[]":
   display_name: Tablecloth
   model: tablecloth
+  sound: wood
   model_tex:
     - oak_plank
     - white_wool

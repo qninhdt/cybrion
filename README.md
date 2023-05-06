@@ -20,7 +20,7 @@
 - [ ] Glass
 - [x] Custom block model (.obj)
 - [x] Flower
-- [ ] Improve world generation
+- [x] Improve world generation
 - [x] Inventory
 - [x] Add sky
 - [x] Save system

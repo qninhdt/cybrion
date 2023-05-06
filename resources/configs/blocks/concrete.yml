@@ -1,3 +1,5 @@
+"[]":
+  sound: stone
 "[color=yellow]":
   display_name: Yellow Concrete
   all: yellow_concrete

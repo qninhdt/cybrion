@@ -1,3 +1,5 @@
+"[]":
+  sound: stone
 "[type=copper]":
   display_name: Copper Block
   all: copper

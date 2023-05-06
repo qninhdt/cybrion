@@ -1,26 +1,27 @@
 "[]":
+  sound: leaf
   model: x_shape
   collision: null
 "[type=grass]":
   display_name: Grass
   model_tex: grass
 "[type=fern]":
-  display_name: Fern 
+  display_name: Fern
   model_tex: fern
 "[type=dandelion]":
   display_name: Dandelion
   model_tex: dandelion
 "[type=poppy]":
-  display_name: Poppy 
+  display_name: Poppy
   model_tex: poppy
 "[type=blue_orchid]":
   display_name: Blue Orchid
   model_tex: blue_orchid
 "[type=allium]":
-  display_name: Allium 
+  display_name: Allium
   model_tex: allium
 "[type=azure]":
-  display_name: Azure 
+  display_name: Azure
   model_tex: azure
 "[type=red_tulip]":
   display_name: Red Tulip

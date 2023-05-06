@@ -5,17 +5,17 @@
   display_name: Dirt
   all: dirt
   sound: dirt
-  
+
 "[type=basalt]":
   display_name: Basalt
-  
+
 "[type=clay]":
   display_name: Clay
   all: clay
-  
+
 "[type=silt]":
   display_name: Silt
-  
+
 "[type=grass]":
   display_name: Grass
   top: grass_top

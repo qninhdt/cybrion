@@ -71,11 +71,17 @@ namespace cybrion
                         f32 noise = wNoise * 0.8 + m_plainNoise.GetNoise(wposX * 8, wposZ * 8) * 0.10f + m_plainNoise.GetNoise(wposX * 16, wposZ * 16) * 0.10f;
 
                         i32 wh = (noise + 1) / 2 * 40 + 15;
+                        i32 dh = std::min(Chunk::CHUNK_SIZE, i32(abs(river - 0.25) / 0.05f * (wh - 35) + 23) - chunkPos.y);
                         i32 lh = std::min(Chunk::CHUNK_SIZE, wh - chunkPos.y);
+                        i32 y = 0;
 
-                        for (i32 y = 0; y < lh; ++y)
+                        for (; y < dh; ++y)
                         {
-                            i32 wy = y + chunkPos.y;
+                            chunk->setBlock({x, y, z}, Blocks::SAND);
+                        }
+
+                        for (; y < lh; ++y)
+                        {
                             chunk->setBlock({x, y, z}, Blocks::WATER);
                         }
                         continue;
@@ -207,15 +213,50 @@ namespace cybrion
         if (chunkPos.y > 20 && chunkPos.y < 50)
             for (i32 x = 0; x < Chunk::CHUNK_SIZE; ++x)
                 for (i32 z = 0; z < Chunk::CHUNK_SIZE; ++z)
+                {
+                    float noiseX = chunkPos.x + x;
+                    float noiseZ = chunkPos.z + z;
+
+                    float forestNoise = m_noise.GetNoise(noiseX * 4, noiseZ * 4);
+                    forestNoise = (forestNoise + 1) / 2;
+
+                    float treeNoise = m_noise.GetNoise(noiseX * 1024, noiseZ * 1024);
+                    treeNoise = (treeNoise + 1) / 2;
+                    treeNoise = pow(treeNoise, 4);
+
+                    float grassNoise = m_noise.GetNoise(noiseX * 256, noiseZ * 256);
+                    grassNoise = (grassNoise + 1) / 2;
+                    grassNoise = pow(grassNoise, 2);
+
+                    float flowerNoise = m_noise.GetNoise(noiseX * 128, noiseZ * 128);
+                    flowerNoise = (flowerNoise + 1) / 2;
+                    flowerNoise = pow(flowerNoise, 2);
+
                     for (i32 y = 0; y < Chunk::CHUNK_SIZE; ++y)
                     {
                         ivec3 wpos = chunkPos + ivec3(x, y, z);
-                        if (chunk->getBlock({x, y, z}) == Blocks::GRASS_BLOCK && wpos.x % 30 == 0 && wpos.z % 30 == 0)
+                        if (chunk->getBlock({x, y, z}) == Blocks::GRASS_BLOCK)
                         {
-                            growTreeAt(chunkPos + ivec3(x, y + 1, z));
-                            break;
+                            if (forestNoise > 0.5f && treeNoise > 0.9f)
+                            {
+                                growTreeAt(chunkPos + ivec3(x, y + 1, z));
+                                break;
+                            }
+                            else if (forestNoise > 0.3f && grassNoise > 0.75)
+                            {
+                                auto &grass = Blocks::GRASS.set<"type">((PlantType)(rand() % 2));
+                                world.setBlock(chunkPos + ivec3(x, y + 1, z), grass);
+                                break;
+                            }
+                            else if (flowerNoise > 0.95f)
+                            {
+                                auto &flower = Blocks::GRASS.set<"type">((PlantType)((rand() % 11) + 2));
+                                world.setBlock(chunkPos + ivec3(x, y + 1, z), flower);
+                                break;
+                            }
                         }
                     }
+                }
 
         chunk->m_hasStructure = true;
     }
@@ -223,7 +264,9 @@ namespace cybrion
     void WorldGenerator::growTreeAt(const ivec3 &pos)
     {
         auto &world = Game::Get().getWorld();
-        auto &wood = Blocks::OAK_LOG.set<"axis">(LogAxis::Y);
+        auto type = WoodType(rand() % 7);
+        auto &wood = Blocks::OAK_LOG.set<"axis">(LogAxis::Y).set<"type">(type);
+        auto &leaf = Blocks::OAK_LEAF.set<"type">(type);
         ivec3 p = pos;
 
         i32 h = (rand() % 3) + 2;
@@ -237,9 +280,9 @@ namespace cybrion
         for (i32 i = -1; i <= 1; ++i)
             for (i32 j = -1; j <= 1; ++j)
                 if (!(i == 0 && j == 0) && (rand() % 3) == 0)
-                    world.setBlock(p + ivec3(i, -1, j), Blocks::OAK_LEAF);
+                    world.setBlock(p + ivec3(i, -1, j), leaf);
 
-        world.setBlock(p, Blocks::OAK_LEAF);
+        world.setBlock(p, wood);
 
         i32 dx = (rand() % 3) - 1;
         i32 dz = (rand() % 3) - 1;
@@ -267,7 +310,7 @@ namespace cybrion
             for (i32 j = -lh; j <= lh; ++j)
             {
                 if ((abs(i) - lh) + (abs(j) - lh) != 0)
-                    world.setBlock(p + ivec3(i, 0, j), Blocks::OAK_LEAF);
+                    world.setBlock(p + ivec3(i, 0, j), leaf);
             }
         }
 
@@ -278,7 +321,7 @@ namespace cybrion
             for (i32 j = -lh; j <= lh; ++j)
             {
                 if ((abs(i) - lh) + (abs(j) - lh) != 0)
-                    world.setBlock(p + ivec3(i, 0, j), Blocks::OAK_LEAF);
+                    world.setBlock(p + ivec3(i, 0, j), leaf);
             }
         }
     }
@@ -292,16 +335,6 @@ namespace cybrion
         if (abs(noise0) < 2 * noise1)
             noise0 += noise1 * (abs(noise0)) * 50;
 
-        // if (noise1 > -0.1)
-        //     //return BiomeType::HILL;
-        //     noise0 += 0.2 - noise1;
-
-        // if (noise0 > 0)
-        //     return BiomeType::PLAIN;
-        // else if (noise0 > -0.5)
-        //     return BiomeType::DESERT;
-        // else
-        //     return BiomeType::HILL;
         if (noise0 > -0.1)
             return BiomeType::PLAIN;
         else
@@ -314,6 +347,6 @@ namespace cybrion
 
         f32 noise1 = m_riverNoise.GetNoise(x * 16 + 100, z * 16 + 100);
 
-        return (0.2 < noise && noise < 0.3) ? 1 : -1;
+        return (0.2 < noise && noise < 0.3) ? noise : -1;
     }
 }

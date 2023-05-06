@@ -1,3 +1,5 @@
+"[]":
+  sound: stone
 "[type=stone]":
   display_name: Stone Brick
   all: stone_brick
