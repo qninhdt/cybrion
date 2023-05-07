@@ -34,4 +34,3 @@ target_include_directories(jbt PUBLIC "include")
 
 find_package(lz4 CONFIG REQUIRED)
 target_link_libraries(jbt PUBLIC lz4::lz4)
-

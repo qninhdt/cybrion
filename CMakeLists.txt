@@ -17,6 +17,7 @@ if (CMAKE_COMPILER_IS_GNUC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -w")
 endif()
 
+
 target_precompile_headers(${PROJECT_NAME} PUBLIC src/pch.hpp)
 
 add_subdirectory(third_party/glad)

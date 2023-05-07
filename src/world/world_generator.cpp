@@ -259,7 +259,7 @@ namespace cybrion
                                 break;
                             }
                         }
-                        else if (chunk->getBlock({x, y, z}) == Blocks::SAND && chunk->getBlock({x, y + 1, z}) == Blocks::AIR)
+                        else if (chunk->getBlock({x, y, z}) == Blocks::SAND && Game::Get().getWorld().getBlock(wpos + ivec3(0, 1, 0)) == Blocks::AIR)
                         {
                             if (cactusNoise > 0.95f)
                             {

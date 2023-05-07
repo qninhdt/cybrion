@@ -294,8 +294,8 @@ namespace cybrion
 
         goToPage("home");
 
-        currentGame = "2";
-        goToPage("game");
+        //currentGame = "2";
+        //goToPage("game");
 
         while (!isClosed())
         {

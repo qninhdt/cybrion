@@ -49,8 +49,8 @@ if not exist %VCPKG_ROOT% (
         glm ^
         lz4 ^
         robin-hood-hashing ^
-        bshoshany-thread-pool ^
-	spdlog ^
+		bshoshany-thread-pool ^
+		spdlog ^
         yaml-cpp ^
         imgui[opengl3-binding,sdl2-binding] ^
         concurrentqueue ^
@@ -62,6 +62,7 @@ if not exist %VCPKG_ROOT% (
 cmake ^
 	-G "%cmakegen%" ^
 	-DCMAKE_TOOLCHAIN_FILE=%BASE_PATH%tools\vcpkg\scripts\buildsystems\vcpkg.cmake ^
+	-DCMAKE_BUILD_TYPE=Release ^
 	-B%BASE_PATH%out
 	
 cmake --build out --config Release
