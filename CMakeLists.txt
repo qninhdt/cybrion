@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.26)
+﻿cmake_minimum_required (VERSION 3.20)
 
 project ("cybrion")
 
@@ -13,7 +13,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC src)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
-if ( CMAKE_COMPILER_IS_GNUCC )
+if (CMAKE_COMPILER_IS_GNUC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -w")
 endif()
 
@@ -56,11 +56,15 @@ find_package(unofficial-concurrentqueue CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC unofficial::concurrentqueue::concurrentqueue)
 
 find_package(SDL2 CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC SDL2::SDL2)
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+)
 
 if (WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_SOURCE_DIR}/third_party/irrKlang/bin/irrKlang.os"
+            "${CMAKE_SOURCE_DIR}/third_party/irrKlang/bin/irrKlang.dll"
             $<TARGET_FILE_DIR:${PROJECT_NAME}>)     
 endif()    

@@ -329,7 +329,7 @@ namespace cybrion
     BiomeType WorldGenerator::getBiome(i32 x, i32 z) const
     {
         f32 noise0 = m_biomeNoise0.GetNoise(f32(x), f32(z)) * 0.5;
-        f32 noise1 = m_biomeNoise1.GetNoise(f32(x), f32(z)) * 0.6 + m_biomeNoise1.GetNoise(f32(x * 4), f32(z * 4)) * 0.2;
+        f32 noise1 = m_biomeNoise1.GetNoise(f32(x), f32(z)) * 0.6 + m_biomeNoise1.GetNoise(f32(x * 4), f32(z * 4)) * 0.2
         +m_biomeNoise1.GetNoise(f32(x * 8), f32(z * 8)) * 0.2;
 
         if (abs(noise0) < 2 * noise1)

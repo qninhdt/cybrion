@@ -10,6 +10,6 @@ namespace cybrion
         void reduceDeltaTime(u32 amount);
 
     private:
-        std::chrono::system_clock::time_point m_lastTime;
+        std::chrono::steady_clock::time_point m_lastTime;
     };
 }

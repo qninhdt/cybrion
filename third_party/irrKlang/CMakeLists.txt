@@ -1,7 +1,7 @@
 add_library(irrKlang INTERFACE)
 
 if (WIN32)
-    set(IRRKLANG_LIB "${CMAKE_SOURCE_DIR}/third_party/irrKlang/bin/libIrrKlang.lib")
+    set(IRRKLANG_LIB "${CMAKE_SOURCE_DIR}/third_party/irrKlang/bin/irrKlang.lib")
 elseif(LINUX AND NOT APPLE)
     set(IRRKLANG_LIB "${CMAKE_SOURCE_DIR}/third_party/irrKlang/bin/libIrrKlang.so")
 endif()

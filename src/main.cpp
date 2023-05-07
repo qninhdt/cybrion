@@ -141,9 +141,10 @@ i32 main(i32 argc, char *args[])
     jbt::init();
 
     string rootPath{args[0]};
+    std::replace(rootPath.begin(), rootPath.end(), '\\', '/');
     const size_t last_slash_idx = rootPath.rfind('/');
     rootPath = rootPath.substr(0, last_slash_idx);
-
+      
     Application app(rootPath);
 
     if (app.open())

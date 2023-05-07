@@ -6,6 +6,10 @@
 
 namespace cybrion
 {
+    constexpr bool compareStrings(const char* str1, const char* str2) {
+        return (*str1 && *str2) ? (*str1 == *str2) && compareStrings(str1 + 1, str2 + 1) : !(*str1 || *str2);
+    }
+
     namespace block
     {
         template <typename T, const_string pname, u32 pnum_values>
@@ -80,7 +84,7 @@ namespace cybrion
             i32 set_impl(const auto &value)
             {
                 constexpr u32 m = num_states() / n / T::num_values;
-                if constexpr (std::strcmp(T::name.value, name.value) == 0)
+                if constexpr (compareStrings(T::name.value, name.value))
                 {
                     auto &self = *(T *)this;
                     return m * (i32(value) - i32(self.value));
@@ -195,7 +199,7 @@ namespace cybrion
             template <const_string name, typename T, typename... R>
             auto &get_impl() const
             {
-                if constexpr (std::strcmp(T::name.value, name.value) == 0)
+                if constexpr (compareStrings(T::name.value, name.value))
                     return ((T *)this)->value;
                 else
                 {
