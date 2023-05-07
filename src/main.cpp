@@ -22,6 +22,7 @@ i32 main(i32 argc, char *args[])
     RegisterEnum(BlockType::WOOL, "wool");
     RegisterEnum(BlockType::CONCRETE, "concrete");
     RegisterEnum(BlockType::MINERAL, "mineral");
+    RegisterEnum(BlockType::CACTUS, "cactus");
 
     // block color
     RegisterEnum(BlockColor::YELLOW, "yellow");
@@ -144,7 +145,7 @@ i32 main(i32 argc, char *args[])
     std::replace(rootPath.begin(), rootPath.end(), '\\', '/');
     const size_t last_slash_idx = rootPath.rfind('/');
     rootPath = rootPath.substr(0, last_slash_idx);
-      
+
     Application app(rootPath);
 
     if (app.open())

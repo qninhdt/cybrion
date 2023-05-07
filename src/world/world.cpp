@@ -424,7 +424,7 @@ namespace cybrion
 
     void World::saveChunk(const ivec3 &pos, const ref<Chunk> &chunk)
     {
-        // return;
+        return;
         ivec3 regionPos = ToRegionPos(pos);
         ivec3 localPos = ToLocalRegionPos(pos);
 

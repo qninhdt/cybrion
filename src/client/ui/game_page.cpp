@@ -32,7 +32,8 @@ namespace cybrion::ui
                  &Blocks::SPRUCE_LEAF,
              }},
             {"Plant",
-             {&Blocks::GRASS,
+             {&Blocks::CACTUS,
+              &Blocks::GRASS,
               &Blocks::FERN,
               &Blocks::DANDELION,
               &Blocks::POPPY,
@@ -47,6 +48,8 @@ namespace cybrion::ui
               &Blocks::LILY_OF_THE_VALLEY}},
             {"Building",
              {
+                 // glass
+                 &Blocks::GLASS,
                  // brick
                  &Blocks::STONE_BRICK,
                  &Blocks::MOSSY_STONE_BRICK,
@@ -103,12 +106,12 @@ namespace cybrion::ui
                  &Blocks::OAK_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
                  &Blocks::SPRUCE_FENCE_GATE.set<"face">(BlockHorizontalFace::NORTH),
                  // mineral
-                 &Blocks::COPPER_BLOCK,
-                 &Blocks::IRON_BLOCK,
-                 &Blocks::EMERALD_BLOCK,
-                 &Blocks::LAPIS_BLOCK,
-                 &Blocks::GOLD_BLOCK,
-                 &Blocks::DIAMOND_BLOCK,
+                 &Blocks::COPPER,
+                 &Blocks::IRON,
+                 &Blocks::EMERALD,
+                 &Blocks::LAPIS,
+                 &Blocks::GOLD,
+                 &Blocks::DIAMOND,
              }},
             {"Decoration",
              {

@@ -1,0 +1,8 @@
+"[]":
+  display_name: Cactus
+  model: cactus
+  model_tex:
+    - cactus_top
+    - cactus_bottom
+    - cactus_side
+  sound: leaf

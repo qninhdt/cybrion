@@ -21,27 +21,28 @@ namespace cybrion
         WOOL,
         CONCRETE,
         MINERAL,
+        CACTUS,
         ENUM_SIZE
     };
 
     enum class BlockColor
     {
-        YELLOW     ,
-        WHITE      ,
-        RED        ,
-        PURPLE     ,
-        PINK       ,
-        ORANGE     ,
-        MAGENTA    ,
-        LIME       ,
-        LIGHT_GRAY ,
-        LIGHT_BLUE ,
-        GREEN      ,
-        GRAY       ,
-        CYAN       ,
-        BROWN      ,
-        BLUE       ,
-        BLACK      ,
+        YELLOW,
+        WHITE,
+        RED,
+        PURPLE,
+        PINK,
+        ORANGE,
+        MAGENTA,
+        LIME,
+        LIGHT_GRAY,
+        LIGHT_BLUE,
+        GREEN,
+        GRAY,
+        CYAN,
+        BROWN,
+        BLUE,
+        BLACK,
     };
 
     enum class BlockShape
@@ -61,12 +62,12 @@ namespace cybrion
 
     enum class BlockFace
     {
-        EAST   = 0,
-        TOP    = 1,
-        SOUTH  = 2,
-        WEST   = 3,
+        EAST = 0,
+        TOP = 1,
+        SOUTH = 2,
+        WEST = 3,
         BOTTOM = 4,
-        NORTH  = 5
+        NORTH = 5
     };
 
     enum class BlockRotation

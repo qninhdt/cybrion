@@ -17,7 +17,7 @@
 - [x] Tree
 - [x] Block sound
 - [x] Water
-- [ ] Glass
+- [x] Glass
 - [x] Custom block model (.obj)
 - [x] Flower
 - [x] Improve world generation

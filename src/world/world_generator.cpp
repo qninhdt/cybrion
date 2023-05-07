@@ -232,6 +232,10 @@ namespace cybrion
                     flowerNoise = (flowerNoise + 1) / 2;
                     flowerNoise = pow(flowerNoise, 2);
 
+                    float cactusNoise = m_noise.GetNoise(noiseX * 256, noiseZ * 256);
+                    cactusNoise = (cactusNoise + 1) / 2;
+                    cactusNoise = pow(cactusNoise, 3);
+
                     for (i32 y = 0; y < Chunk::CHUNK_SIZE; ++y)
                     {
                         ivec3 wpos = chunkPos + ivec3(x, y, z);
@@ -248,11 +252,20 @@ namespace cybrion
                                 world.setBlock(chunkPos + ivec3(x, y + 1, z), grass);
                                 break;
                             }
-                            else if (flowerNoise > 0.95f)
+                            else if (flowerNoise > 0.9f)
                             {
                                 auto &flower = Blocks::GRASS.set<"type">((PlantType)((rand() % 11) + 2));
                                 world.setBlock(chunkPos + ivec3(x, y + 1, z), flower);
                                 break;
+                            }
+                        }
+                        else if (chunk->getBlock({x, y, z}) == Blocks::SAND && chunk->getBlock({x, y + 1, z}) == Blocks::AIR)
+                        {
+                            if (cactusNoise > 0.95f)
+                            {
+                                i32 height = (rand() % 2) + 3;
+                                for (i32 i = 1; i <= height; ++i)
+                                    world.setBlock(chunkPos + ivec3(x, y + i, z), Blocks::CACTUS);
                             }
                         }
                     }
@@ -329,8 +342,7 @@ namespace cybrion
     BiomeType WorldGenerator::getBiome(i32 x, i32 z) const
     {
         f32 noise0 = m_biomeNoise0.GetNoise(f32(x), f32(z)) * 0.5;
-        f32 noise1 = m_biomeNoise1.GetNoise(f32(x), f32(z)) * 0.6 + m_biomeNoise1.GetNoise(f32(x * 4), f32(z * 4)) * 0.2
-        +m_biomeNoise1.GetNoise(f32(x * 8), f32(z * 8)) * 0.2;
+        f32 noise1 = m_biomeNoise1.GetNoise(f32(x), f32(z)) * 0.6 + m_biomeNoise1.GetNoise(f32(x * 4), f32(z * 4)) * 0.2 + m_biomeNoise1.GetNoise(f32(x * 8), f32(z * 8)) * 0.2;
 
         if (abs(noise0) < 2 * noise1)
             noise0 += noise1 * (abs(noise0)) * 50;
