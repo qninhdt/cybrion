@@ -152,14 +152,14 @@ namespace cybrion::ui
         ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
 
         static bool resumeButton = false;
-        if (HoverableImageButton(m_resumeTexture, m_hoveredResumeTexture, 400, 100, resumeButton))
+        if (HoverableImageButton(m_resumeTexture, m_hoveredResumeTexture, 300, 300 / 4, resumeButton))
         {
             LocalGame::Get().resume();
             Application::Get().disableCursor();
         }
 
         static bool exitButton = false;
-        if (HoverableImageButton(m_exitTexture, m_hoveredExitTexture, 400, 100, exitButton))
+        if (HoverableImageButton(m_exitTexture, m_hoveredExitTexture, 300, 300 / 4, exitButton))
         {
             Application::Get().goToPage("home");
         }
@@ -311,7 +311,7 @@ namespace cybrion::ui
         if (heldBlock)
         {
             ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, m_io.DisplaySize.y - 110), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-            ImGui::SetNextWindowBgAlpha(0.4);
+            ImGui::SetNextWindowBgAlpha(0.3);
             ImGui::Begin("Inventory Header", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
 
             ImGui::Text("%s", heldBlock->getDisplayName().c_str());

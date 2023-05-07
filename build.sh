@@ -44,7 +44,7 @@ cmake \
     -B${BASE_DIR}/out \
     --no-warn-unused-cli
     
-cmake --build out
+cmake --build out --config Debug
 
 # create build
 mkdir -p build

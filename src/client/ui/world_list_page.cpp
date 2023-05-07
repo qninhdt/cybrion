@@ -36,16 +36,22 @@ namespace cybrion::ui
         ImGui::PopStyleVar(2);
         ImGui::End();
 
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0.2));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0.2));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.3));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0.5));
+
         // list
         ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, 200), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
 
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.5f));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.3f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 25));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 
         ImGui::Begin("World List", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
 
         ImGui::PopStyleColor(1);
-        ImGui::PopStyleVar(1);
+        ImGui::PopStyleVar(2);
 
         if (ImGui::Button("Back"))
         {
@@ -100,6 +106,7 @@ namespace cybrion::ui
             ImGui::EndChildFrame();
         }
 
+        ImGui::PopStyleColor(4);
         ImGui::End();
     }
 

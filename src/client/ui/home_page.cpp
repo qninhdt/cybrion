@@ -43,19 +43,19 @@ namespace cybrion::ui
         ImGui::PopStyleVar(2);
         ImGui::End();
 
-        ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, m_io.DisplaySize.y * 0.1 + 20), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
+        ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, m_io.DisplaySize.y * 0.05 + 20), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 15));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
         ImGui::Begin("Home Title", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize);
 
-        ImGui::Image((ImTextureID)(intptr_t)m_titleTexture.getId(), ImVec2(900, 900 / 4));
+        ImGui::Image((ImTextureID)(intptr_t)m_titleTexture.getId(), ImVec2(600, 600 / 4));
 
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor(1);
         ImGui::End();
 
-        ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, m_io.DisplaySize.y * 0.9f - 100), ImGuiCond_Always, ImVec2(0.5f, 1.0f));
+        ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, m_io.DisplaySize.y * 0.95f - 50), ImGuiCond_Always, ImVec2(0.5f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.3f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 30));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
@@ -64,13 +64,13 @@ namespace cybrion::ui
                          ImGuiWindowFlags_AlwaysAutoResize);
 
         static bool playButton = false;
-        if (HoverableImageButton(m_playTexture, m_hoveredPlayTexture, 400, 100, playButton))
+        if (HoverableImageButton(m_playTexture, m_hoveredPlayTexture, 300, 300 / 4, playButton))
         {
             Application::Get().goToPage("world_list");
         }
 
         static bool quitButton = false;
-        if (HoverableImageButton(m_quitTexture, m_hoveredQuitTexture, 400, 100, quitButton))
+        if (HoverableImageButton(m_quitTexture, m_hoveredQuitTexture, 300, 300 / 4, quitButton))
         {
             Application::Get().close();
         }

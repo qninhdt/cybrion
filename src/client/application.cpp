@@ -6,9 +6,63 @@
 #include "client/ui/game_page.hpp"
 #include "client/ui/world_list_page.hpp"
 
+#include "client/ui/controls.hpp"
+
 namespace cybrion
 {
     Application *Application::s_application = nullptr;
+
+    SDL_HitTestResult HitTestCallback(SDL_Window *Window, const SDL_Point *Area, void *Data)
+    {
+        int Width, Height;
+        SDL_GetWindowSize(Window, &Width, &Height);
+        f32 MOUSE_GRAB_PADDING = 8;
+
+        if (Area->y < MOUSE_GRAB_PADDING)
+        {
+            if (Area->x < MOUSE_GRAB_PADDING)
+            {
+                return SDL_HITTEST_RESIZE_TOPLEFT;
+            }
+            else if (Area->x > Width - MOUSE_GRAB_PADDING)
+            {
+                return SDL_HITTEST_RESIZE_TOPRIGHT;
+            }
+            else
+            {
+                return SDL_HITTEST_RESIZE_TOP;
+            }
+        }
+        else if (Area->y > Height - MOUSE_GRAB_PADDING)
+        {
+            if (Area->x < MOUSE_GRAB_PADDING)
+            {
+                return SDL_HITTEST_RESIZE_BOTTOMLEFT;
+            }
+            else if (Area->x > Width - MOUSE_GRAB_PADDING)
+            {
+                return SDL_HITTEST_RESIZE_BOTTOMRIGHT;
+            }
+            else
+            {
+                return SDL_HITTEST_RESIZE_BOTTOM;
+            }
+        }
+        else if (Area->x < MOUSE_GRAB_PADDING)
+        {
+            return SDL_HITTEST_RESIZE_LEFT;
+        }
+        else if (Area->x > Width - MOUSE_GRAB_PADDING)
+        {
+            return SDL_HITTEST_RESIZE_RIGHT;
+        }
+        else if (Area->y < 32 && Area->x < Width - 24 * 5)
+        {
+            return SDL_HITTEST_DRAGGABLE;
+        }
+
+        return SDL_HITTEST_NORMAL;
+    }
 
     void APIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id,
                                          GLenum severity, GLsizei length,
@@ -111,8 +165,8 @@ namespace cybrion
                id, _type.c_str(), _severity.c_str(), _source.c_str(), msg);
     }
 
-    Application::Application(const string &rootPath) : m_width(1600),
-                                                       m_height(800),
+    Application::Application(const string &rootPath) : m_width(1200),
+                                                       m_height(600),
                                                        m_mousePos(0, 0),
                                                        m_lastMousePos(0, 0),
                                                        m_title("Cybrion v1.0"),
@@ -121,6 +175,7 @@ namespace cybrion
                                                        m_window(nullptr),
                                                        m_context(nullptr),
                                                        m_pos(0, 0),
+                                                       m_fps(0),
                                                        m_game(nullptr),
                                                        m_soundEngine(nullptr),
                                                        m_rootPath(rootPath),
@@ -150,7 +205,7 @@ namespace cybrion
         m_window = SDL_CreateWindow(
             m_title.c_str(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            m_width, m_height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+            m_width, m_height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS);
 
         if (!m_window)
         {
@@ -165,6 +220,9 @@ namespace cybrion
             CYBRION_CLIENT_ERROR("Cannot create OpenGL context");
             return false;
         }
+
+        SDL_SetWindowResizable(m_window, SDL_TRUE);
+        SDL_SetWindowHitTest(m_window, HitTestCallback, 0);
 
         // load OpenGL
         if (gladLoadGLLoader(SDL_GL_GetProcAddress))
@@ -214,6 +272,11 @@ namespace cybrion
 
         CYBRION_CLIENT_TRACE("Start loading resources ({})", getResourcePath(""));
         m_shaderManager.loadShaders();
+
+        m_maximizeTexture.load("ui/maximize_button.png");
+        m_restoreTexture.load("ui/restore_button.png");
+        m_minimizeTexture.load("ui/minimize_button.png");
+        m_closeTexture.load("ui/close_button.png");
     }
 
     void Application::run()
@@ -375,6 +438,7 @@ namespace cybrion
             ImGui::NewFrame();
 
             ImGui::PushFont(m_font);
+            renderTitleBar();
             m_pages[m_currentPage]->onRender();
             ImGui::PopFont();
 
@@ -570,6 +634,57 @@ namespace cybrion
     bool Application::isCursorEnable() const
     {
         return m_enableCursor;
+    }
+
+    void Application::renderTitleBar()
+    {
+        bool isMaximized = (SDL_GetWindowFlags(m_window) & SDL_WINDOW_MAXIMIZED) != 0;
+
+        const i32 TITLE_BAR_SIZE = 24;
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, TITLE_BAR_SIZE));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.2));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0));
+        ImGui::Begin("Title Bar", NULL, ImGuiWindowFlags_NoDecoration);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6, 0));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.2));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0.4));
+
+        ImGui::SameLine(ImGui::GetWindowWidth() - TITLE_BAR_SIZE * 2);
+        if (ImGui::ImageButton((ImTextureID)(intptr_t)m_closeTexture.getId(), ImVec2(TITLE_BAR_SIZE, TITLE_BAR_SIZE)))
+        {
+            close();
+        }
+
+        ImGui::SameLine(ImGui::GetWindowWidth() - TITLE_BAR_SIZE * 3 - 12);
+        if (isMaximized)
+        {
+            if (ImGui::ImageButton((ImTextureID)(intptr_t)m_restoreTexture.getId(), ImVec2(TITLE_BAR_SIZE, TITLE_BAR_SIZE)))
+            {
+                SDL_RestoreWindow(m_window);
+            }
+        }
+        else
+        {
+            if (ImGui::ImageButton((ImTextureID)(intptr_t)m_maximizeTexture.getId(), ImVec2(TITLE_BAR_SIZE, TITLE_BAR_SIZE)))
+            {
+                SDL_MaximizeWindow(m_window);
+            }
+        }
+
+        ImGui::SameLine(ImGui::GetWindowWidth() - TITLE_BAR_SIZE * 4 - 12 * 2);
+        if (ImGui::ImageButton((ImTextureID)(intptr_t)m_minimizeTexture.getId(), ImVec2(TITLE_BAR_SIZE, TITLE_BAR_SIZE)))
+        {
+            SDL_MinimizeWindow(m_window);
+        }
+
+        ImGui::PopStyleVar(4);
+        ImGui::PopStyleColor(4);
+        ImGui::End();
     }
 
     Application::~Application()

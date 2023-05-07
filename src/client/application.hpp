@@ -5,6 +5,7 @@
 #include "client/resource/shader_manager.hpp"
 #include "client/local_game.hpp"
 #include "client/ui/page.hpp"
+#include "client/GL/texture.hpp"
 
 namespace cybrion
 {
@@ -18,6 +19,8 @@ namespace cybrion
         void run();
         void close();
         void closeImmediately();
+
+        void renderTitleBar();
 
         void startGame();
         void exitGame();
@@ -87,8 +90,14 @@ namespace cybrion
         ivec2 m_mousePos;
         ivec2 m_lastMousePos;
         string m_title;
+        f32 m_fps;
         bool m_isClosed;
         bool m_enableCursor;
+
+        GL::Texture m_maximizeTexture;
+        GL::Texture m_restoreTexture;
+        GL::Texture m_minimizeTexture;
+        GL::Texture m_closeTexture;
 
         // ui
         umap<string, ref<ui::Page>> m_pages;
