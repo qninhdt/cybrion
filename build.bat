@@ -86,3 +86,5 @@ xcopy %BASE_PATH%resources %BUILD_PATH%\resources\ /E /C /I /Y > nul
 echo Build completed
 
 endlocal
+
+pause

@@ -49,9 +49,13 @@ cmake --build out
 # create build
 mkdir -p build
 
+echo Copy execute files and resource files
+
 # copy resources
 rm -rf ${BUILD_DIR}/resources
 cp -r resources ${BUILD_DIR}/resources
 
 # copy execute file
 cp -r out/cybrion build/cybrion
+
+echo Build completed

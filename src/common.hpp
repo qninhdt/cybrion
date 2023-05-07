@@ -23,6 +23,12 @@
 
 namespace cybrion
 {
+#ifdef WIN32
+    using time_point = std::chrono::steady_clock::time_point;
+#else
+    using time_point = std::chrono::system_clock::time_point;
+#endif
+
     namespace detail
     {
         template <class...>

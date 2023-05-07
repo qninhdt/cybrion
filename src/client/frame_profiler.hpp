@@ -13,11 +13,12 @@ namespace cybrion
 
         f32 getFPS() const;
         f32 getDeltaTime() const;
+
     private:
         f32 m_fps;
         f32 m_deltaTime;
         f64 m_totalTime;
         std::queue<f32> m_timeQueue;
-        std::chrono::steady_clock::time_point m_lastTime, m_time;
+        time_point m_lastTime, m_time;
     };
 }
