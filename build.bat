@@ -50,7 +50,7 @@ if not exist %VCPKG_ROOT% (
         lz4 ^
         robin-hood-hashing ^
         bshoshany-thread-pool ^
-		sdlog ^
+	spdlog ^
         yaml-cpp ^
         imgui[opengl3-binding,sdl2-binding] ^
         concurrentqueue ^
