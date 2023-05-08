@@ -1,0 +1,26 @@
+IDI_ICON1 ICON "resources/cybrion.ico"
+
+1 VERSIONINFO
+FILEVERSION             1,0,0,0
+PRODUCTVERSION          1,0,0,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+        VALUE "Comments",         "bardabez"
+        VALUE "CompanyName",      "https:/github.com/qninhdt"
+        VALUE "FileDescription",  "Just a silly blocky game"
+        VALUE "FileVersion",      "1.0.0.0"
+        VALUE "InternalName",     "qninhdt"
+        VALUE "LegalCopyright",   "Copyright (C) 2023 Nguyen Quang Ninh"
+        VALUE "OriginalFilename", "cybrion.exe"
+        VALUE "ProductName",      "Cybrion (https:/github.com/qninhdt/cybrion)"
+        VALUE "ProductVersion",   "1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409,1200
+    END
+END

@@ -3,6 +3,11 @@
 project ("cybrion")
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+if (MSVC)
+	list(APPEND SOURCES config.rc)
+endif()
+
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
@@ -16,7 +21,6 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 if (CMAKE_COMPILER_IS_GNUC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -w")
 endif()
-
 
 target_precompile_headers(${PROJECT_NAME} PUBLIC src/pch.hpp)
 

@@ -56,7 +56,7 @@ namespace cybrion
         {
             return SDL_HITTEST_RESIZE_RIGHT;
         }
-        else if (Area->y < 32 && Area->x < Width - 24 * 5)
+        else if (Area->y < 24 && Area->x < Width - 24 * 5)
         {
             return SDL_HITTEST_DRAGGABLE;
         }
