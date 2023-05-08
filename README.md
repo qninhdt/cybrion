@@ -14,19 +14,19 @@
 - [CMake](https://cmake.org/)
 - [Visual Studio 2015 or newer](https://visualstudio.microsoft.com/)
 
-> _Don't forget to add CMake to enviroment path_
+> _Don't forget to add CMake to environment variables_
 #### Installing libraries and compiling
 - __Step 1__: Open terminal and dowload source code
-```powershell
+```batch
 > git clone https://github.com/qninhdt/cybrion
 ```
 - __Step 2__: Install vcpkg and libraries
-```powershell
+```batch
 > cd cybrion
 > build.bat
 ```
 - __Step 3__: Rerun build.bat to compile project
-```powershell
+```batch
 > build.bat
 ```
 
@@ -50,4 +50,31 @@ $ ./build.sh
 
 Similar to __Windows__, build folder will be `cybrion/build`
 
+## 📁 Project structure
+
+    ├── resources           # Game textures, shader files and config files
+    └── src                 # Source files
+    |   ├── client              # Everything that relates to rendering, window, controls          
+    |   |   ├── GL                  # OpenGL primitive elements (mesh, framebuffer, texture, ...)
+    |   |   ├── graphic             # Handle rendering for block, world, sky, ...
+    |   |   ├── resource            # Load config files, shader files and block textures
+    |   |   └── ui                  # Handle user interface (inventory, menu, text, ...)
+    |   ├── core                # Custom data structures and some useful classes
+    |   ├── physic              # Handle physic (AABB, ...)
+    |   ├── uitl                # Utility functions
+    |   ├── world               # Manage world components (block, chunk, entity, ...)
+    |   └── ...
+    └── ...
+
+## 🎮 How to play
+- `Left Click` to break a block
+- `Right Click` to place a block
+- `WASD` to move around
+- `Space` to go up
+- `Shift` to go down
+- `E` to open block menu
+- `Esc` to pause game
+- `Ctrl` to move faster
+- `F1` to hide GUI
+- `F3` to open Debug tools
 
