@@ -64,107 +64,6 @@ namespace cybrion
         return SDL_HITTEST_NORMAL;
     }
 
-    void APIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id,
-                                         GLenum severity, GLsizei length,
-                                         const GLchar *msg, const void *data)
-    {
-        string _source;
-        string _type;
-        string _severity;
-
-        switch (source)
-        {
-        case GL_DEBUG_SOURCE_API:
-            _source = "API";
-            break;
-
-        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-            _source = "WINDOW SYSTEM";
-            break;
-
-        case GL_DEBUG_SOURCE_SHADER_COMPILER:
-            _source = "SHADER COMPILER";
-            break;
-
-        case GL_DEBUG_SOURCE_THIRD_PARTY:
-            _source = "THIRD PARTY";
-            break;
-
-        case GL_DEBUG_SOURCE_APPLICATION:
-            _source = "APPLICATION";
-            break;
-
-        case GL_DEBUG_SOURCE_OTHER:
-            _source = "UNKNOWN";
-            break;
-
-        default:
-            _source = "UNKNOWN";
-            break;
-        }
-
-        switch (type)
-        {
-        case GL_DEBUG_TYPE_ERROR:
-            _type = "ERROR";
-            break;
-
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-            _type = "DEPRECATED BEHAVIOR";
-            break;
-
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-            _type = "UDEFINED BEHAVIOR";
-            break;
-
-        case GL_DEBUG_TYPE_PORTABILITY:
-            _type = "PORTABILITY";
-            break;
-
-        case GL_DEBUG_TYPE_PERFORMANCE:
-            _type = "PERFORMANCE";
-            break;
-
-        case GL_DEBUG_TYPE_OTHER:
-            _type = "OTHER";
-            break;
-
-        case GL_DEBUG_TYPE_MARKER:
-            _type = "MARKER";
-            break;
-
-        default:
-            _type = "UNKNOWN";
-            break;
-        }
-
-        switch (severity)
-        {
-        case GL_DEBUG_SEVERITY_HIGH:
-            _severity = "HIGH";
-            break;
-
-        case GL_DEBUG_SEVERITY_MEDIUM:
-            _severity = "MEDIUM";
-            break;
-
-        case GL_DEBUG_SEVERITY_LOW:
-            _severity = "LOW";
-            break;
-
-        case GL_DEBUG_SEVERITY_NOTIFICATION:
-            _severity = "NOTIFICATION";
-            break;
-
-        default:
-            _severity = "UNKNOWN";
-            break;
-        }
-
-        printf("%d: %s of %s severity, raised from %s: %s\n",
-               id, _type.c_str(), _severity.c_str(), _source.c_str(), msg);
-    }
-
     Application::Application(const string &rootPath) : m_width(1200),
                                                        m_height(600),
                                                        m_mousePos(0, 0),
@@ -240,9 +139,6 @@ namespace cybrion
 
         glClearColor(1, 1, 1, 1);
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-
-        glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
         m_soundEngine = irrklang::createIrrKlangDevice();
         m_soundEngine->setSoundVolume(1.0f);
@@ -251,7 +147,7 @@ namespace cybrion
         ImGui::CreateContext();
         ImGui::GetIO().Fonts->AddFontDefault();
         ImGui::GetIO().IniFilename = nullptr;
-        m_font = ImGui::GetIO().Fonts->AddFontFromFileTTF(getResourcePath("font.ttf").c_str(), 16);
+        m_font = ImGui::GetIO().Fonts->AddFontFromFileTTF(getResourcePath("font.ttf").c_str(), 14);
 
         ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
         ImGui_ImplOpenGL3_Init("#version 430");
@@ -273,6 +169,8 @@ namespace cybrion
         CYBRION_CLIENT_TRACE("Start loading resources ({})", getResourcePath(""));
         m_shaderManager.loadShaders();
 
+        m_iconTexture.load("ui/icon.png");
+
         m_maximizeTexture.load("ui/maximize_button.png");
         m_restoreTexture.load("ui/restore_button.png");
         m_minimizeTexture.load("ui/minimize_button.png");
@@ -285,7 +183,7 @@ namespace cybrion
         Stopwatch stopwatch;
 
         // main loop
-        f32 deltaTime = 0;
+        //f32 deltaTime = 0;
         fpsStopwatch.reset();
         stopwatch.reset();
 
@@ -315,6 +213,17 @@ namespace cybrion
                 if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
                 {
                     keyPressedCallback(event.key.keysym.scancode, (SDL_EventType)event.type);
+
+                    if (event.key.keysym.scancode == SDL_SCANCODE_F11 && event.type == SDL_KEYDOWN)
+                    {
+                        bool isFullscreen = (SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN;
+                        if (!isFullscreen) {
+                            SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+                        }
+                        else {
+                            SDL_SetWindowFullscreen(m_window, 0);
+                        }
+                    }
                 }
                 if (event.type == SDL_MOUSEWHEEL)
                 {
@@ -403,10 +312,11 @@ namespace cybrion
             // --------------------------------------------
             m_frameProfiler.tick();
 
-            if (fpsStopwatch.getDeltaTime() >= 25000)
+            if (fpsStopwatch.getDeltaTime() >= 250000)
             {
-                deltaTime = m_frameProfiler.getDeltaTime();
-                fpsStopwatch.reduceDeltaTime(25000);
+                //deltaTime = m_frameProfiler.getDeltaTime();
+                fpsStopwatch.reduceDeltaTime(250000);
+                m_fps = m_frameProfiler.getFPS();
             }
 
             if (isPlayingGame())
@@ -524,7 +434,7 @@ namespace cybrion
 
     f32 Application::getFPS() const
     {
-        return m_frameProfiler.getFPS();
+        return m_fps;
     }
 
     f32 Application::getDeltaTime() const
@@ -639,6 +549,9 @@ namespace cybrion
     void Application::renderTitleBar()
     {
         bool isMaximized = (SDL_GetWindowFlags(m_window) & SDL_WINDOW_MAXIMIZED) != 0;
+        bool isFullscreen = (SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN;
+
+        if (isFullscreen) return;
 
         const i32 TITLE_BAR_SIZE = 24;
         ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -653,6 +566,27 @@ namespace cybrion
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.2));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0.4));
+
+        ImGui::SameLine(TITLE_BAR_SIZE / 2);
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+        ImGui::BeginChildFrame(12345, ImVec2(150, 0));
+        ImGui::PopStyleColor(1);
+        ImGui::PopStyleVar(1);
+
+        ImGui::Image((ImTextureID)(intptr_t)m_iconTexture.getId(), ImVec2(16, 16));
+
+        ImGui::SameLine();
+        ImGui::Text("Cybrion");
+
+        ImGui::EndChildFrame();
+
+        ImGui::SameLine(125);
+        ImGui::PushID(90);
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0.1f));
+        ImGui::Button(std::to_string((i32)getFPS()).c_str(), ImVec2(0, TITLE_BAR_SIZE));
+        ImGui::PopStyleColor(1);
+        ImGui::PopID();
 
         ImGui::SameLine(ImGui::GetWindowWidth() - TITLE_BAR_SIZE * 2);
         if (ImGui::ImageButton((ImTextureID)(intptr_t)m_closeTexture.getId(), ImVec2(TITLE_BAR_SIZE, TITLE_BAR_SIZE)))

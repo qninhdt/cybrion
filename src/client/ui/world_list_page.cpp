@@ -91,7 +91,7 @@ namespace cybrion::ui
 
             ImGui::Text("%s", m_worldList[i].name.c_str());
 
-            ImGui::SameLine(350);
+            ImGui::SameLine(ImGui::GetWindowWidth() - 150);
             ImGui::TextColored(ImVec4(1, 1, 1, 0.5f), "%.1f Mb", m_worldList[i].size);
 
             ImGui::SameLine(ImGui::GetWindowWidth() - 50);

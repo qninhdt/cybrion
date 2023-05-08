@@ -94,6 +94,8 @@ namespace cybrion
         bool m_isClosed;
         bool m_enableCursor;
 
+        GL::Texture m_iconTexture;
+
         GL::Texture m_maximizeTexture;
         GL::Texture m_restoreTexture;
         GL::Texture m_minimizeTexture;
