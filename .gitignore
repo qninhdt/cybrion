@@ -2,6 +2,7 @@
 .vs
 *.hjbt
 *.rar
+*.zip
 out
 build
 tools
