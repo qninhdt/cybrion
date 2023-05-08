@@ -8,6 +8,7 @@
 <p align="center">
     <img src="./docs/screenshots/preview.png" alt="Cybrion preview">
 </p>
+
 ## ✏️ Mô tả
 
 __Cybrion__ là một trò chơi 3D được viết bằng ngôn ngữ C++ phiên bản 20 và sử dụng thư viện SDL2 để xử lý đồ họa. Trong Cybrion, người chơi sẽ được thỏa thích xây dựng bất cứ thứ gì bằng những khối có sẵn, trong một thế giới mở tuyệt đẹp, không bị giới hạn bởi không gian.
