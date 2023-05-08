@@ -4,6 +4,19 @@
     <p align="center"><i>❝ Just a silly blocky game ❞ — <b>@qninhdt</b></i></p>
 </p>
 
+<p align="center">
+    <img src="./docs/screenshots/preview.png" alt="Cybrion preview">
+</p>
+
+## 💡 Features
+- Infinite, procedurally generated world
+- Multithreading for world generation
+- Beautiful and colorful world
+- Custom shape blocks (fence, chess, table)
+- Wide variety of flowers and trees
+- Save and load world using custom file type
+- Complex GUI (Block menu, inventory)
+
 ## ⚙️ Installing
 
 
@@ -67,14 +80,21 @@ Similar to __Windows__, build folder will be `cybrion/build`
     └── ...
 
 ## 🎮 How to play
-- `Left Click` to break a block
-- `Right Click` to place a block
-- `WASD` to move around
-- `Space` to go up
-- `Shift` to go down
-- `E` to open block menu
-- `Esc` to pause game
-- `Ctrl` to move faster
-- `F1` to hide GUI
-- `F3` to open Debug tools
+
+### Hello world
+- __Step 1__: Enter the name of your world then click `Create`
+- __Step 2__: Click `Play`
+- __Step 3__: Enjoy the game 🗿🍷
+
+### Controls
+- __`Left Click`__ to break a block
+- __`Right Click`__ to place a block
+- __`WASD`__ to move around
+- __`Space`__ to go up
+- __`Shift`__ to go down
+- __`E`__ to open block menu
+- __`Esc`__ to pause game
+- __`Ctrl`__ to move faster
+- __`F1`__ to hide GUI
+- __`F3`__ to open Debug tools
 
