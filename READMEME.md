@@ -9,6 +9,7 @@
 </p>
 
 ## 💡 Features
+- Infinite, procedurally generated world
 - Multithreading for world generation
 - Beautiful and colorful world
 - Custom shape blocks (fence, chess, table)
