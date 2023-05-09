@@ -351,6 +351,9 @@ namespace cybrion::ui
         ImGui::SetNextWindowPos(ImVec2(m_io.DisplaySize.x * 0.5f, 50), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
         ImGui::Begin("Block Menu Header", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
 
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0.2));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.3));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0.5));
         for (auto &[name, blocks] : m_blockMenu)
         {
             if (ImGui::Button(name.c_str()))
@@ -359,6 +362,8 @@ namespace cybrion::ui
             }
             ImGui::SameLine();
         }
+
+        ImGui::PopStyleColor(3);
 
         ImGui::End();
 
