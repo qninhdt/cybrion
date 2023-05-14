@@ -22,6 +22,7 @@ namespace cybrion
         CONCRETE,
         MINERAL,
         CACTUS,
+        PLANK,
         ENUM_SIZE
     };
 

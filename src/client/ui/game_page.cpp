@@ -55,6 +55,14 @@ namespace cybrion::ui
                  &Blocks::MOSSY_STONE_BRICK,
                  &Blocks::CLAY_BRICK,
                  &Blocks::QUARTZ_BRICK,
+                 // plank
+                 &Blocks::ACACIA_PLANK,
+                 &Blocks::BIRCH_PLANK,
+                 &Blocks::DARK_OAK_PLANK,
+                 &Blocks::JUNGLE_PLANK,
+                 &Blocks::MANGROVE_PLANK,
+                 &Blocks::OAK_PLANK,
+                 &Blocks::SPRUCE_PLANK,
                  // wool
                  &Blocks::YELLOW_WOOL,
                  &Blocks::WHITE_WOOL,

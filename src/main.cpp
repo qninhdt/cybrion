@@ -23,6 +23,7 @@ i32 main(i32 argc, char *args[])
     RegisterEnum(BlockType::CONCRETE, "concrete");
     RegisterEnum(BlockType::MINERAL, "mineral");
     RegisterEnum(BlockType::CACTUS, "cactus");
+    RegisterEnum(BlockType::PLANK, "plank");
 
     // block color
     RegisterEnum(BlockColor::YELLOW, "yellow");

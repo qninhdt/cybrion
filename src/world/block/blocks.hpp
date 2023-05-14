@@ -19,6 +19,7 @@
 #include "world/block/building/concrete_block.hpp"
 #include "world/block/building/mineral_block.hpp"
 #include "world/block/building/glass_block.hpp"
+#include "world/block/building/plank_block.hpp"
 
 #include "world/block/decoration/tablecloth_block.hpp"
 #include "world/block/decoration/chess_block.hpp"
@@ -47,7 +48,8 @@ namespace cybrion
                        ConcreteBlock,
                        MineralBlock,
                        CactusBlock,
-                       GlassBlock>
+                       GlassBlock,
+                       PlankBlock>
     {
     public:
         static AirBlock &AIR;
@@ -165,6 +167,14 @@ namespace cybrion
         static CactusBlock &CACTUS;
         static GlassBlock &GLASS;
 
+        static PlankBlock &ACACIA_PLANK;
+        static PlankBlock &BIRCH_PLANK;
+        static PlankBlock &DARK_OAK_PLANK;
+        static PlankBlock &JUNGLE_PLANK;
+        static PlankBlock &MANGROVE_PLANK;
+        static PlankBlock &OAK_PLANK;
+        static PlankBlock &SPRUCE_PLANK;
+
         static Blocks &Get();
 
     private:
@@ -180,6 +190,7 @@ namespace cybrion
         static WoolBlock &WOOL;
         static ConcreteBlock &CONCRETE;
         static MineralBlock &MINERAL;
+        static PlankBlock &PLANK;
 
         static Blocks s_blocks;
     };

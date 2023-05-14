@@ -1,0 +1,30 @@
+"[]":
+  sound: wood
+
+"[type=acacia]":
+  display_name: Acacia Plank
+  all: acacia_plank
+
+"[type=birch]":
+  display_name: Birch Plank
+  all: birch_plank
+
+"[type=dark_oak]":
+  display_name: Dark Oak Plank
+  all: dark_oak_plank
+
+"[type=jungle]":
+  display_name: Jungle Plank
+  all: jungle_plank
+
+"[type=mangrove]":
+  display_name: Mangrove Plank
+  all: mangrove_plank
+
+"[type=oak]":
+  display_name: Oak Plank
+  all: oak_plank
+
+"[type=spruce]":
+  display_name: Spruce Plank
+  all: spruce_plank

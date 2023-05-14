@@ -139,6 +139,15 @@ namespace cybrion
     CactusBlock &Blocks::CACTUS = s_blocks.get<CactusBlock>();
     GlassBlock &Blocks::GLASS = s_blocks.get<GlassBlock>();
 
+    PlankBlock &Blocks::PLANK = s_blocks.get<PlankBlock>();
+    PlankBlock &Blocks::OAK_PLANK = PLANK.set<"type">(WoodType::OAK);
+    PlankBlock &Blocks::SPRUCE_PLANK = PLANK.set<"type">(WoodType::SPRUCE);
+    PlankBlock &Blocks::BIRCH_PLANK = PLANK.set<"type">(WoodType::BIRCH);
+    PlankBlock &Blocks::JUNGLE_PLANK = PLANK.set<"type">(WoodType::JUNGLE);
+    PlankBlock &Blocks::ACACIA_PLANK = PLANK.set<"type">(WoodType::ACACIA);
+    PlankBlock &Blocks::DARK_OAK_PLANK = PLANK.set<"type">(WoodType::DARK_OAK);
+    PlankBlock &Blocks::MANGROVE_PLANK = PLANK.set<"type">(WoodType::MANGROVE);
+
     Blocks &Blocks::Get()
     {
         return s_blocks;
