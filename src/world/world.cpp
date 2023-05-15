@@ -424,7 +424,7 @@ namespace cybrion
 
     void World::saveChunk(const ivec3 &pos, const ref<Chunk> &chunk)
     {
-        //return;
+        // return;
         ivec3 regionPos = ToRegionPos(pos);
         ivec3 localPos = ToLocalRegionPos(pos);
 
@@ -509,6 +509,8 @@ namespace cybrion
 
             if (blockId != -1)
                 inventory[i] = &Blocks::Get().getBlock(blockId);
+            else
+                inventory[i] = nullptr;
         }
         CYBRION_GAME_INFO("Loaded world {} with seed {}", config.get_string("name"), config.get_int("seed"));
         return world;
